@@ -14,8 +14,6 @@ import dagger.Provides;
 import dagger.android.ContributesAndroidInjector;
 import dagger.android.support.AndroidSupportInjectionModule;
 import dagger.multibindings.IntoMap;
-import me.worric.souvenarius.di.ActivityContext;
-import me.worric.souvenarius.di.ActivityScope;
 import me.worric.souvenarius.di.AppContext;
 import me.worric.souvenarius.di.ViewModelKey;
 import me.worric.souvenarius.ui.common.AppViewModelFactory;
