@@ -7,6 +7,8 @@ import android.arch.lifecycle.ViewModel;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import timber.log.Timber;
+
 public class MainViewModel extends ViewModel {
 
     private final MutableLiveData<String> mHelloWorld;
@@ -14,6 +16,7 @@ public class MainViewModel extends ViewModel {
     @Inject
     public MainViewModel(@Named("theMessage") String message) {
         mHelloWorld = new MutableLiveData<>();
+        Timber.i("Setting the message...");
         mHelloWorld.setValue(message);
     }
 
