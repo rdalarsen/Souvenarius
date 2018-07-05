@@ -1,12 +1,11 @@
 package me.worric.souvenarius.data.repository;
 
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 
+import java.io.File;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import me.worric.souvenarius.data.model.Souvenir;
@@ -14,18 +13,13 @@ import me.worric.souvenarius.data.model.Souvenir;
 @Singleton
 public class SouvenirRepository {
 
-    private final MutableLiveData<String> mHelloWorld;
     private final FirebaseHandler mFirebaseHandler;
+    private final StorageHandler mStorageHandler;
 
     @Inject
-    public SouvenirRepository(@Named("theMessage") String theMessage, FirebaseHandler firebaseHandler) {
-        mHelloWorld = new MutableLiveData<>();
+    public SouvenirRepository(FirebaseHandler firebaseHandler, StorageHandler storageHandler) {
         mFirebaseHandler = firebaseHandler;
-        mHelloWorld.setValue(theMessage);
-    }
-
-    public LiveData<String> getHelloWorldText() {
-        return mHelloWorld;
+        mStorageHandler = storageHandler;
     }
 
     public LiveData<List<Souvenir>> getSouvenirs() {
@@ -34,6 +28,10 @@ public class SouvenirRepository {
 
     public void addSouvenir(Souvenir souvenir) {
         mFirebaseHandler.addSouvenir(souvenir);
+    }
+
+    public void save(File imageFile) {
+        mStorageHandler.uploadImage(imageFile);
     }
 
 }

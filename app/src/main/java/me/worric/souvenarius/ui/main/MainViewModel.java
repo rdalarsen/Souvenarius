@@ -1,11 +1,13 @@
 package me.worric.souvenarius.ui.main;
 
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 
 import org.threeten.bp.Instant;
 
+import java.io.File;
 import java.util.Arrays;
 
 import javax.inject.Inject;
@@ -17,10 +19,12 @@ import timber.log.Timber;
 public class MainViewModel extends ViewModel {
 
     private final SouvenirRepository mSouvenirRepository;
+    private final MutableLiveData<File> mPhotoPath;
 
     @Inject
     public MainViewModel(SouvenirRepository souvenirRepository) {
         mSouvenirRepository = souvenirRepository;
+        mPhotoPath = new MutableLiveData<>();
     }
 
     public LiveData<String> getPlaceOfFirstSouvenir() {
@@ -43,8 +47,16 @@ public class MainViewModel extends ViewModel {
         mSouvenirRepository.addSouvenir(souvenir);
     }
 
-    public LiveData<String> getHelloWorldText() {
-        return mSouvenirRepository.getHelloWorldText();
+    public void setPhotoPath(File theFile) {
+        mPhotoPath.setValue(theFile);
+    }
+
+    public LiveData<File> getPhotoPath() {
+        return mPhotoPath;
+    }
+
+    public void save() {
+        mSouvenirRepository.save(mPhotoPath.getValue());
     }
 
 }
