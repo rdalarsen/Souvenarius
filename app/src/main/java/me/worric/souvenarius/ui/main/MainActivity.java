@@ -2,9 +2,11 @@ package me.worric.souvenarius.ui.main;
 
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 import javax.inject.Inject;
 
@@ -13,12 +15,16 @@ import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
 import me.worric.souvenarius.R;
+import me.worric.souvenarius.databinding.ActivityMainBinding;
+import me.worric.souvenarius.ui.add.AddFragment;
+import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity implements HasSupportFragmentInjector {
 
     @Inject
     protected ViewModelProvider.Factory mFactory;
     private MainViewModel mMainViewModel;
+    private ActivityMainBinding mBinding;
     @Inject
     DispatchingAndroidInjector<Fragment> mInjector;
 
@@ -26,14 +32,26 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     protected void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         mMainViewModel = ViewModelProviders.of(this, mFactory).get(MainViewModel.class);
+        mBinding.setViewmodel(mMainViewModel);
+        mBinding.setLifecycleOwner(this);
+
+        setSupportActionBar(mBinding.toolbar);
+
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, AddFragment.newInstance(), "add")
+                    .commit();
+        }
     }
 
+    public void handleFab(View view) {
+        Timber.i("Fab clicked");
+    }
 
     @Override
     public AndroidInjector<Fragment> supportFragmentInjector() {
         return mInjector;
     }
-
 }

@@ -113,4 +113,13 @@ public class AddFragment extends Fragment {
         void handleAddPhoto(View view);
     }
 
+    public static AddFragment newInstance() {
+
+        Bundle args = new Bundle();
+
+        AddFragment fragment = new AddFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
 }
