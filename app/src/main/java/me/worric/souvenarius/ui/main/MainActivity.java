@@ -17,7 +17,6 @@ import dagger.android.support.HasSupportFragmentInjector;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.databinding.ActivityMainBinding;
 import me.worric.souvenarius.ui.add.AddFragment;
-import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity implements HasSupportFragmentInjector {
 
@@ -41,13 +40,23 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, AddFragment.newInstance(), "add")
+                    .add(R.id.fragment_container, MainFragment.newInstance(), "main")
                     .commit();
         }
     }
 
     public void handleFab(View view) {
-        Timber.i("Fab clicked");
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, AddFragment.newInstance(), "add")
+                .addToBackStack(null)
+                .commit();
+        mBinding.appbarLayout.setExpanded(true);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        mBinding.appbarLayout.setExpanded(true);
     }
 
     @Override

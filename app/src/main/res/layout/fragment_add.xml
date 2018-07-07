@@ -10,63 +10,70 @@
             name="handler"
             type="me.worric.souvenarius.ui.add.AddFragment.ClickHandler" />
     </data>
-    <android.support.constraint.ConstraintLayout
+    <ScrollView
+        android:id="@+id/add_fragment_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        tools:context=".ui.main.MainActivity">
+        android:nestedScrollingEnabled="true">
 
-        <ImageView
-            android:id="@+id/iv_photo_preview"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintDimensionRatio="h,16:9"
-            android:contentDescription="@string/content_desc_photo_preview"
-            app:imageUri="@{viewmodel.photoPath.absolutePath}"
-            app:placeholder="@{@drawable/ic_launcher_background}"
-            android:onClick="@{handler::handleAddPhoto}"
-            tools:src="@drawable/ic_launcher_background" />
-
-        <EditText
-            android:id="@+id/et_souvenir_title"
-            android:layout_width="wrap_content"
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/iv_photo_preview"
-            android:inputType="text"
-            android:ems="10"
-            android:hint="@string/title_hint" />
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            tools:context=".ui.main.MainActivity">
 
-        <EditText
-            android:id="@+id/et_story"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/et_souvenir_title"
-            app:layout_constraintBottom_toTopOf="@+id/btn_add_done"
-            app:layout_constraintVertical_bias="0.0"
-            android:inputType="textMultiLine"
-            android:hint="@string/story_hint"
-            android:ems="10" />
+            <ImageView
+                android:id="@+id/iv_photo_preview"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintDimensionRatio="h,16:9"
+                android:contentDescription="@string/content_desc_photo_preview"
+                app:imageUri="@{viewmodel.photoPath.absolutePath}"
+                app:placeholder="@{@drawable/ic_launcher_background}"
+                android:onClick="@{handler::handleAddPhoto}"
+                tools:src="@drawable/ic_launcher_background" />
 
-        <Button
-            android:id="@+id/btn_add_done"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:text="@string/btn_done"
-            android:onClick="@{() -> viewmodel.addSouvenir()}" />
+            <EditText
+                android:id="@+id/et_souvenir_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/iv_photo_preview"
+                android:inputType="text"
+                android:ems="10"
+                android:hint="@string/title_hint" />
 
-    </android.support.constraint.ConstraintLayout>
+            <EditText
+                android:id="@+id/et_story"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/et_souvenir_title"
+                app:layout_constraintBottom_toTopOf="@+id/btn_add_done"
+                app:layout_constraintVertical_bias="0.0"
+                android:inputType="textMultiLine"
+                android:hint="@string/story_hint"
+                android:ems="10" />
+
+            <Button
+                android:id="@+id/btn_add_done"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:text="@string/btn_done"
+                android:onClick="@{() -> viewmodel.addSouvenir()}" />
+
+        </android.support.constraint.ConstraintLayout>
+    </ScrollView>
 </layout>

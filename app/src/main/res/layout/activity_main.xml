@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
     <data>
         <variable
             name="viewmodel"
@@ -8,7 +9,8 @@
     </data>
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:context=".ui.main.MainActivity">
 
         <FrameLayout
             android:id="@+id/fragment_container"
@@ -26,7 +28,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="?android:attr/actionBarSize"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                app:layout_scrollFlags="scroll|enterAlwaysCollapsed" />
+                app:contentInsetStart="72dp"
+                app:navigationIcon="@drawable/ic_launcher_background"
+                app:layout_scrollFlags="scroll|enterAlways" />
         </android.support.design.widget.AppBarLayout>
 
         <android.support.design.widget.FloatingActionButton
