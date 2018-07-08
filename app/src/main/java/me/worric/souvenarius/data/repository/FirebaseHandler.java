@@ -17,6 +17,7 @@ import javax.inject.Inject;
 
 import me.worric.souvenarius.data.model.Souvenir;
 import me.worric.souvenarius.data.model.SouvenirResponse;
+import timber.log.Timber;
 
 public class FirebaseHandler {
 
@@ -40,12 +41,12 @@ public class FirebaseHandler {
                 List<SouvenirResponse> resultList = new LinkedList<>();
                 if (dataSnapshot.hasChildren()) {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        SouvenirResponse souvenir = snapshot.getValue(SouvenirResponse.class);
-                        if (souvenir == null) continue;
+                        SouvenirResponse response = snapshot.getValue(SouvenirResponse.class);
+                        if (response == null) continue;
 
-                        souvenir.setFirebaseId(snapshot.getKey());
+                        response.setFirebaseId(snapshot.getKey());
 
-                        resultList.add(souvenir);
+                        resultList.add(response);
                     }
                 }
 
@@ -54,7 +55,7 @@ public class FirebaseHandler {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                Timber.e(databaseError.toException(), "There was a database error");
             }
         });
     }
@@ -63,7 +64,7 @@ public class FirebaseHandler {
         return mSouvenirs;
     }
 
-    public void addSouvenir(Souvenir souvenir) {
+    public void storeSouvenir(Souvenir souvenir) {
         String pushKey = mRef.push().getKey();
         if (pushKey == null) throw new IllegalStateException("Key cannot be null!");
 

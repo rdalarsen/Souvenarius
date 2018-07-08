@@ -9,8 +9,17 @@ public class Souvenir {
     private List<String> mImages = null;
     private long mTimestamp;
     private String mPlace;
+    private String mTitle;
 
     public Souvenir() {
+    }
+
+    public String getTitle() {
+        return mTitle;
+    }
+
+    public void setTitle(String title) {
+        mTitle = title;
     }
 
     public long getId() {

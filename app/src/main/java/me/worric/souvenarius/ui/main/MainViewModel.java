@@ -5,15 +5,16 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 
-import org.threeten.bp.Instant;
-
 import java.io.File;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 import javax.inject.Inject;
 
 import me.worric.souvenarius.data.model.Souvenir;
+import me.worric.souvenarius.data.model.SouvenirResponse;
 import me.worric.souvenarius.data.repository.SouvenirRepository;
 import me.worric.souvenarius.ui.add.AddFragment;
 import timber.log.Timber;
@@ -29,32 +30,24 @@ public class MainViewModel extends ViewModel {
         mPhotoPath = new MutableLiveData<>();
     }
 
-    public LiveData<String> getPlaceOfFirstSouvenir() {
+    public LiveData<List<String>> getFirebaseIds() {
         return Transformations.map(mSouvenirRepository.getSouvenirs(), souvenirs -> {
             if (souvenirs != null && souvenirs.size() > 0) {
-                Timber.i("Souvenirs exist, returning place of first souvenir");
-                return souvenirs.get(0).getPlace();
+                List<String> resultList = new ArrayList<>(souvenirs.size());
+                for (SouvenirResponse response : souvenirs) {
+                    resultList.add(response.getFirebaseId());
+                }
+                return resultList;
             }
             Timber.w("Souvenirs do not exist, returning error message");
-            return "Place not available";
+            return Collections.singletonList("Place not available");
         });
     }
 
-    public void addSouvenir() {
-        Souvenir souvenir = new Souvenir();
-        souvenir.setId(4);
-        souvenir.setPlace("the place");
-        souvenir.setTimestamp(Instant.now().toEpochMilli());
-        souvenir.setImages(Arrays.asList("fasf982h", "fha2eja0"));
-        mSouvenirRepository.addSouvenir(souvenir);
-    }
-
     public void addSouvenir(AddFragment.SouvenirSaveInfo info) {
-        Souvenir souvenir = new Souvenir();
-        souvenir.addImage(info.getPhotoName());
-        souvenir.setTimestamp(Instant.now().toEpochMilli());
-        souvenir.setPlace(info.getPlace());
-        mSouvenirRepository.addSouvenir(souvenir);
+        File photo = Objects.requireNonNull(mPhotoPath.getValue());
+        Souvenir souvenir = info.toSouvenir(photo);
+        mSouvenirRepository.addSouvenir(souvenir, photo);
     }
 
     public void setPhotoPath(File theFile) {
@@ -65,11 +58,7 @@ public class MainViewModel extends ViewModel {
         return mPhotoPath;
     }
 
-    public void save() {
-        mSouvenirRepository.save(mPhotoPath.getValue());
-    }
-
-    public boolean clearPhotoPath() {
+    public boolean deleteTempImage() {
         boolean wasDeletedSuccessfully = Objects.requireNonNull(mPhotoPath.getValue()).delete();
         if (wasDeletedSuccessfully) {
             mPhotoPath.setValue(null);

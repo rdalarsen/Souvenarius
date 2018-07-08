@@ -13,11 +13,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import org.threeten.bp.Instant;
 import org.threeten.bp.ZonedDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
 
@@ -29,6 +31,7 @@ import javax.inject.Inject;
 import dagger.android.support.AndroidSupportInjection;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.BR;
+import me.worric.souvenarius.data.model.Souvenir;
 import me.worric.souvenarius.databinding.FragmentAddBinding;
 import me.worric.souvenarius.di.ActivityContext;
 import me.worric.souvenarius.ui.main.MainViewModel;
@@ -79,9 +82,8 @@ public class AddFragment extends Fragment {
             String story = mBinding.etStory.getText().toString();
             String title = mBinding.etSouvenirTitle.getText().toString();
             String place = "hi";
-            String name = mViewModel.getPhotoPath().getValue().getName();
-            SouvenirSaveInfo info = new SouvenirSaveInfo(story, title, name, place);
-            if (info.isMissingValues()) {
+            SouvenirSaveInfo info = new SouvenirSaveInfo(story, title, place);
+            if (info.hasMissingValues()) {
                 Toast.makeText(mContext, "There are missing values. Please input them", Toast.LENGTH_SHORT).show();
             } else {
                 mViewModel.addSouvenir(info);
@@ -104,6 +106,8 @@ public class AddFragment extends Fragment {
                         output);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                 startActivityForResult(intent, TAKE_PHOTO_REQUEST_CODE);
+            } else {
+                Toast.makeText(mContext, "Could allocate temporary file", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -123,8 +127,8 @@ public class AddFragment extends Fragment {
             if (resultCode == RESULT_OK) {
                 Timber.i("Photo was taken OK");
             } else {
-                Timber.w("Could not take photo.");
-                boolean wasSuccessfullyDeleted = mViewModel.clearPhotoPath();
+                boolean wasSuccessfullyDeleted = mViewModel.deleteTempImage();
+                Timber.w("Could not take photo. The temp file was %s deleted", (wasSuccessfullyDeleted ? "successfully" : "not"));
             }
         }
     }
@@ -150,18 +154,16 @@ public class AddFragment extends Fragment {
 
         private String mStory;
         private String mTitle;
-        private String mPhotoName;
         private String mPlace;
 
-        public SouvenirSaveInfo(String story, String title, String photoName, String place) {
+        public SouvenirSaveInfo(String story, String title, String place) {
             mStory = story;
             mTitle = title;
-            mPhotoName = photoName;
             mPlace = place;
         }
 
-        public boolean isMissingValues() {
-            return mStory == null || mTitle == null || mPhotoName == null || mPlace == null;
+        public boolean hasMissingValues() {
+            return TextUtils.isEmpty(mStory) || TextUtils.isEmpty(mTitle) || TextUtils.isEmpty(mPlace);
         }
 
         public String getPlace() {
@@ -188,12 +190,15 @@ public class AddFragment extends Fragment {
             mTitle = title;
         }
 
-        public String getPhotoName() {
-            return mPhotoName;
-        }
-
-        public void setPhotoName(String photoName) {
-            mPhotoName = photoName;
+        public Souvenir toSouvenir(File photo) {
+            Souvenir souvenir = new Souvenir();
+            souvenir.setPlace(mPlace);
+            souvenir.setTimestamp(Instant.now().toEpochMilli());
+            souvenir.setTitle(mTitle);
+            if (photo != null) {
+                souvenir.addImage(photo.getName());
+            }
+            return souvenir;
         }
     }
 

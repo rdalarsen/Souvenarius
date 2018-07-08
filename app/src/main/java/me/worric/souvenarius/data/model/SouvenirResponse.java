@@ -7,17 +7,37 @@ public class SouvenirResponse {
 
     private String mFirebaseId;
     private String mPlace;
+    private String mTitle;
+    private String mStory;
     private List<String> mPhotos = null;
     private long mTimestamp;
 
-    public SouvenirResponse(String firebaseId, String place, List<String> photos, long timestamp) {
+    public SouvenirResponse(String firebaseId, String place, String title, String story, List<String> photos, long timestamp) {
         mFirebaseId = firebaseId;
         mPlace = place;
+        mTitle = title;
+        mStory = story;
         mPhotos = photos;
         mTimestamp = timestamp;
     }
 
     public SouvenirResponse() {
+    }
+
+    public String getTitle() {
+        return mTitle;
+    }
+
+    public void setTitle(String title) {
+        mTitle = title;
+    }
+
+    public String getStory() {
+        return mStory;
+    }
+
+    public void setStory(String story) {
+        mStory = story;
     }
 
     public String getPlace() {

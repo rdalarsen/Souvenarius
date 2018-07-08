@@ -9,11 +9,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import javax.inject.Inject;
 
@@ -26,6 +24,7 @@ public class MainFragment extends Fragment {
     protected ViewModelProvider.Factory mFactory;
     private FragmentMainBinding mBinding;
     private MainViewModel mViewModel;
+    private MainAdapter mAdapter;
 
     @Nullable
     @Override
@@ -39,40 +38,22 @@ public class MainFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        mAdapter = new MainAdapter();
+        mBinding.rvSouvenirList.setAdapter(mAdapter);
         mBinding.rvSouvenirList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         mBinding.rvSouvenirList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
-        mBinding.rvSouvenirList.setAdapter(new RecyclerView.Adapter<SouvenirViewholder>() {
-            @NonNull
-            @Override
-            public SouvenirViewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
-                return new SouvenirViewholder(v);
-            }
-
-            @Override
-            public void onBindViewHolder(@NonNull SouvenirViewholder holder, int position) {
-                holder.text1.setText("test");
-                holder.text2.setText("and more test");
-            }
-
-            @Override
-            public int getItemCount() {
-                return 30;
-            }
-        });
     }
 
-    public static class SouvenirViewholder extends RecyclerView.ViewHolder {
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mViewModel.getFirebaseIds().observe(this, strings -> mAdapter.swapLists(strings));
+    }
 
-        TextView text1;
-        TextView text2;
-
-        public SouvenirViewholder(View itemView) {
-            super(itemView);
-            text1 = itemView.findViewById(R.id.tv_item_1);
-            text2 = itemView.findViewById(R.id.tv_item_2);
-        }
-
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mViewModel.getFirebaseIds().removeObservers(this);
     }
 
     public static MainFragment newInstance() {

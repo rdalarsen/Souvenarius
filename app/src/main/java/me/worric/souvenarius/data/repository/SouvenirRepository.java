@@ -27,12 +27,9 @@ public class SouvenirRepository {
         return mFirebaseHandler.getSouvenirs();
     }
 
-    public void addSouvenir(Souvenir souvenir) {
-        mFirebaseHandler.addSouvenir(souvenir);
-    }
-
-    public void save(File imageFile) {
-        mStorageHandler.uploadImage(imageFile);
+    public void addSouvenir(Souvenir souvenir, File image) {
+        mStorageHandler.uploadImage(image);
+        mFirebaseHandler.storeSouvenir(souvenir);
     }
 
 }
