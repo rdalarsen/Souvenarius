@@ -16,6 +16,7 @@ import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import org.threeten.bp.ZonedDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
@@ -26,8 +27,8 @@ import java.io.IOException;
 import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
-import me.worric.souvenarius.BR;
 import me.worric.souvenarius.R;
+import me.worric.souvenarius.BR;
 import me.worric.souvenarius.databinding.FragmentAddBinding;
 import me.worric.souvenarius.di.ActivityContext;
 import me.worric.souvenarius.ui.main.MainViewModel;
@@ -38,6 +39,10 @@ import static android.app.Activity.RESULT_OK;
 public class AddFragment extends Fragment {
 
     private static final int TAKE_PHOTO_REQUEST_CODE = 909;
+    private static final String DATE_PATTERN = "yyyyMMdd_HHmmss";
+    private static final String FILE_NAME_PREFIX = "JPEG_";
+    private static final String FILE_NAME_SEPARATOR = "_";
+    private static final String FILE_NAME_SUFFIX = ".jpg";
     @Inject
     protected ViewModelProvider.Factory mFactory;
     @Inject @ActivityContext
@@ -67,7 +72,21 @@ public class AddFragment extends Fragment {
         mViewModel = ViewModelProviders.of(getActivity(), mFactory).get(MainViewModel.class);
         mBinding.setViewmodel(mViewModel);
         mBinding.setLifecycleOwner(this);
-        mBinding.setVariable(BR.handler, (ClickHandler) view -> takePhoto());
+        mBinding.setVariable(BR.addphotohandler, (AddPhotoHandler) view -> {
+            takePhoto();
+        });
+        mBinding.setVariable(BR.savesouvenirhandler, (SaveSouvenirHandler) view -> {
+            String story = mBinding.etStory.getText().toString();
+            String title = mBinding.etSouvenirTitle.getText().toString();
+            String place = "hi";
+            String name = mViewModel.getPhotoPath().getValue().getName();
+            SouvenirSaveInfo info = new SouvenirSaveInfo(story, title, name, place);
+            if (info.isMissingValues()) {
+                Toast.makeText(mContext, "There are missing values. Please input them", Toast.LENGTH_SHORT).show();
+            } else {
+                mViewModel.addSouvenir(info);
+            }
+        });
     }
 
     private void takePhoto() {
@@ -90,10 +109,10 @@ public class AddFragment extends Fragment {
     }
 
     private File createImageFile() throws IOException {
-        String timestamp = ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
-        String imageFileName = "JPEG_" + timestamp + "_";
+        String timestamp = ZonedDateTime.now().format(DateTimeFormatter.ofPattern(DATE_PATTERN));
+        String imageFileName = FILE_NAME_PREFIX + timestamp + FILE_NAME_SEPARATOR;
         File storageDir = mContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
+        File image = File.createTempFile(imageFileName, FILE_NAME_SUFFIX, storageDir);
         mViewModel.setPhotoPath(image);
         return image;
     }
@@ -105,12 +124,17 @@ public class AddFragment extends Fragment {
                 Timber.i("Photo was taken OK");
             } else {
                 Timber.w("Could not take photo.");
+                boolean wasSuccessfullyDeleted = mViewModel.clearPhotoPath();
             }
         }
     }
 
-    public interface ClickHandler {
-        void handleAddPhoto(View view);
+    public interface AddPhotoHandler {
+        void onAddPhoto(View view);
+    }
+
+    public interface SaveSouvenirHandler {
+        void onSaveSouvenir(View view);
     }
 
     public static AddFragment newInstance() {
@@ -120,6 +144,57 @@ public class AddFragment extends Fragment {
         AddFragment fragment = new AddFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public static class SouvenirSaveInfo {
+
+        private String mStory;
+        private String mTitle;
+        private String mPhotoName;
+        private String mPlace;
+
+        public SouvenirSaveInfo(String story, String title, String photoName, String place) {
+            mStory = story;
+            mTitle = title;
+            mPhotoName = photoName;
+            mPlace = place;
+        }
+
+        public boolean isMissingValues() {
+            return mStory == null || mTitle == null || mPhotoName == null || mPlace == null;
+        }
+
+        public String getPlace() {
+            return mPlace;
+        }
+
+        public void setPlace(String place) {
+            mPlace = place;
+        }
+
+        public String getStory() {
+            return mStory;
+        }
+
+        public void setStory(String story) {
+            mStory = story;
+        }
+
+        public String getTitle() {
+            return mTitle;
+        }
+
+        public void setTitle(String title) {
+            mTitle = title;
+        }
+
+        public String getPhotoName() {
+            return mPhotoName;
+        }
+
+        public void setPhotoName(String photoName) {
+            mPhotoName = photoName;
+        }
     }
 
 }

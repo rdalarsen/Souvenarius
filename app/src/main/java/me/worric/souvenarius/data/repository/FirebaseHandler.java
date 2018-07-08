@@ -16,12 +16,13 @@ import java.util.List;
 import javax.inject.Inject;
 
 import me.worric.souvenarius.data.model.Souvenir;
+import me.worric.souvenarius.data.model.SouvenirResponse;
 
 public class FirebaseHandler {
 
     private static final String SOUVENIRS_REFERENCE = "souvenirs";
     private final FirebaseDatabase mDatabase;
-    private final MutableLiveData<List<Souvenir>> mSouvenirs;
+    private final MutableLiveData<List<SouvenirResponse>> mSouvenirs;
     private final DatabaseReference mRef;
 
     @Inject
@@ -36,10 +37,14 @@ public class FirebaseHandler {
         mRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                List<Souvenir> resultList = new LinkedList<>();
+                List<SouvenirResponse> resultList = new LinkedList<>();
                 if (dataSnapshot.hasChildren()) {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        Souvenir souvenir = snapshot.getValue(Souvenir.class);
+                        SouvenirResponse souvenir = snapshot.getValue(SouvenirResponse.class);
+                        if (souvenir == null) continue;
+
+                        souvenir.setFirebaseId(snapshot.getKey());
+
                         resultList.add(souvenir);
                     }
                 }
@@ -54,7 +59,7 @@ public class FirebaseHandler {
         });
     }
 
-    public LiveData<List<Souvenir>> getSouvenirs() {
+    public LiveData<List<SouvenirResponse>> getSouvenirs() {
         return mSouvenirs;
     }
 

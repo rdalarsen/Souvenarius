@@ -9,11 +9,13 @@ import org.threeten.bp.Instant;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
 import me.worric.souvenarius.data.model.Souvenir;
 import me.worric.souvenarius.data.repository.SouvenirRepository;
+import me.worric.souvenarius.ui.add.AddFragment;
 import timber.log.Timber;
 
 public class MainViewModel extends ViewModel {
@@ -47,6 +49,14 @@ public class MainViewModel extends ViewModel {
         mSouvenirRepository.addSouvenir(souvenir);
     }
 
+    public void addSouvenir(AddFragment.SouvenirSaveInfo info) {
+        Souvenir souvenir = new Souvenir();
+        souvenir.addImage(info.getPhotoName());
+        souvenir.setTimestamp(Instant.now().toEpochMilli());
+        souvenir.setPlace(info.getPlace());
+        mSouvenirRepository.addSouvenir(souvenir);
+    }
+
     public void setPhotoPath(File theFile) {
         mPhotoPath.setValue(theFile);
     }
@@ -59,4 +69,11 @@ public class MainViewModel extends ViewModel {
         mSouvenirRepository.save(mPhotoPath.getValue());
     }
 
+    public boolean clearPhotoPath() {
+        boolean wasDeletedSuccessfully = Objects.requireNonNull(mPhotoPath.getValue()).delete();
+        if (wasDeletedSuccessfully) {
+            mPhotoPath.setValue(null);
+        }
+        return wasDeletedSuccessfully;
+    }
 }

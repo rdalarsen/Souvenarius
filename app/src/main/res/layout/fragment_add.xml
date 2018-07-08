@@ -7,8 +7,11 @@
             name="viewmodel"
             type="me.worric.souvenarius.ui.main.MainViewModel" />
         <variable
-            name="handler"
-            type="me.worric.souvenarius.ui.add.AddFragment.ClickHandler" />
+            name="addphotohandler"
+            type="me.worric.souvenarius.ui.add.AddFragment.AddPhotoHandler" />
+        <variable
+            name="savesouvenirhandler"
+            type="me.worric.souvenarius.ui.add.AddFragment.SaveSouvenirHandler" />
     </data>
     <ScrollView
         android:id="@+id/add_fragment_scroll_view"
@@ -36,7 +39,7 @@
                 android:contentDescription="@string/content_desc_photo_preview"
                 app:imageUri="@{viewmodel.photoPath.absolutePath}"
                 app:placeholder="@{@drawable/ic_launcher_background}"
-                android:onClick="@{handler::handleAddPhoto}"
+                android:onClick="@{addphotohandler::onAddPhoto}"
                 tools:src="@drawable/ic_launcher_background" />
 
             <EditText
@@ -47,8 +50,20 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/iv_photo_preview"
                 android:inputType="text"
+                android:maxLines="1"
                 android:ems="10"
                 android:hint="@string/title_hint" />
+
+            <EditText
+                android:id="@+id/et_place"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/et_souvenir_title"
+                app:layout_constraintStart_toStartOf="@+id/et_souvenir_title"
+                android:inputType="text"
+                android:maxLines="1"
+                android:ems="10"
+                android:hint="Place..." />
 
             <EditText
                 android:id="@+id/et_story"
@@ -57,7 +72,7 @@
                 android:layout_marginTop="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/et_souvenir_title"
+                app:layout_constraintTop_toBottomOf="@+id/et_place"
                 app:layout_constraintBottom_toTopOf="@+id/btn_add_done"
                 app:layout_constraintVertical_bias="0.0"
                 android:inputType="textMultiLine"
@@ -71,8 +86,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:text="@string/btn_done"
-                android:onClick="@{() -> viewmodel.addSouvenir()}" />
+                android:onClick="@{savesouvenirhandler::onSaveSouvenir}"
+                android:text="@string/btn_done" />
 
         </android.support.constraint.ConstraintLayout>
     </ScrollView>

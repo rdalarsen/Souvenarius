@@ -1,5 +1,6 @@
 package me.worric.souvenarius.data.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Souvenir {
@@ -26,6 +27,12 @@ public class Souvenir {
 
     public void setImages(List<String> images) {
         mImages = images;
+    }
+
+    public void addImage(String image) {
+        if (mImages == null) mImages = new ArrayList<>();
+
+        mImages.add(image);
     }
 
     public long getTimestamp() {
