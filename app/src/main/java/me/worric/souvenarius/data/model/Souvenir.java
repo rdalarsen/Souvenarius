@@ -1,5 +1,11 @@
 package me.worric.souvenarius.data.model;
 
+import org.threeten.bp.Instant;
+import org.threeten.bp.ZoneId;
+import org.threeten.bp.ZonedDateTime;
+import org.threeten.bp.format.DateTimeFormatter;
+import org.threeten.bp.format.FormatStyle;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +37,7 @@ public class Souvenir {
     }
 
     public List<String> getImages() {
-        return mImages;
+        return mImages == null ? new ArrayList<>() : mImages;
     }
 
     public void setImages(List<String> images) {
@@ -58,6 +64,16 @@ public class Souvenir {
 
     public void setPlace(String place) {
         mPlace = place;
+    }
+
+    public String getFormattedTimestamp() {
+        return ZonedDateTime
+                .ofInstant(Instant.ofEpochMilli(getTimestamp()), ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM));
+    }
+
+    public String getFirstPhoto() {
+        return (getImages().size() > 0 ? getImages().get(0) : null );
     }
 
 }

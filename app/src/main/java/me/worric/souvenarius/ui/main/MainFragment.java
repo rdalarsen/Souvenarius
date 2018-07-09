@@ -24,7 +24,7 @@ public class MainFragment extends Fragment {
     protected ViewModelProvider.Factory mFactory;
     private FragmentMainBinding mBinding;
     private MainViewModel mViewModel;
-    private MainAdapter mAdapter;
+    private SouvenirAdapter mAdapter;
 
     @Nullable
     @Override
@@ -38,7 +38,7 @@ public class MainFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        mAdapter = new MainAdapter();
+        mAdapter = new SouvenirAdapter();
         mBinding.rvSouvenirList.setAdapter(mAdapter);
         mBinding.rvSouvenirList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         mBinding.rvSouvenirList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
