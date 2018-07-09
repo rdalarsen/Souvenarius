@@ -53,6 +53,7 @@ public class SouvenirAdapter extends RecyclerView.Adapter<SouvenirAdapter.Souven
             souvenir.setPlace(theString);
             souvenir.setTitle(theString);
             souvenir.setTimestamp(1200412L);
+            souvenir.addImage("JPEG_20180708_184100_1874717512.jpg");
             mBinding.setSouvenir(souvenir);
             mBinding.executePendingBindings();
         }
