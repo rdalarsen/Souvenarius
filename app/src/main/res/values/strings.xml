@@ -6,4 +6,7 @@
     <string name="title_hint">Title…</string>
     <string name="story_hint">Your story here…</string>
     <string name="btn_done">Done!</string>
+
+    <!-- Main fragment -->
+    <string name="souvenir_list_error_message">There are no souvenirs. Go get some :)!</string>
 </resources>

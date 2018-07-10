@@ -23,45 +23,56 @@ public class FirebaseHandler {
 
     private static final String SOUVENIRS_REFERENCE = "souvenirs";
     private final FirebaseDatabase mDatabase;
-    private final MutableLiveData<List<SouvenirResponse>> mSouvenirs;
     private final DatabaseReference mRef;
+    private MutableLiveData<SouvenirRepository.Result<List<SouvenirResponse>>> mResult;
 
     @Inject
     public FirebaseHandler() {
-        mSouvenirs = new MutableLiveData<>();
         mDatabase = FirebaseDatabase.getInstance();
         mRef = mDatabase.getReference(SOUVENIRS_REFERENCE);
-        fetchSouvenirs();
     }
 
     public void fetchSouvenirs() {
         mRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                List<SouvenirResponse> resultList = new LinkedList<>();
-                if (dataSnapshot.hasChildren()) {
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        SouvenirResponse response = snapshot.getValue(SouvenirResponse.class);
-                        if (response == null) continue;
-
-                        response.setFirebaseId(snapshot.getKey());
-
-                        resultList.add(response);
-                    }
-                }
-
-                mSouvenirs.setValue(resultList);
+                List<SouvenirResponse> resultList = parseResponseToList(dataSnapshot);
+                SouvenirRepository.Result<List<SouvenirResponse>> result = SouvenirRepository.Result.success(resultList);
+                mResult.setValue(result);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Timber.e(databaseError.toException(), "There was a database error");
+                mResult.setValue(SouvenirRepository.Result.failure(databaseError.toException()));
             }
         });
     }
 
-    public LiveData<List<SouvenirResponse>> getSouvenirs() {
-        return mSouvenirs;
+    private List<SouvenirResponse> parseResponseToList(DataSnapshot dataSnapshot) {
+        List<SouvenirResponse> resultList = new LinkedList<>();
+        if (dataSnapshot.hasChildren()) {
+            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                SouvenirResponse response = snapshot.getValue(SouvenirResponse.class);
+                if (response == null) {
+                    Timber.w("Parsed dataSnapshot is null. Continuing...");
+                    continue;
+                }
+
+                response.setFirebaseId(snapshot.getKey());
+
+                resultList.add(response);
+            }
+        }
+        return resultList;
+    }
+
+    public LiveData<SouvenirRepository.Result<List<SouvenirResponse>>> getResults() {
+        if (mResult == null) {
+            mResult = new MutableLiveData<>();
+            fetchSouvenirs();
+        }
+        return mResult;
     }
 
     public void storeSouvenir(Souvenir souvenir) {
