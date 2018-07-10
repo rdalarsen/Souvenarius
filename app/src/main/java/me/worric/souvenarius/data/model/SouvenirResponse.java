@@ -1,5 +1,7 @@
 package me.worric.souvenarius.data.model;
 
+import com.google.firebase.database.Exclude;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +51,9 @@ public class SouvenirResponse {
     }
 
     public List<String> getPhotos() {
+        if (mPhotos == null) {
+            mPhotos = new ArrayList<>();
+        }
         return mPhotos;
     }
 
@@ -73,8 +78,18 @@ public class SouvenirResponse {
     }
 
     public void addPhotoToList(String photoName) {
-        if (mPhotos == null) mPhotos = new ArrayList<>();
-
-        mPhotos.add(photoName);
+        getPhotos().add(photoName);
     }
+
+    @Exclude
+    public Souvenir toSouvenir() {
+        Souvenir souvenir = new Souvenir();
+        souvenir.setStory(getStory());
+        souvenir.setTimestamp(getTimestamp());
+        souvenir.setTitle(getTitle());
+        souvenir.setPhotos(getPhotos());
+        souvenir.setPlace(getPlace());
+        return souvenir;
+    }
+
 }
