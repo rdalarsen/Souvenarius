@@ -7,12 +7,10 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,20 +18,18 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import org.threeten.bp.Instant;
-import org.threeten.bp.ZonedDateTime;
-import org.threeten.bp.format.DateTimeFormatter;
 
 import java.io.File;
-import java.io.IOException;
 
 import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
-import me.worric.souvenarius.R;
 import me.worric.souvenarius.BR;
+import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.model.Souvenir;
 import me.worric.souvenarius.databinding.FragmentAddBinding;
 import me.worric.souvenarius.di.ActivityContext;
+import me.worric.souvenarius.ui.common.FileUtils;
 import me.worric.souvenarius.ui.main.MainViewModel;
 import timber.log.Timber;
 
@@ -42,19 +38,13 @@ import static android.app.Activity.RESULT_OK;
 public class AddFragment extends Fragment {
 
     private static final int TAKE_PHOTO_REQUEST_CODE = 909;
-    private static final String DATE_PATTERN = "yyyyMMdd_HHmmss";
-    private static final String FILE_NAME_PREFIX = "JPEG_";
-    private static final String FILE_NAME_SEPARATOR = "_";
-    private static final String FILE_NAME_SUFFIX = ".jpg";
+
     @Inject
     protected ViewModelProvider.Factory mFactory;
     @Inject @ActivityContext
     protected Context mContext;
     private FragmentAddBinding mBinding;
     private MainViewModel mViewModel;
-
-    public AddFragment() {
-    }
 
     @Override
     public void onAttach(Context context) {
@@ -94,31 +84,16 @@ public class AddFragment extends Fragment {
     private void takePhoto() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if ((intent.resolveActivity(mContext.getPackageManager())) != null) {
-            File output = null;
-            try {
-                output = createImageFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            if (output != null) {
-                Uri photoUri = FileProvider.getUriForFile(mContext,
-                        "me.worric.souvenarius.fileprovider",
-                        output);
+            File photo = FileUtils.createTempImageFile(getContext());
+            mViewModel.setPhotoPath(photo);
+            if (photo != null) {
+                Uri photoUri = FileUtils.getUriForFile(photo, getContext());
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                 startActivityForResult(intent, TAKE_PHOTO_REQUEST_CODE);
             } else {
                 Toast.makeText(mContext, "Could allocate temporary file", Toast.LENGTH_SHORT).show();
             }
         }
-    }
-
-    private File createImageFile() throws IOException {
-        String timestamp = ZonedDateTime.now().format(DateTimeFormatter.ofPattern(DATE_PATTERN));
-        String imageFileName = FILE_NAME_PREFIX + timestamp + FILE_NAME_SEPARATOR;
-        File storageDir = mContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(imageFileName, FILE_NAME_SUFFIX, storageDir);
-        mViewModel.setPhotoPath(image);
-        return image;
     }
 
     @Override
@@ -135,12 +110,12 @@ public class AddFragment extends Fragment {
 
     public interface AddPhotoHandler {
         void onAddPhoto(View view);
-    }
 
+    }
     public interface SaveSouvenirHandler {
         void onSaveSouvenir(View view);
-    }
 
+    }
     public static AddFragment newInstance() {
 
         Bundle args = new Bundle();
@@ -148,6 +123,9 @@ public class AddFragment extends Fragment {
         AddFragment fragment = new AddFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public AddFragment() {
     }
 
     public static class SouvenirSaveInfo {

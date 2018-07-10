@@ -8,6 +8,8 @@ import android.widget.ImageView;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.ui.GlideApp;
 import timber.log.Timber;
@@ -25,16 +27,26 @@ public class BindingAdapters {
     @BindingAdapter({"imageName"})
     public static void loadImageFromName(ImageView view, String imageName) {
         Timber.d("imageName is: %s", imageName);
-        StorageReference reference = null;
-        if (!TextUtils.isEmpty(imageName)) {
-            reference = FirebaseStorage.getInstance()
-                    .getReference("images")
-                    .child(imageName);
+        File localPhoto = FileUtils.getLocalFileForPhotoName(imageName, view.getContext());
+        if (localPhoto.exists()) {
+            Timber.d("local photo existed, loading it...");
+            GlideApp.with(view.getContext())
+                    .load(localPhoto)
+                    .error(R.drawable.ic_launcher_background)
+                    .into(view);
+        } else {
+            Timber.d("local photo DID NOT exist, loading FirebaseStorage photo...");
+            StorageReference reference = null;
+            if (!TextUtils.isEmpty(imageName)) {
+                reference = FirebaseStorage.getInstance()
+                        .getReference("images")
+                        .child(imageName);
+            }
+            GlideApp.with(view.getContext())
+                    .load(reference)
+                    .error(R.drawable.ic_launcher_background)
+                    .into(view);
         }
-        GlideApp.with(view.getContext())
-                .load(reference)
-                .error(R.drawable.ic_launcher_background)
-                .into(view);
     }
 
 }
