@@ -1,5 +1,7 @@
 package me.worric.souvenarius.data.model;
 
+import com.google.firebase.database.Exclude;
+
 import org.threeten.bp.Instant;
 import org.threeten.bp.ZoneId;
 import org.threeten.bp.ZonedDateTime;
@@ -12,12 +14,21 @@ import java.util.List;
 public class Souvenir {
 
     private long id;
-    private List<String> mImages = null;
+    private List<String> mPhotos;
     private long mTimestamp;
     private String mPlace;
     private String mTitle;
+    private String mStory;
 
     public Souvenir() {
+    }
+
+    public String getStory() {
+        return mStory;
+    }
+
+    public void setStory(String story) {
+        mStory = story;
     }
 
     public String getTitle() {
@@ -36,18 +47,19 @@ public class Souvenir {
         this.id = id;
     }
 
-    public List<String> getImages() {
-        return mImages == null ? new ArrayList<>() : mImages;
+    public List<String> getPhotos() {
+        if (mPhotos == null) {
+            mPhotos = new ArrayList<>();
+        }
+        return mPhotos;
     }
 
-    public void setImages(List<String> images) {
-        mImages = images;
+    public void setPhotos(List<String> photos) {
+        mPhotos = photos;
     }
 
-    public void addImage(String image) {
-        if (mImages == null) mImages = new ArrayList<>();
-
-        mImages.add(image);
+    public void addPhoto(String image) {
+        getPhotos().add(image);
     }
 
     public long getTimestamp() {
@@ -66,14 +78,16 @@ public class Souvenir {
         mPlace = place;
     }
 
+    @Exclude
     public String getFormattedTimestamp() {
         return ZonedDateTime
                 .ofInstant(Instant.ofEpochMilli(getTimestamp()), ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM));
     }
 
+    @Exclude
     public String getFirstPhoto() {
-        return (getImages().size() > 0 ? getImages().get(0) : null );
+        return (getPhotos().size() > 0 ? getPhotos().get(0) : null );
     }
 
 }

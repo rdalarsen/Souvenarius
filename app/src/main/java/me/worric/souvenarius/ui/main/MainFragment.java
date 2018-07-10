@@ -47,13 +47,13 @@ public class MainFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel.getFirebaseIds().observe(this, strings -> mAdapter.swapLists(strings));
+        mViewModel.getSouvenirs().observe(this, strings -> mAdapter.swapLists(strings));
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mViewModel.getFirebaseIds().removeObservers(this);
+        mViewModel.getSouvenirs().removeObservers(this);
     }
 
     public static MainFragment newInstance() {

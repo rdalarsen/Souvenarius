@@ -81,7 +81,7 @@ public class AddFragment extends Fragment {
         mBinding.setVariable(BR.savesouvenirhandler, (SaveSouvenirHandler) view -> {
             String story = mBinding.etStory.getText().toString();
             String title = mBinding.etSouvenirTitle.getText().toString();
-            String place = "hi";
+            String place = mBinding.etPlace.getText().toString();
             SouvenirSaveInfo info = new SouvenirSaveInfo(story, title, place);
             if (info.hasMissingValues()) {
                 Toast.makeText(mContext, "There are missing values. Please input them", Toast.LENGTH_SHORT).show();
@@ -195,8 +195,9 @@ public class AddFragment extends Fragment {
             souvenir.setPlace(mPlace);
             souvenir.setTimestamp(Instant.now().toEpochMilli());
             souvenir.setTitle(mTitle);
+            souvenir.setStory(mStory);
             if (photo != null) {
-                souvenir.addImage(photo.getName());
+                souvenir.addPhoto(photo.getName());
             }
             return souvenir;
         }

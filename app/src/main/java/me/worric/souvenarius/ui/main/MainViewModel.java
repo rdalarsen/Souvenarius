@@ -7,7 +7,6 @@ import android.arch.lifecycle.ViewModel;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,17 +29,17 @@ public class MainViewModel extends ViewModel {
         mPhotoPath = new MutableLiveData<>();
     }
 
-    public LiveData<List<String>> getFirebaseIds() {
+    public LiveData<List<Souvenir>> getSouvenirs() {
         return Transformations.map(mSouvenirRepository.getSouvenirs(), souvenirs -> {
             if (souvenirs != null && souvenirs.size() > 0) {
-                List<String> resultList = new ArrayList<>(souvenirs.size());
+                List<Souvenir> resultList = new ArrayList<>(souvenirs.size());
                 for (SouvenirResponse response : souvenirs) {
-                    resultList.add(response.getFirebaseId());
+                    resultList.add(response.toSouvenir());
                 }
                 return resultList;
             }
-            Timber.w("Souvenirs do not exist, returning error message");
-            return Collections.singletonList("Place not available");
+            Timber.w("Souvenirs do not exist, returning null");
+            return null;
         });
     }
 

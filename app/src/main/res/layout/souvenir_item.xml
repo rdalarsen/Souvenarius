@@ -9,7 +9,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingTop="8dp">
 
         <TextView
             android:id="@+id/tv_souvenir_list_title"
@@ -21,18 +22,29 @@
             android:id="@+id/tv_souvenir_list_place"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:text="@{souvenir.place}" />
 
         <TextView
             android:id="@+id/tv_souvenir_list_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:text="@{souvenir.formattedTimestamp}" />
+
+        <TextView
+            android:id="@+id/tv_souvenir_list_story"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@{souvenir.story}"
+            android:ellipsize="end" />
 
         <ImageView
             android:id="@+id/iv_souvenir_photo"
             android:layout_width="70dp"
             android:layout_height="70dp"
+            android:layout_marginTop="8dp"
             android:scaleType="centerCrop"
             app:imageName="@{souvenir.firstPhoto}" />
 

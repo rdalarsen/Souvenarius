@@ -14,10 +14,10 @@ import me.worric.souvenarius.databinding.SouvenirItemBinding;
 
 public class SouvenirAdapter extends RecyclerView.Adapter<SouvenirAdapter.SouvenirViewholder> {
 
-    private List<String> ids;
+    private List<Souvenir> mSouvenirs;
 
-    public void swapLists(List<String> ids) {
-        this.ids = ids;
+    public void swapLists(List<Souvenir> souvenirs) {
+        this.mSouvenirs = souvenirs;
         notifyDataSetChanged();
     }
 
@@ -25,18 +25,19 @@ public class SouvenirAdapter extends RecyclerView.Adapter<SouvenirAdapter.Souven
     @Override
     public SouvenirViewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        SouvenirItemBinding binding = DataBindingUtil.inflate(inflater, R.layout.souvenir_item, parent, false);
+        SouvenirItemBinding binding =
+                DataBindingUtil.inflate(inflater, R.layout.souvenir_item, parent, false);
         return new SouvenirViewholder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull SouvenirViewholder holder, int position) {
-        holder.bind(ids.get(position));
+        holder.bind(mSouvenirs.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return ids == null ? 0 : ids.size();
+        return mSouvenirs == null ? 0 : mSouvenirs.size();
     }
 
     static class SouvenirViewholder extends RecyclerView.ViewHolder {
@@ -48,12 +49,7 @@ public class SouvenirAdapter extends RecyclerView.Adapter<SouvenirAdapter.Souven
             mBinding = binding;
         }
 
-        void bind(String theString) {
-            Souvenir souvenir = new Souvenir();
-            souvenir.setPlace(theString);
-            souvenir.setTitle(theString);
-            souvenir.setTimestamp(1200412L);
-            souvenir.addImage("JPEG_20180708_184100_1874717512.jpg");
+        void bind(Souvenir souvenir) {
             mBinding.setSouvenir(souvenir);
             mBinding.executePendingBindings();
         }
