@@ -22,11 +22,31 @@ public class MainViewModel extends ViewModel {
 
     private final SouvenirRepository mSouvenirRepository;
     private final MutableLiveData<File> mPhotoPath;
+    private MutableLiveData<MainFragment.ListStyle> mListStyle;
 
     @Inject
     public MainViewModel(SouvenirRepository souvenirRepository) {
         mSouvenirRepository = souvenirRepository;
         mPhotoPath = new MutableLiveData<>();
+    }
+
+    public LiveData<MainFragment.ListStyle> getListStyle() {
+        if (mListStyle == null) {
+            mListStyle = new MutableLiveData<>();
+            mListStyle.setValue(MainFragment.ListStyle.LIST);
+        }
+        return mListStyle;
+    }
+
+    public void toggleListStyles() {
+        MainFragment.ListStyle style = mListStyle.getValue();
+        if (style != null) {
+            if (style.equals(MainFragment.ListStyle.LIST)) {
+                mListStyle.setValue(MainFragment.ListStyle.STAGGERED);
+            } else {
+                mListStyle.setValue(MainFragment.ListStyle.LIST);
+            }
+        }
     }
 
     public LiveData<List<Souvenir>> getSouvenirs() {
