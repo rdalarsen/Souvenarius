@@ -41,6 +41,13 @@ public class SouvenirRepository {
         mFirebaseHandler.storeSouvenir(souvenir);
     }
 
+    public void updateSouvenir(Souvenir souvenir) {
+        mFirebaseHandler.storeSouvenir(souvenir);
+    }
+
+    /**
+     * Inspired by <a href="https://github.com/googlesamples/android-architecture-components/tree/master/GithubBrowserSample">Google's GithubBrowser example</a>
+     */
     public static final class Result<T> {
 
         public final T response;

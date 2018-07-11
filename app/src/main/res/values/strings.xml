@@ -9,4 +9,7 @@
 
     <!-- Main fragment -->
     <string name="souvenir_list_error_message">There are no souvenirs. Go get some :)!</string>
+
+    <!-- Detail fragment -->
+    <string name="content_desc_photo">Souvenir photo</string>
 </resources>

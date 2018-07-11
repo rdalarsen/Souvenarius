@@ -8,6 +8,7 @@ import dagger.android.ContributesAndroidInjector;
 import me.worric.souvenarius.di.ActivityContext;
 import me.worric.souvenarius.di.ActivityScope;
 import me.worric.souvenarius.ui.add.AddFragment;
+import me.worric.souvenarius.ui.detail.DetailFragment;
 
 @Module
 public abstract class MainActivityModule {
@@ -20,5 +21,13 @@ public abstract class MainActivityModule {
     @ActivityScope
     @ContributesAndroidInjector
     abstract AddFragment contributeAddFragment();
+
+    @ActivityScope
+    @ContributesAndroidInjector
+    abstract DetailFragment contributeDetailFragment();
+
+    @ActivityScope
+    @ContributesAndroidInjector
+    abstract DetailFragment.EditDialogFragment contributeEditDiablogFragment();
 
 }

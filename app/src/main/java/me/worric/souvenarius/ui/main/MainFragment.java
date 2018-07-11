@@ -56,7 +56,9 @@ public class MainFragment extends Fragment {
                 mBinding.rvSouvenirList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
             } else if (listStyle.equals(ListStyle.STAGGERED)) {
                 manager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-                mBinding.rvSouvenirList.removeItemDecorationAt(ITEM_DECORATION_INDEX);
+                if (mBinding.rvSouvenirList.getItemDecorationCount() > 0) {
+                    mBinding.rvSouvenirList.removeItemDecorationAt(ITEM_DECORATION_INDEX);
+                }
             } else {
                 throw new IllegalArgumentException("Unknown ListStyle: " + listStyle.toString());
             }

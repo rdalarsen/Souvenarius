@@ -17,6 +17,7 @@ import dagger.multibindings.IntoMap;
 import me.worric.souvenarius.di.AppContext;
 import me.worric.souvenarius.di.ViewModelKey;
 import me.worric.souvenarius.ui.common.AppViewModelFactory;
+import me.worric.souvenarius.ui.detail.DetailViewModel;
 import me.worric.souvenarius.ui.main.MainActivity;
 import me.worric.souvenarius.ui.main.MainActivityModule;
 import me.worric.souvenarius.ui.main.MainViewModel;
@@ -39,6 +40,11 @@ public abstract class AppModule {
     @IntoMap
     @ViewModelKey(MainViewModel.class)
     abstract ViewModel bindViewModel(MainViewModel mainViewModel);
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DetailViewModel.class)
+    abstract ViewModel bindDetailViewModel(DetailViewModel detailViewModel);
 
     @Provides
     @Named(value = "theMessage")
