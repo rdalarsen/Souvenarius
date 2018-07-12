@@ -8,6 +8,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSnapHelper;
+import android.support.v7.widget.SnapHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,10 +24,12 @@ import me.worric.souvenarius.databinding.FragmentDetailBinding;
 
 public class DetailFragment extends Fragment {
 
+    private static final String KEY_SOUVENIR_ID = "key_souvenir_id";
     @Inject
     protected ViewModelProvider.Factory mFactory;
     private DetailViewModel mViewModel;
     private FragmentDetailBinding mBinding;
+    private SouvenirPhotoAdapter mAdapter;
 
     @Override
     public void onAttach(Context context) {
@@ -42,13 +47,13 @@ public class DetailFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        String souvenirId = getArguments().getString("souvenirId");
+        String souvenirId = getArguments().getString(KEY_SOUVENIR_ID);
         mViewModel = ViewModelProviders.of(this, mFactory).get(DetailViewModel.class);
         mViewModel.setSouvenirId(souvenirId);
 
         mBinding.setLifecycleOwner(this);
-        mBinding.setVariable(BR.viewmodel, mViewModel);
-        mBinding.setVariable(BR.clickHandler, (OnClickEdit) v -> {
+        mBinding.setViewmodel(mViewModel);
+        mBinding.setClickHandler(v -> {
             TextType textType;
             int viewId = v.getId();
             if (viewId == R.id.tv_detail_title) {
@@ -65,18 +70,59 @@ public class DetailFragment extends Fragment {
             EditDialogFragment.newInstance("Edit details", textType)
                     .show(getChildFragmentManager(), "edit_title");
         });
+
+        setupRecyclerView();
+
+        mViewModel.getCurrentSouvenir().observe(this, souvenir -> {
+            mAdapter.swapPhotos(souvenir, mBinding.rvSouvenirPhotoList);
+            mBinding.setVariable(BR.currentSouvenir, souvenir);
+        });
+    }
+
+    private void setupRecyclerView() {
+        mBinding.rvSouvenirPhotoList.setLayoutManager(new LinearLayoutManager(getContext(),
+                LinearLayoutManager.HORIZONTAL, false));
+        mAdapter = new SouvenirPhotoAdapter(mPhotoClickListener);
+        mBinding.rvSouvenirPhotoList.setAdapter(mAdapter);
+        mBinding.rvSouvenirPhotoList.setHasFixedSize(true);
+        SnapHelper snapHelper = new LinearSnapHelper();
+        snapHelper.attachToRecyclerView(mBinding.rvSouvenirPhotoList);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mViewModel.getCurrentSouvenir().removeObservers(this);
     }
 
     public static DetailFragment newInstance(String souvenirId) {
         DetailFragment fragment = new DetailFragment();
         Bundle args = new Bundle();
-        args.putString("souvenirId", souvenirId);
+        args.putString(KEY_SOUVENIR_ID, souvenirId);
         fragment.setArguments(args);
         return fragment;
     }
 
     public interface OnClickEdit {
         void onClickEdit(View view);
+    }
+
+    private PhotoClickListener mPhotoClickListener = new PhotoClickListener() {
+        @Override
+        public void onDeletePhoto(String photoName) {
+            mViewModel.deletePhoto(photoName);
+        }
+
+        @Override
+        public void onAddPhoto(String photoName) {
+            mViewModel.addPhoto(photoName);
+        }
+    };
+
+    public interface PhotoClickListener {
+        void onDeletePhoto(String photoName);
+
+        void onAddPhoto(String photoName);
     }
 
     public enum TextType {

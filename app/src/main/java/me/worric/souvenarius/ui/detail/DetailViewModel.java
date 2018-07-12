@@ -7,11 +7,14 @@ import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 import android.text.Editable;
 
+import java.util.ArrayList;
+
 import javax.inject.Inject;
 
 import me.worric.souvenarius.data.model.Souvenir;
 import me.worric.souvenarius.data.model.SouvenirResponse;
 import me.worric.souvenarius.data.repository.SouvenirRepository;
+import timber.log.Timber;
 
 public class DetailViewModel extends ViewModel {
 
@@ -67,6 +70,19 @@ public class DetailViewModel extends ViewModel {
             }
             mCurrentSouvenir.setValue(souvenir);
         }
+    }
+
+    public void deletePhoto(String photoName) {
+        Timber.i("Delete photo triggered! Photo name was: %s", photoName);
+        Souvenir souvenir = mCurrentSouvenir.getValue();
+        if (souvenir != null) {
+            souvenir.setPhotos(new ArrayList<>());
+            mCurrentSouvenir.setValue(souvenir);
+        }
+    }
+
+    public void addPhoto(String photoName) {
+        Timber.i("Add photo triggered! Photo name: %s", photoName);
     }
 
 }

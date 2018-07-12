@@ -24,8 +24,7 @@ public class Souvenir {
     private String mTitle;
     private String mStory;
 
-    public Souvenir() {
-    }
+    public Souvenir() {}
 
     public String getStory() {
         return mStory;
@@ -51,6 +50,7 @@ public class Souvenir {
         this.id = id;
     }
 
+    @NonNull
     public List<String> getPhotos() {
         if (mPhotos == null) {
             mPhotos = new ArrayList<>();

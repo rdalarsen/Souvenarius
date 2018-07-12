@@ -37,7 +37,7 @@ public class BindingAdapters {
             Timber.d("local photo existed, loading it...");
             requestBuilder = GlideApp.with(view.getContext()).load(localPhoto);
         } else {
-            Timber.d("local photo DID NOT exist, loading FirebaseStorage photo...");
+            Timber.d("local photo DID NOT exist, trying to load FirebaseStorage photo...");
             StorageReference reference = null;
             if (!TextUtils.isEmpty(imageName)) {
                 reference = FirebaseStorage.getInstance().getReference("images").child(imageName);

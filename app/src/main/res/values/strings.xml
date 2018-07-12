@@ -12,4 +12,5 @@
 
     <!-- Detail fragment -->
     <string name="content_desc_photo">Souvenir photo</string>
+    <string name="content_desc_item_detail_photo">Souvenir photo</string>
 </resources>

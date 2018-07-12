@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
-import me.worric.souvenarius.BR;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.databinding.DialogEditBinding;
 
@@ -55,10 +54,10 @@ public class EditDialogFragment extends DialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mViewModel = ViewModelProviders.of(getParentFragment(), mFactory).get(DetailViewModel.class);
-        mBinding.setVariable(BR.textType, mTextType);
+        mBinding.setTextType(mTextType);
         mBinding.setViewmodel(mViewModel);
         mBinding.setLifecycleOwner(this);
-        mBinding.setVariable(BR.clickHandler, mTextClickHandler);
+        mBinding.setClickHandler(mTextClickHandler);
 
         /*String title = getArguments().getString(KEY_DIALOG_TITLE, "default title");
         getDialog().setTitle("Edit the " + title);
