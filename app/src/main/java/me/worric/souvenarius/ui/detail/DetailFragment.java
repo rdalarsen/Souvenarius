@@ -12,14 +12,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.Arrays;
-
 import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
 import me.worric.souvenarius.BR;
 import me.worric.souvenarius.R;
-import me.worric.souvenarius.data.model.Souvenir;
 import me.worric.souvenarius.databinding.FragmentDetailBinding;
 
 public class DetailFragment extends Fragment {
@@ -45,36 +42,48 @@ public class DetailFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Souvenir souvenir = getSouvenirFromBundle(getArguments());
+        String souvenirId = getArguments().getString("souvenirId");
         mViewModel = ViewModelProviders.of(this, mFactory).get(DetailViewModel.class);
-        mViewModel.setSouvenir(souvenir);
+        mViewModel.setSouvenirId(souvenirId);
 
         mBinding.setLifecycleOwner(this);
         mBinding.setVariable(BR.viewmodel, mViewModel);
-        mBinding.setVariable(BR.clickHandler, (OnClickEdit) v ->
-                EditDialogFragment.newInstance("Le titel")
-                        .show(getChildFragmentManager(), "edit_title"));
+        mBinding.setVariable(BR.clickHandler, (OnClickEdit) v -> {
+            TextType textType;
+            int viewId = v.getId();
+            if (viewId == R.id.tv_detail_title) {
+                textType = TextType.TITLE;
+            } else if (viewId == R.id.tv_detail_place) {
+                textType = TextType.PLACE;
+            } else if (viewId == R.id.tv_detail_story) {
+                textType = TextType.STORY;
+            } else if (viewId == R.id.tv_detail_timestamp) {
+                textType = TextType.DATE;
+            } else {
+                throw new IllegalArgumentException("Unknown view ID: " + viewId);
+            }
+            EditDialogFragment.newInstance("Edit details", textType)
+                    .show(getChildFragmentManager(), "edit_title");
+        });
     }
 
-    private Souvenir getSouvenirFromBundle(Bundle arguments) {
-        Souvenir souvenir = new Souvenir();
-        souvenir.setTitle("The title");
-        souvenir.setTimestamp(1531221883679L);
-        souvenir.setPlace("The place");
-        souvenir.setPhotos(Arrays.asList("JPEG_20180711_072642_8927165028337173907.jpg"));
-        souvenir.setStory("The story");
-        return souvenir;
-    }
-
-    public static DetailFragment newInstance() {
+    public static DetailFragment newInstance(String souvenirId) {
         DetailFragment fragment = new DetailFragment();
         Bundle args = new Bundle();
+        args.putString("souvenirId", souvenirId);
         fragment.setArguments(args);
         return fragment;
     }
 
     public interface OnClickEdit {
         void onClickEdit(View view);
+    }
+
+    public enum TextType {
+        TITLE,
+        PLACE,
+        DATE,
+        STORY
     }
 
 }

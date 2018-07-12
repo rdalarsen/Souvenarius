@@ -46,8 +46,9 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     }
 
     public void handleFab(View view) {
+        String souvenirId = "-LHCSjnIHggC9DlhiQJV";
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, DetailFragment.newInstance(), "add")
+                .replace(R.id.fragment_container, DetailFragment.newInstance(souvenirId), "detail")
                 .addToBackStack(null)
                 .commit();
         mBinding.appbarLayout.setExpanded(true);
