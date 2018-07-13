@@ -10,6 +10,11 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+/**
+ * The code for this generified ViewmodelFactory can be found in
+ * <a href="https://stackoverflow.com/a/44506312">this</a> SO post. The post references the JAVA version
+ * of the file from <a href="https://github.com/googlesamples/android-architecture-components/blob/master/GithubBrowserSample/app/src/main/java/com/android/example/github/viewmodel/GithubViewModelFactory.kt">Google's Github browser example</a>.
+ */
 @Singleton
 public class AppViewModelFactory implements ViewModelProvider.Factory {
 
