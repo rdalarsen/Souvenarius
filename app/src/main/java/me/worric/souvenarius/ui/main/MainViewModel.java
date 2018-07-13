@@ -84,4 +84,10 @@ public class MainViewModel extends ViewModel {
         }
         return wasDeletedSuccessfully;
     }
+
+    @Override
+    protected void onCleared() {
+        Timber.d("onCleared called");
+    }
+
 }

@@ -7,7 +7,7 @@ import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 import android.text.Editable;
 
-import java.util.ArrayList;
+import java.io.File;
 
 import javax.inject.Inject;
 
@@ -22,12 +22,14 @@ public class DetailViewModel extends ViewModel {
     private final MutableLiveData<String> mSouvenirId;
     private final MutableLiveData<Souvenir> mUpdatedSouvenir;
     private final MediatorLiveData<Souvenir> mCurrentSouvenir;
+    private final MutableLiveData<File> mPhotoFile;
 
     @Inject
     public DetailViewModel(SouvenirRepository repository) {
         mRepository = repository;
         mSouvenirId = new MutableLiveData<>();
         mUpdatedSouvenir = new MutableLiveData<>();
+        mPhotoFile = new MutableLiveData<>();
         mCurrentSouvenir = new MediatorLiveData<>();
         initCurrentSouvenir();
     }
@@ -72,17 +74,40 @@ public class DetailViewModel extends ViewModel {
         }
     }
 
-    public void deletePhoto(String photoName) {
+    public boolean deletePhoto(String photoName) {
         Timber.i("Delete photo triggered! Photo name was: %s", photoName);
         Souvenir souvenir = mCurrentSouvenir.getValue();
-        if (souvenir != null) {
-            souvenir.setPhotos(new ArrayList<>());
-            mCurrentSouvenir.setValue(souvenir);
+        if (souvenir != null && souvenir.getPhotos().size() > 0) {
+            boolean deleteResult = souvenir.getPhotos().remove(photoName);
+            if (deleteResult) {
+                mCurrentSouvenir.setValue(souvenir);
+                // TODO: update in repo as well
+                //mRepository.updateSouvenir(souvenir);
+            }
+            return deleteResult;
         }
+        return false;
     }
 
-    public void addPhoto(String photoName) {
-        Timber.i("Add photo triggered! Photo name: %s", photoName);
+    public boolean addPhoto() {
+        File currentFile = mPhotoFile.getValue();
+        if (currentFile != null) {
+            Souvenir souvenir = mCurrentSouvenir.getValue();
+            if (souvenir != null && souvenir.getPhotos().size() > 0) {
+                boolean addResult = souvenir.getPhotos().add(currentFile.getName());
+                if (addResult) {
+                    mCurrentSouvenir.setValue(souvenir);
+                    // TODO: update in repo as well
+                    //mRepository.updateSouvenir(souvenir);
+                }
+                return addResult;
+            }
+        }
+        return false;
+    }
+
+    public void setCurrentPhotoFile(File photoFile) {
+        mPhotoFile.setValue(photoFile);
     }
 
 }
