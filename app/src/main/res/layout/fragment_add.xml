@@ -60,7 +60,7 @@
                 android:inputType="text"
                 android:maxLines="1"
                 android:ems="10"
-                android:text="@{viewmodel.locationInfo}"
+                android:text='@{viewmodel.locationInfo ?? "loading..."}'
                 android:hint="Location..." />
 
             <EditText

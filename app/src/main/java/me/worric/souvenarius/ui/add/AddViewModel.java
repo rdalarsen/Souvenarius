@@ -1,9 +1,12 @@
 package me.worric.souvenarius.ui.add;
 
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
+import android.support.annotation.NonNull;
+import android.text.Editable;
 
 import java.io.File;
 import java.util.Objects;
@@ -14,18 +17,42 @@ import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.model.Souvenir;
 import me.worric.souvenarius.data.repository.LocationRepository;
 import me.worric.souvenarius.data.repository.SouvenirRepository;
+import timber.log.Timber;
 
 public class AddViewModel extends ViewModel {
 
     private final LocationRepository mLocationRepository;
     private final SouvenirRepository mSouvenirRepository;
     private final MutableLiveData<File> mPhotoFile;
+    private final MediatorLiveData<String> mLocation;
+    private final LiveData<String> mResultAddress;
 
     @Inject
     public AddViewModel(SouvenirRepository souvenirRepository, LocationRepository locationRepository) {
         mSouvenirRepository = souvenirRepository;
         mLocationRepository = locationRepository;
         mPhotoFile = new MutableLiveData<>();
+        mLocation = new MediatorLiveData<>();
+        mResultAddress = getLiveData();
+        mLocation.addSource(mResultAddress, mLocation::setValue);
+    }
+
+    @NonNull
+    private LiveData<String> getLiveData() {
+        return Transformations.map(mLocationRepository.getLocation(), result -> {
+            Timber.i("Result status is: %s", result.status.name());
+            if (result.status.equals(Result.Status.SUCCESS)) {
+                return String.format("%s, %s", result.response.getLocality(),
+                        result.response.getCountryName());
+            } else if (result.status.equals(Result.Status.FAILURE)) {
+                return result.message;
+            }
+            throw new IllegalArgumentException("Unknown status: " + result.status.name());
+        });
+    }
+
+    public void setText(Editable editable) {
+        mLocation.setValue(editable.toString());
     }
 
     public boolean addSouvenir(SouvenirSaveInfo info) {
@@ -55,19 +82,12 @@ public class AddViewModel extends ViewModel {
     }
 
     public LiveData<String> getLocationInfo() {
-        return Transformations.map(mLocationRepository.getLocation(), result -> {
-            if (result.status.equals(Result.Status.SUCCESS)) {
-                return String.format("%s, %s", result.response.getLocality(),
-                        result.response.getCountryName());
-            } else if (result.status.equals(Result.Status.FAILURE)) {
-                return result.message;
-            }
-            throw new IllegalArgumentException("Unknown status: " + result.status.name());
-        });
+        return mLocation;
     }
 
     @Override
     protected void onCleared() {
+        Timber.i("Clearing result data...");
         mLocationRepository.clearResult();
     }
 }
