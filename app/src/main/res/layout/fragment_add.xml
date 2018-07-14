@@ -60,7 +60,8 @@
                 android:inputType="text"
                 android:maxLines="1"
                 android:ems="10"
-                android:hint="Place..." />
+                android:text="@{viewmodel.locationInfo}"
+                android:hint="Location..." />
 
             <EditText
                 android:id="@+id/et_story"
