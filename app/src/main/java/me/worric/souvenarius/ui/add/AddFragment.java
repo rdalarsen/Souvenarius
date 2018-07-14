@@ -57,7 +57,7 @@ public class AddFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(getActivity(), mFactory).get(AddViewModel.class);
+        mViewModel = ViewModelProviders.of(this, mFactory).get(AddViewModel.class);
         mBinding.setViewmodel(mViewModel);
         mBinding.setLifecycleOwner(this);
         mBinding.setClickHandler(mClickHandler);
