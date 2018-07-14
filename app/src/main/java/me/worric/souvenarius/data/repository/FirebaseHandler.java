@@ -15,6 +15,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.model.Souvenir;
 import me.worric.souvenarius.data.model.SouvenirResponse;
 import timber.log.Timber;
@@ -24,7 +25,7 @@ public class FirebaseHandler {
     private static final String SOUVENIRS_REFERENCE = "souvenirs";
     private final FirebaseDatabase mDatabase;
     private final DatabaseReference mRef;
-    private MutableLiveData<SouvenirRepository.Result<List<SouvenirResponse>>> mResult;
+    private MutableLiveData<Result<List<SouvenirResponse>>> mResult;
 
     @Inject
     public FirebaseHandler() {
@@ -37,14 +38,14 @@ public class FirebaseHandler {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 List<SouvenirResponse> resultList = parseResponseToList(dataSnapshot);
-                SouvenirRepository.Result<List<SouvenirResponse>> result = SouvenirRepository.Result.success(resultList);
+                Result<List<SouvenirResponse>> result = Result.success(resultList);
                 mResult.setValue(result);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Timber.e(databaseError.toException(), "There was a database error");
-                mResult.setValue(SouvenirRepository.Result.failure(databaseError.toException()));
+                mResult.setValue(Result.failure(databaseError.toException().getMessage()));
             }
         });
     }
@@ -67,7 +68,7 @@ public class FirebaseHandler {
         return resultList;
     }
 
-    public LiveData<SouvenirRepository.Result<List<SouvenirResponse>>> getResults() {
+    public LiveData<Result<List<SouvenirResponse>>> getResults() {
         if (mResult == null) {
             mResult = new MutableLiveData<>();
             fetchSouvenirs();

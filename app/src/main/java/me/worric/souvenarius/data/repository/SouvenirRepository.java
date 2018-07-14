@@ -10,6 +10,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.model.Souvenir;
 import me.worric.souvenarius.data.model.SouvenirResponse;
 
@@ -27,12 +28,12 @@ public class SouvenirRepository {
 
     public LiveData<List<SouvenirResponse>> getSouvenirs() {
         return Transformations.map(mFirebaseHandler.getResults(), result -> {
-            if (Status.SUCCESS.equals(result.status)) {
+            if (Result.Status.SUCCESS.equals(result.status)) {
                 return result.response;
-            } else if (Status.FAILURE.equals(result.status)) {
+            } else if (Result.Status.FAILURE.equals(result.status)) {
                 return Collections.emptyList();
             }
-            throw new IllegalArgumentException("Unknown result");
+            throw new IllegalArgumentException("Unknown status code: " + result.status.name());
         });
     }
 
@@ -43,35 +44,6 @@ public class SouvenirRepository {
 
     public void updateSouvenir(Souvenir souvenir) {
         mFirebaseHandler.storeSouvenir(souvenir);
-    }
-
-    /**
-     * Inspired by <a href="https://github.com/googlesamples/android-architecture-components/tree/master/GithubBrowserSample">Google's GithubBrowser example</a>
-     */
-    public static final class Result<T> {
-
-        public final T response;
-        public final Status status;
-        public final Exception e;
-
-        private Result(T response, Status status, Exception e) {
-            this.response = response;
-            this.status = status;
-            this.e = e;
-        }
-
-        public static <T> Result<T> success(T response) {
-            return new Result<>(response, Status.SUCCESS, null);
-        }
-
-        public static <T> Result<T> failure(Exception e) {
-            return new Result<>(null, Status.FAILURE, e);
-        }
-    }
-
-    public enum Status {
-        SUCCESS,
-        FAILURE
     }
 
 }
