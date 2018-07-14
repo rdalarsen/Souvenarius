@@ -7,6 +7,9 @@
         <variable
             name="viewmodel"
             type="me.worric.souvenarius.ui.main.MainViewModel" />
+        <variable
+            name="clickHandler"
+            type="me.worric.souvenarius.ui.main.MainFragment.ClickHandler" />
     </data>
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
@@ -18,7 +21,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:onClick="@{() -> viewmodel.toggleListStyles()}"
+            android:onClick="@{clickHandler::onToggleLayoutClicked}"
             android:text="toggle viewing" />
 
         <android.support.v7.widget.RecyclerView
@@ -30,7 +33,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             android:nestedScrollingEnabled="true"
-            tools:listItem="@layout/list_item" />
+            tools:listitem="@layout/souvenir_item" />
 
         <TextView
             android:id="@+id/tv_souvenir_list_error_text"

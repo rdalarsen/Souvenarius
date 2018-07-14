@@ -17,8 +17,13 @@ public class SouvenirAdapter extends RecyclerView.Adapter<SouvenirAdapter.Souven
     private List<Souvenir> mSouvenirs;
 
     public void swapLists(List<Souvenir> souvenirs) {
-        this.mSouvenirs = souvenirs;
-        notifyDataSetChanged();
+        if (mSouvenirs == null) {
+            mSouvenirs = souvenirs;
+            notifyItemRangeInserted(0, souvenirs.size());
+        } else {
+            mSouvenirs = souvenirs;
+            notifyDataSetChanged();
+        }
     }
 
     @NonNull
@@ -42,7 +47,7 @@ public class SouvenirAdapter extends RecyclerView.Adapter<SouvenirAdapter.Souven
 
     static class SouvenirViewholder extends RecyclerView.ViewHolder {
 
-        private SouvenirItemBinding mBinding;
+        private final SouvenirItemBinding mBinding;
 
         SouvenirViewholder(SouvenirItemBinding binding) {
             super(binding.getRoot());
