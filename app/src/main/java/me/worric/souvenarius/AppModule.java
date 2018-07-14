@@ -16,6 +16,7 @@ import dagger.android.support.AndroidSupportInjectionModule;
 import dagger.multibindings.IntoMap;
 import me.worric.souvenarius.di.AppContext;
 import me.worric.souvenarius.di.ViewModelKey;
+import me.worric.souvenarius.ui.add.AddViewModel;
 import me.worric.souvenarius.ui.common.AppViewModelFactory;
 import me.worric.souvenarius.ui.detail.DetailViewModel;
 import me.worric.souvenarius.ui.main.MainActivity;
@@ -45,6 +46,11 @@ public abstract class AppModule {
     @IntoMap
     @ViewModelKey(DetailViewModel.class)
     abstract ViewModel bindDetailViewModel(DetailViewModel detailViewModel);
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(AddViewModel.class)
+    abstract ViewModel bindAddViewModel(AddViewModel addViewModel);
 
     @Provides
     @Named(value = "theMessage")

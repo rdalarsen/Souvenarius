@@ -5,13 +5,10 @@
     <data>
         <variable
             name="viewmodel"
-            type="me.worric.souvenarius.ui.main.MainViewModel" />
+            type="me.worric.souvenarius.ui.add.AddViewModel" />
         <variable
-            name="addPhotoHandler"
-            type="me.worric.souvenarius.ui.add.AddFragment.AddPhotoHandler" />
-        <variable
-            name="saveSouvenirHandler"
-            type="me.worric.souvenarius.ui.add.AddFragment.SaveSouvenirHandler" />
+            name="clickHandler"
+            type="me.worric.souvenarius.ui.add.AddFragment.ClickHandler" />
     </data>
     <ScrollView
         android:id="@+id/add_fragment_scroll_view"
@@ -39,7 +36,7 @@
                 android:contentDescription="@string/content_desc_photo_preview"
                 app:imageUri="@{viewmodel.photoPath.absolutePath}"
                 app:placeholder="@{@drawable/ic_launcher_background}"
-                android:onClick="@{addPhotoHandler::onAddPhoto}"
+                android:onClick="@{clickHandler::onAddPhotoClicked}"
                 tools:src="@drawable/ic_launcher_background" />
 
             <EditText
@@ -86,7 +83,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:onClick="@{saveSouvenirHandler::onSaveSouvenir}"
+                android:onClick="@{clickHandler::onSaveSouvenirClicked}"
                 android:text="@string/btn_done" />
 
         </android.support.constraint.ConstraintLayout>
