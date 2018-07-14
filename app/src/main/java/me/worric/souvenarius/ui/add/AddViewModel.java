@@ -11,39 +11,47 @@ import javax.inject.Inject;
 
 import me.worric.souvenarius.data.model.Souvenir;
 import me.worric.souvenarius.data.repository.SouvenirRepository;
+import timber.log.Timber;
 
 public class AddViewModel extends ViewModel {
 
     private final SouvenirRepository mSouvenirRepository;
-    private final MutableLiveData<File> mPhotoPath;
+    private final MutableLiveData<File> mPhotoFile;
 
     @Inject
     public AddViewModel(SouvenirRepository souvenirRepository) {
         mSouvenirRepository = souvenirRepository;
-        mPhotoPath = new MutableLiveData<>();
+        mPhotoFile = new MutableLiveData<>();
     }
 
-    public void addSouvenir(SouvenirSaveInfo info) {
-        File photo = Objects.requireNonNull(mPhotoPath.getValue());
-        Souvenir souvenir = info.toSouvenir(photo);
-        mSouvenirRepository.addSouvenir(souvenir, photo);
+    public boolean addSouvenir(SouvenirSaveInfo info) {
+        File photo = mPhotoFile.getValue();
+        if (photo != null) {
+            Souvenir souvenir = info.toSouvenir(photo);
+            mSouvenirRepository.addSouvenir(souvenir, photo);
+            return true;
+        }
+        return false;
     }
 
-    public void setPhotoPath(File theFile) {
-        mPhotoPath.setValue(theFile);
+    public void setPhotoFile(File theFile) {
+        mPhotoFile.setValue(theFile);
     }
 
-    public LiveData<File> getPhotoPath() {
-        return mPhotoPath;
+    public LiveData<File> getPhotoFile() {
+        return mPhotoFile;
     }
 
     public boolean deleteTempImage() {
-        boolean wasDeletedSuccessfully = Objects.requireNonNull(mPhotoPath.getValue()).delete();
+        boolean wasDeletedSuccessfully = Objects.requireNonNull(mPhotoFile.getValue()).delete();
         if (wasDeletedSuccessfully) {
-            mPhotoPath.setValue(null);
+            mPhotoFile.setValue(null);
         }
         return wasDeletedSuccessfully;
     }
 
-
+    @Override
+    protected void onCleared() {
+        Timber.d("onCleared called");
+    }
 }

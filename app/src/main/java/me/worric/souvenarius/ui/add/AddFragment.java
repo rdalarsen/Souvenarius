@@ -23,7 +23,6 @@ import javax.inject.Inject;
 import dagger.android.support.AndroidSupportInjection;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.databinding.FragmentAddBinding;
-import me.worric.souvenarius.di.ActivityContext;
 import me.worric.souvenarius.ui.common.FileUtils;
 import timber.log.Timber;
 
@@ -39,9 +38,6 @@ public class AddFragment extends Fragment {
 
     @Inject
     protected ViewModelProvider.Factory mFactory;
-    @Inject
-    @ActivityContext
-    protected Context mContext;
     private FragmentAddBinding mBinding;
     private AddViewModel mViewModel;
 
@@ -69,15 +65,15 @@ public class AddFragment extends Fragment {
 
     private void takePhoto() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if ((intent.resolveActivity(mContext.getPackageManager())) != null) {
+        if ((intent.resolveActivity(getContext().getPackageManager())) != null) {
             File photo = FileUtils.createTempImageFile(getContext());
-            mViewModel.setPhotoPath(photo);
+            mViewModel.setPhotoFile(photo);
             if (photo != null) {
                 Uri photoUri = FileUtils.getUriForFile(photo, getContext());
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                 startActivityForResult(intent, TAKE_PHOTO_REQUEST_CODE);
             } else {
-                Toast.makeText(mContext, "Could allocate temporary file", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Could allocate temporary file", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -107,10 +103,14 @@ public class AddFragment extends Fragment {
             String place = mBinding.etPlace.getText().toString();
             SouvenirSaveInfo info = new SouvenirSaveInfo(story, title, place);
             if (info.hasMissingValues()) {
-                Toast.makeText(mContext, "There are missing values. Please input them",
+                Toast.makeText(getContext(), "There are missing values. Please input them",
                         Toast.LENGTH_SHORT).show();
             } else {
-                mViewModel.addSouvenir(info);
+                if (mViewModel.addSouvenir(info)) {
+                    Toast.makeText(getContext(), "Souvenir successfully saved", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "Souvenir COULD NOT be saved!", Toast.LENGTH_SHORT).show();
+                }
             }
         }
     };
