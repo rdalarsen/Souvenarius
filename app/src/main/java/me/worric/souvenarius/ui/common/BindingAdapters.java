@@ -30,10 +30,12 @@ public class BindingAdapters {
     public static void loadImageFromName(ImageView view, String imageName) {
         Timber.d("imageName is: %s", imageName);
         File localPhoto = FileUtils.getLocalFileForPhotoName(imageName, view.getContext());
-        RequestOptions options = new RequestOptions().error(R.drawable.ic_launcher_background);
+        RequestOptions options = new RequestOptions()
+                .error(R.drawable.ic_launcher_background)
+                .placeholder(R.drawable.ic_launcher_background);
         RequestBuilder<Drawable> requestBuilder;
 
-        if (localPhoto.exists()) {
+        if (localPhoto != null && localPhoto.exists()) {
             Timber.d("local photo existed, loading it...");
             requestBuilder = GlideApp.with(view.getContext()).load(localPhoto);
         } else {

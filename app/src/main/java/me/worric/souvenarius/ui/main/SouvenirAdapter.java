@@ -14,7 +14,12 @@ import me.worric.souvenarius.databinding.SouvenirItemBinding;
 
 public class SouvenirAdapter extends RecyclerView.Adapter<SouvenirAdapter.SouvenirViewholder> {
 
+    private final MainFragment.ItemClickListener mListener;
     private List<Souvenir> mSouvenirs;
+
+    public SouvenirAdapter(MainFragment.ItemClickListener listener) {
+        mListener = listener;
+    }
 
     public void swapLists(List<Souvenir> souvenirs) {
         if (mSouvenirs == null) {
@@ -32,6 +37,7 @@ public class SouvenirAdapter extends RecyclerView.Adapter<SouvenirAdapter.Souven
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         SouvenirItemBinding binding =
                 DataBindingUtil.inflate(inflater, R.layout.souvenir_item, parent, false);
+        binding.setItemClickListener(mListener);
         return new SouvenirViewholder(binding);
     }
 

@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
+import android.text.TextUtils;
 
 import org.threeten.bp.ZonedDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
@@ -25,6 +26,9 @@ public final class FileUtils {
     private FileUtils() {}
 
     public static File getLocalFileForPhotoName(@NonNull String photoName, @NonNull Context context) {
+        if (TextUtils.isEmpty(photoName)) {
+            return null;
+        }
         File storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         return new File(storageDir, photoName);
     }

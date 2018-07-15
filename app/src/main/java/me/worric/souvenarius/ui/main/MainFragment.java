@@ -14,10 +14,12 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import javax.inject.Inject;
 
 import me.worric.souvenarius.R;
+import me.worric.souvenarius.data.model.Souvenir;
 import me.worric.souvenarius.databinding.FragmentMainBinding;
 
 public class MainFragment extends Fragment {
@@ -58,7 +60,7 @@ public class MainFragment extends Fragment {
     }
 
     private void setupRecyclerView() {
-        mAdapter = new SouvenirAdapter();
+        mAdapter = new SouvenirAdapter(mItemClickListener);
         mBinding.rvSouvenirList.setAdapter(mAdapter);
         setupLayoutManager();
     }
@@ -89,6 +91,18 @@ public class MainFragment extends Fragment {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable(KEY_LIST_STYLE, mListStyle);
+    }
+
+    private final ItemClickListener mItemClickListener = souvenir -> {
+        try {
+            ((MainActivity)getActivity()).handleItemClicked(souvenir);
+        } catch (ClassCastException e) {
+            Toast.makeText(getContext(), "Something went wrong!", Toast.LENGTH_SHORT).show();
+        }
+    };
+
+    public interface ItemClickListener {
+        void onItemClicked(Souvenir souvenir);
     }
 
     private final ClickHandler mClickHandler = view -> {

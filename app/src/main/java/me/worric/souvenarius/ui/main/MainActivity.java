@@ -19,8 +19,10 @@ import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
 import me.worric.souvenarius.R;
+import me.worric.souvenarius.data.model.Souvenir;
 import me.worric.souvenarius.databinding.ActivityMainBinding;
 import me.worric.souvenarius.ui.add.AddFragment;
+import me.worric.souvenarius.ui.detail.DetailFragment;
 import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity implements HasSupportFragmentInjector {
@@ -81,8 +83,15 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         }
     }
 
-    public void handleFab(View view) {
+    public void handleItemClicked(Souvenir souvenir) {
         String souvenirId = "-LHCSjnIHggC9DlhiQJV";
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, DetailFragment.newInstance(souvenirId), "detail")
+                .addToBackStack(null)
+                .commit();
+    }
+
+    public void handleFab(View view) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, AddFragment.newInstance(), "detail")
                 .addToBackStack(null)
