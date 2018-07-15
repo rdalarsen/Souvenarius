@@ -141,4 +141,11 @@ public class MainFragment extends Fragment {
         STAGGERED
     }
 
+    public enum SortStyle {
+        LOCATION_ASC,
+        LOCATION_DESC,
+        DATE_ASC,
+        DATE_DESC
+    }
+
 }

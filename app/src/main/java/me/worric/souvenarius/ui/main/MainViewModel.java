@@ -1,7 +1,6 @@
 package me.worric.souvenarius.ui.main;
 
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 
@@ -18,30 +17,10 @@ import timber.log.Timber;
 public class MainViewModel extends ViewModel {
 
     private final SouvenirRepository mSouvenirRepository;
-    private MutableLiveData<MainFragment.ListStyle> mListStyle;
 
     @Inject
     public MainViewModel(SouvenirRepository souvenirRepository) {
         mSouvenirRepository = souvenirRepository;
-    }
-
-    public LiveData<MainFragment.ListStyle> getListStyle() {
-        if (mListStyle == null) {
-            mListStyle = new MutableLiveData<>();
-            mListStyle.setValue(MainFragment.ListStyle.LIST);
-        }
-        return mListStyle;
-    }
-
-    public void toggleListStyles() {
-        MainFragment.ListStyle style = mListStyle.getValue();
-        if (style != null) {
-            if (style.equals(MainFragment.ListStyle.LIST)) {
-                mListStyle.setValue(MainFragment.ListStyle.STAGGERED);
-            } else {
-                mListStyle.setValue(MainFragment.ListStyle.LIST);
-            }
-        }
     }
 
     public LiveData<List<Souvenir>> getSouvenirs() {

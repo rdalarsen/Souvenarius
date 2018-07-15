@@ -28,6 +28,7 @@ import timber.log.Timber;
 public class MainActivity extends AppCompatActivity implements HasSupportFragmentInjector {
 
     public static final int REQUEST_CODE = 404;
+    private static final String KEY_SHOW_FAB_STATUS = "key_show_fab_status";
     @Inject
     protected ViewModelProvider.Factory mFactory;
     private MainViewModel mMainViewModel;
@@ -46,6 +47,12 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
 
         setSupportActionBar(mBinding.toolbar);
 
+        checkPermissions();
+        initFragment(savedInstanceState);
+        restoreSavedValues(savedInstanceState);
+    }
+
+    private void checkPermissions() {
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this,
@@ -57,7 +64,17 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
             }, REQUEST_CODE);
 
         }
+    }
 
+    private void restoreSavedValues(Bundle savedInstanceState) {
+        boolean shouldShowFab = true;
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_SHOW_FAB_STATUS)) {
+            shouldShowFab = savedInstanceState.getBoolean(KEY_SHOW_FAB_STATUS);
+        }
+        mBinding.setShouldShowFab(shouldShowFab);
+    }
+
+    private void initFragment(Bundle savedInstanceState) {
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, MainFragment.newInstance(), "main")
@@ -83,6 +100,12 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         }
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(KEY_SHOW_FAB_STATUS, mBinding.getShouldShowFab());
+    }
+
     public void handleItemClicked(Souvenir souvenir) {
         String souvenirId = "-LHCSjnIHggC9DlhiQJV";
         getSupportFragmentManager().beginTransaction()
@@ -96,6 +119,7 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
                 .replace(R.id.fragment_container, AddFragment.newInstance(), "detail")
                 .addToBackStack(null)
                 .commit();
+        mBinding.setShouldShowFab(false);
         mBinding.appbarLayout.setExpanded(true);
     }
 
