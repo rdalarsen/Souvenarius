@@ -21,8 +21,20 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btn_debug_sort"
+            app:layout_constraintHorizontal_chainStyle="spread"
             android:onClick="@{clickHandler::onToggleLayoutClicked}"
             android:text="toggle viewing" />
+
+        <Button
+            android:id="@+id/btn_debug_sort"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@+id/btn_debug"
+            app:layout_constraintStart_toEndOf="@+id/btn_debug"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:onClick="@{clickHandler::onToggleSortClicked}"
+            android:text="Toggle sort" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_souvenir_list"

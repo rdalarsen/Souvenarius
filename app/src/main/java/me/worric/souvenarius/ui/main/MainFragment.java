@@ -26,18 +26,32 @@ public class MainFragment extends Fragment {
 
     private static final int ITEM_DECORATION_INDEX = 0;
     private static final String KEY_LIST_STYLE = "key_list_style";
+    private static final String KEY_SORT_STYLE = "key_sort_style";
     @Inject
     protected ViewModelProvider.Factory mFactory;
     private FragmentMainBinding mBinding;
     private MainViewModel mViewModel;
     private SouvenirAdapter mAdapter;
-    private ListStyle mListStyle = ListStyle.LIST;
+    private ListStyle mListStyle;
+    private SortStyle mSortStyle;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_LIST_STYLE)) {
-            mListStyle = (ListStyle) savedInstanceState.getSerializable(KEY_LIST_STYLE);
+        restoreValues(savedInstanceState);
+    }
+
+    private void restoreValues(Bundle savedInstanceState) {
+        if (savedInstanceState == null) {
+            mSortStyle = SortStyle.DATE_DESC;
+            mListStyle = ListStyle.LIST;
+        } else {
+            if (savedInstanceState.containsKey(KEY_LIST_STYLE)) {
+                mListStyle = (ListStyle) savedInstanceState.getSerializable(KEY_LIST_STYLE);
+            }
+            if (savedInstanceState.containsKey(KEY_SORT_STYLE)) {
+                mSortStyle = (SortStyle) savedInstanceState.getSerializable(KEY_SORT_STYLE);
+            }
         }
     }
 
@@ -52,11 +66,13 @@ public class MainFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProviders.of(getActivity(), mFactory).get(MainViewModel.class);
+        mViewModel.getSortedSouvenirs().observe(this, strings -> mAdapter.swapLists(strings));
+        mViewModel.getSortStyle().observe(this, sortStyle -> mSortStyle = sortStyle);
+        mViewModel.setSortStyle(mSortStyle);
         mBinding.setViewmodel(mViewModel);
         mBinding.setLifecycleOwner(this);
         mBinding.setClickHandler(mClickHandler);
         setupRecyclerView();
-        mViewModel.getSouvenirs().observe(this, strings -> mAdapter.swapLists(strings));
     }
 
     private void setupRecyclerView() {
@@ -84,13 +100,14 @@ public class MainFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mViewModel.getSouvenirs().removeObservers(this);
+        mViewModel.getSortedSouvenirs().removeObservers(this);
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable(KEY_LIST_STYLE, mListStyle);
+        outState.putSerializable(KEY_SORT_STYLE, mSortStyle);
     }
 
     private final ItemClickListener mItemClickListener = souvenir -> {
@@ -105,26 +122,35 @@ public class MainFragment extends Fragment {
         void onItemClicked(Souvenir souvenir);
     }
 
-    private final ClickHandler mClickHandler = view -> {
-        RecyclerView.LayoutManager manager;
-        if (mListStyle.equals(ListStyle.LIST)) {
-            // Load staggered + toggle list style
-            if (mBinding.rvSouvenirList.getItemDecorationCount() > 0) {
-                mBinding.rvSouvenirList.removeItemDecorationAt(ITEM_DECORATION_INDEX);
+    public final ClickHandler mClickHandler = new ClickHandler() {
+        @Override
+        public void onToggleLayoutClicked(View view) {
+            RecyclerView.LayoutManager manager;
+            if (mListStyle.equals(ListStyle.LIST)) {
+                // Load staggered + toggle list style
+                if (mBinding.rvSouvenirList.getItemDecorationCount() > 0) {
+                    mBinding.rvSouvenirList.removeItemDecorationAt(ITEM_DECORATION_INDEX);
+                }
+                manager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+                mListStyle = ListStyle.STAGGERED;
+            } else {
+                // Load list + toggle list style
+                mBinding.rvSouvenirList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+                manager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+                mListStyle = ListStyle.LIST;
             }
-            manager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-            mListStyle = ListStyle.STAGGERED;
-        } else {
-            // Load list + toggle list style
-            mBinding.rvSouvenirList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
-            manager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-            mListStyle = ListStyle.LIST;
+            mBinding.rvSouvenirList.setLayoutManager(manager);
         }
-        mBinding.rvSouvenirList.setLayoutManager(manager);
+
+        @Override
+        public void onToggleSortClicked(View view) {
+            mViewModel.toggleSortStyle();
+        }
     };
 
     public interface ClickHandler {
         void onToggleLayoutClicked(View view);
+        void onToggleSortClicked(View view);
     }
 
     public static MainFragment newInstance() {
