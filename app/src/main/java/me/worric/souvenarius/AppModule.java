@@ -3,9 +3,9 @@ package me.worric.souvenarius;
 import android.app.Application;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
+import android.arch.persistence.room.Room;
 import android.content.Context;
 
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Binds;
@@ -14,6 +14,7 @@ import dagger.Provides;
 import dagger.android.ContributesAndroidInjector;
 import dagger.android.support.AndroidSupportInjectionModule;
 import dagger.multibindings.IntoMap;
+import me.worric.souvenarius.data.db.AppDatabase;
 import me.worric.souvenarius.di.AppContext;
 import me.worric.souvenarius.di.ViewModelKey;
 import me.worric.souvenarius.ui.add.AddViewModel;
@@ -53,9 +54,9 @@ public abstract class AppModule {
     abstract ViewModel bindAddViewModel(AddViewModel addViewModel);
 
     @Provides
-    @Named(value = "theMessage")
-    static String providesMessage() {
-        return "This is the message";
+    @Singleton
+    static AppDatabase provideDatabase(@AppContext Context context) {
+        return Room.databaseBuilder(context, AppDatabase.class, "souvenirdb").build();
     }
 
 }
