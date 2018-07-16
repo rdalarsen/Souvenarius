@@ -16,7 +16,7 @@ public interface SouvenirDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(List<SouvenirDb> souvenirs);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.FAIL)
     void insertAll(SouvenirDb... souvenirDbs);
 
     @Query("SELECT * FROM souvenirs ORDER BY timestamp ASC")

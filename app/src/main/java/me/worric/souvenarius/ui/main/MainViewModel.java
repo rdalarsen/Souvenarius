@@ -6,12 +6,14 @@ import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import me.worric.souvenarius.data.db.model.SouvenirDb;
 import me.worric.souvenarius.data.model.Souvenir;
 import me.worric.souvenarius.data.model.SouvenirResponse;
 import me.worric.souvenarius.data.repository.SouvenirRepository;
@@ -94,5 +96,15 @@ public class MainViewModel extends ViewModel {
     @Override
     protected void onCleared() {
         Timber.d("onCleared called");
+    }
+
+    public void addNewSouvenir() {
+        SouvenirDb db = new SouvenirDb();
+        db.setPlace("The testPlace");
+        db.setStory("The testStory");
+        db.setTimestamp(1531381740282L);
+        db.setTitle("The testTitle");
+        db.setPhotos(Arrays.asList("fsdjfalæskdjf.jpg"));
+        mSouvenirRepository.addNewSouvenir(db);
     }
 }

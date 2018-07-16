@@ -3,6 +3,7 @@ package me.worric.souvenarius.data.repository;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.Transformations;
+import android.os.AsyncTask;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -14,9 +15,11 @@ import javax.inject.Singleton;
 
 import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.db.AppDatabase;
+import me.worric.souvenarius.data.db.dao.SouvenirDao;
 import me.worric.souvenarius.data.db.model.SouvenirDb;
 import me.worric.souvenarius.data.model.Souvenir;
 import me.worric.souvenarius.data.model.SouvenirResponse;
+import timber.log.Timber;
 
 @Singleton
 public class SouvenirRepository {
@@ -33,6 +36,7 @@ public class SouvenirRepository {
         mStorageHandler = storageHandler;
         mAppDatabase = appDatabase;
         mRelayer = new MediatorLiveData<>();
+        initTestData();
     }
 
     public LiveData<List<Souvenir>> getSouvenirsOrderedByTimeAsc() {
@@ -72,4 +76,37 @@ public class SouvenirRepository {
         mFirebaseHandler.storeSouvenir(souvenir);
     }
 
+    private MediatorLiveData<List<SouvenirDb>> mTestMediator = new MediatorLiveData<>();
+    private LiveData<List<SouvenirDb>> mSouvenirsFromDb;
+
+    private void initTestData() {
+        mSouvenirsFromDb = mAppDatabase.souvenirDao().findAllOrderByTimeAsc();
+    }
+
+    public void addNewSouvenir(SouvenirDb db) {
+        mTestMediator.addSource(mSouvenirsFromDb, souvenirDbs -> {
+            mTestMediator.removeSource(mSouvenirsFromDb);
+            Timber.i("result contains stuff: %s", souvenirDbs.isEmpty());
+        });
+
+        new SouvenirInsertTask(mAppDatabase.souvenirDao()).execute(db);
+    }
+
+    private static class SouvenirInsertTask extends AsyncTask<SouvenirDb, Void, Void> {
+
+        private SouvenirDao mDao;
+
+        public SouvenirInsertTask(SouvenirDao dao) {
+            mDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(SouvenirDb... souvenirDbs) {
+            Timber.i("The length of the arguments is: %d\ninserting data into the database...", souvenirDbs.length);
+            SouvenirDb souvenirDb = souvenirDbs[0];
+            mDao.insertAll(souvenirDb);
+            return null;
+        }
+
+    }
 }

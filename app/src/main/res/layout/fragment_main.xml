@@ -32,9 +32,19 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="@+id/btn_debug"
             app:layout_constraintStart_toEndOf="@+id/btn_debug"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btn_debug_add"
             android:onClick="@{clickHandler::onToggleSortClicked}"
             android:text="Toggle sort" />
+
+        <Button
+            android:id="@+id/btn_debug_add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@+id/btn_debug"
+            app:layout_constraintStart_toEndOf="@+id/btn_debug_sort"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:onClick="@{clickHandler::onAddDataClicked}"
+            android:text="Add some data" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_souvenir_list"

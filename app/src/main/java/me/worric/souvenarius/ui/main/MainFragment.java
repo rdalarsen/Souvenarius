@@ -146,11 +146,17 @@ public class MainFragment extends Fragment {
         public void onToggleSortClicked(View view) {
             mViewModel.toggleSortStyle();
         }
+
+        @Override
+        public void onAddDataClicked(View view) {
+            mViewModel.addNewSouvenir();
+        }
     };
 
     public interface ClickHandler {
         void onToggleLayoutClicked(View view);
         void onToggleSortClicked(View view);
+        void onAddDataClicked(View view);
     }
 
     public static MainFragment newInstance() {
