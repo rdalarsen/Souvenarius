@@ -19,6 +19,7 @@ import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.db.AppDatabase;
 import me.worric.souvenarius.data.db.model.SouvenirDb;
 import me.worric.souvenarius.data.db.tasks.SouvenirInsertTask;
+import me.worric.souvenarius.data.db.tasks.SouvenirUpdateTask;
 import me.worric.souvenarius.ui.main.SortStyle;
 import timber.log.Timber;
 
@@ -144,8 +145,19 @@ public class SouvenirRepository {
         return mAppDatabase.souvenirDao().findOneById(souvenirId);
     }
 
+    public void updateSouvenir(SouvenirDb souvenir) {
+        DataUpdateCallback callback = numRowsAffected -> {
+            if (numRowsAffected > 0) Timber.i("data was updated just fine!");
+        };
+        new SouvenirUpdateTask(mAppDatabase.souvenirDao(), callback).execute(souvenir);
+    }
+
     public interface DataInsertCallback {
         void onDataInserted(SouvenirDb souvenirDb);
+    }
+
+    public interface DataUpdateCallback {
+        void onDataUpdated(int numRowsAffected);
     }
 
     private LiveData<SouvenirDb> mGetSouvenirDbFromResults =

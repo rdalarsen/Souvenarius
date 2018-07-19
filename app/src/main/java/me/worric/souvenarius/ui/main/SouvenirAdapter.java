@@ -61,9 +61,8 @@ public class SouvenirAdapter extends RecyclerView.Adapter<SouvenirAdapter.Souven
         }
 
         void bind(SouvenirDb souvenir) {
-            //TODO: change to correct type
-            //mBinding.setSouvenir(souvenir);
-            //mBinding.executePendingBindings();
+            mBinding.setSouvenir(souvenir);
+            mBinding.executePendingBindings();
         }
     }
 

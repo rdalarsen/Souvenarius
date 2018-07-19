@@ -11,6 +11,7 @@ import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 
 import javax.inject.Inject;
 
@@ -60,9 +61,9 @@ public class EditDialogFragment extends DialogFragment {
         mBinding.setClickHandler(mTextClickHandler);
 
         /*String title = getArguments().getString(KEY_DIALOG_TITLE, "default title");
-        getDialog().setTitle("Edit the " + title);
+        getDialog().setTitle("Edit the " + title);*/
 
-        getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);*/
+        getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
     }
 
     private EditTextClickHandler mTextClickHandler = new EditTextClickHandler() {

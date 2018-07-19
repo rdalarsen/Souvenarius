@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
     <data>
         <import type="android.view.View" />
+        <import type="me.worric.souvenarius.data.Result.Status" />
         <variable
             name="viewmodel"
             type="me.worric.souvenarius.ui.main.MainViewModel" />
@@ -71,8 +72,17 @@
             android:id="@+id/grp_error_messages"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="@{(viewmodel.sortedSouvenirDbs == null || viewmodel.souvenirs.size() > 0) ? View.GONE : View.VISIBLE}"
+            android:visibility="@{(viewmodel.sortedSouvenirDbs == null || viewmodel.sortedSouvenirDbs.response.size() > 0) ? View.GONE : View.VISIBLE}"
             app:constraint_referenced_ids="tv_souvenir_list_error_text" />
+
+        <View
+            android:id="@+id/success_failure_indicator"
+            android:layout_width="200dp"
+            android:layout_height="56dp"
+            android:background="@{viewmodel.sortedSouvenirDbs.status == Status.FAILURE ? @android:color/holo_green_light : @android:color/holo_red_light}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </android.support.constraint.ConstraintLayout>
 </layout>

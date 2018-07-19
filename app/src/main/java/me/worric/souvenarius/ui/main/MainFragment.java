@@ -80,7 +80,7 @@ public class MainFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProviders.of(getActivity(), mFactory).get(MainViewModel.class);
         mViewModel.getSortedSouvenirDbs().observe(this, souvenirs -> {
-            if (souvenirs.status.equals(Result.Status.FAILURE)) mAdapter.swapLists(souvenirs.response);
+            if (souvenirs.status.equals(Result.Status.SUCCESS)) mAdapter.swapLists(souvenirs.response);
         });
         mViewModel.getSortStyle().observe(this, sortStyle -> mSortStyle = sortStyle);
         mViewModel.setSortStyle(mSortStyle);

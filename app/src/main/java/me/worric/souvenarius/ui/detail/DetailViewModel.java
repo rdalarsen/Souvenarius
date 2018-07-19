@@ -12,7 +12,6 @@ import java.io.File;
 import javax.inject.Inject;
 
 import me.worric.souvenarius.data.db.model.SouvenirDb;
-import me.worric.souvenarius.data.model.Souvenir;
 import me.worric.souvenarius.data.repository.SouvenirRepository;
 import timber.log.Timber;
 
@@ -20,46 +19,31 @@ public class DetailViewModel extends ViewModel {
 
     private final SouvenirRepository mRepository;
     private final MutableLiveData<Long> mSouvenirId;
-    private final MutableLiveData<Souvenir> mUpdatedSouvenir;
     private final MediatorLiveData<SouvenirDb> mCurrentSouvenir;
+    private final LiveData<SouvenirDb> mFindOne;
     private final MutableLiveData<File> mPhotoFile;
 
     @Inject
     public DetailViewModel(SouvenirRepository repository) {
         mRepository = repository;
         mSouvenirId = new MutableLiveData<>();
-        mUpdatedSouvenir = new MutableLiveData<>();
         mPhotoFile = new MutableLiveData<>();
+        mFindOne = Transformations.switchMap(mSouvenirId, mRepository::findOne);
         mCurrentSouvenir = new MediatorLiveData<>();
-        initCurrentSouvenir();
-    }
-
-    private void initCurrentSouvenir() {
-        /*LiveData<Souvenir> filterSouvenirsById =
-                Transformations.switchMap(mSouvenirId, id ->
-                        Transformations.map(mRepository.getSouvenirs(), souvenirResponses -> {
-                            for (SouvenirResponse response : souvenirResponses) {
-                                if (response.getFirebaseId().equals(id)) {
-                                    return response.toSouvenir();
-                                }
-                            }
-                            return null;
-                        }));
-        mCurrentSouvenir.addSource(filterSouvenirsById, mCurrentSouvenir::setValue);*/
+        mCurrentSouvenir.addSource(mFindOne, souvenirDb -> {
+            Timber.i("observer triggered!");
+            mCurrentSouvenir.setValue(souvenirDb);
+        });
     }
 
     public void setSouvenirId(long souvenirId) {
-        mSouvenirId.setValue(souvenirId);
+        if (mSouvenirId.getValue() == null) {
+            mSouvenirId.setValue(souvenirId);
+        }
     }
 
     public LiveData<SouvenirDb> getCurrentSouvenir() {
-        LiveData<SouvenirDb> findOne = Transformations.switchMap(mSouvenirId, mRepository::findOne);
-        mCurrentSouvenir.addSource(findOne, souvenirDb -> {
-            mCurrentSouvenir.removeSource(findOne);
-            if (mCurrentSouvenir.getValue() == null) {
-                mCurrentSouvenir.setValue(souvenirDb);
-            }
-        });
+        Timber.i("getCurrentSouvenir called!");
         return mCurrentSouvenir;
     }
 
@@ -77,7 +61,7 @@ public class DetailViewModel extends ViewModel {
                     souvenir.setStory(editable.toString());
                     break;
             }
-            mCurrentSouvenir.setValue(souvenir);
+            mRepository.updateSouvenir(souvenir);
         }
     }
 
@@ -103,9 +87,9 @@ public class DetailViewModel extends ViewModel {
             if (souvenir != null && souvenir.getPhotos().size() > 0) {
                 boolean addResult = souvenir.getPhotos().add(currentFile.getName());
                 if (addResult) {
-                    mCurrentSouvenir.setValue(souvenir);
+//                    mCurrentSouvenir.setValue(souvenir);
                     // TODO: update in repo as well
-                    //mRepository.updateSouvenir(souvenir);
+                    mRepository.updateSouvenir(souvenir);
                 }
                 return addResult;
             }
