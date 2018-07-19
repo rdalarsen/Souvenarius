@@ -11,7 +11,7 @@
             type="me.worric.souvenarius.ui.detail.DetailFragment.OnClickEdit" />
         <variable
             name="currentSouvenir"
-            type="me.worric.souvenarius.data.model.Souvenir" />
+            type="me.worric.souvenarius.data.db.model.SouvenirDb" />
     </data>
     <ScrollView
         android:id="@+id/sv_detail"

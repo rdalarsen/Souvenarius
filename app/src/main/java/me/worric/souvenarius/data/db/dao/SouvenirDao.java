@@ -35,4 +35,7 @@ public interface SouvenirDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     int updateOne(SouvenirDb souvenirDb);
 
+    @Query("SELECT * FROM souvenirs WHERE id = :id")
+    LiveData<SouvenirDb> findOneById(Long id);
+
 }

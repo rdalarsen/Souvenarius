@@ -7,7 +7,6 @@ import android.arch.lifecycle.ViewModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -16,7 +15,6 @@ import javax.inject.Inject;
 import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.db.model.SouvenirDb;
 import me.worric.souvenarius.data.model.Souvenir;
-import me.worric.souvenarius.data.model.SouvenirResponse;
 import me.worric.souvenarius.data.repository.SouvenirRepository;
 import timber.log.Timber;
 
@@ -29,6 +27,10 @@ public class MainViewModel extends ViewModel {
     public MainViewModel(SouvenirRepository souvenirRepository) {
         mSouvenirRepository = souvenirRepository;
         mSortStyle = new MutableLiveData<>();
+    }
+
+    public LiveData<Result<List<SouvenirDb>>> getSortedSouvenirDbs() {
+        return mSouvenirRepository.getSortedSouvenirs();
     }
 
     public LiveData<List<Souvenir>> getNewSouvenirs() {
@@ -53,7 +55,8 @@ public class MainViewModel extends ViewModel {
     }
 
     public LiveData<List<Souvenir>> getSouvenirs() {
-        return Transformations.map(mSouvenirRepository.getSouvenirs(), souvenirs -> {
+        return null;
+                /*Transformations.map(mSouvenirRepository.getSouvenirs(), souvenirs -> {
             if (souvenirs != null && souvenirs.size() > 0) {
                 List<Souvenir> resultList = new ArrayList<>(souvenirs.size());
                 for (SouvenirResponse response : souvenirs) {
@@ -63,10 +66,10 @@ public class MainViewModel extends ViewModel {
             }
             Timber.w("Souvenirs do not exist, returning null");
             return null;
-        });
+        });*/
     }
 
-    public LiveData<List<Souvenir>> getSortedSouvenirs() {
+    /*public LiveData<List<Souvenir>> getSortedSouvenirs() {
         return Transformations.switchMap(mSortStyle, sortStyle -> {
             if (sortStyle.equals(SortStyle.DATE_DESC)) {
                 return sortSouvenirs(dateComparator, false);
@@ -75,9 +78,9 @@ public class MainViewModel extends ViewModel {
             }
             throw new IllegalArgumentException("Unknown sort style: " + sortStyle.name());
         });
-    }
+    }*/
 
-    private LiveData<List<Souvenir>> sortSouvenirs(final Comparator<Souvenir> comparator,
+    /*private LiveData<List<Souvenir>> sortSouvenirs(final Comparator<Souvenir> comparator,
                                                    final boolean reversed) {
         return Transformations.map(mSouvenirRepository.getSouvenirs(), souvenirs -> {
             if (souvenirs != null && souvenirs.size() > 0) {
@@ -91,7 +94,7 @@ public class MainViewModel extends ViewModel {
             }
             return Collections.emptyList();
         });
-    }
+    }*/
 
     public void toggleSortStyle() {
         SortStyle sortStyle = mSortStyle.getValue();
@@ -127,6 +130,6 @@ public class MainViewModel extends ViewModel {
         db.setTimestamp(1530381740282L);
         db.setTitle("The testTitle");
         db.setPhotos(Arrays.asList("fsdjfalæskdjf.jpg", "sfhsldfhgas.jpg"));
-        mSouvenirRepository.addNewSouvenir(db);
+        mSouvenirRepository.addNewSouvenir(db, null);
     }
 }

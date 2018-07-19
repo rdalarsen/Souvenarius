@@ -2,8 +2,11 @@ package me.worric.souvenarius.data.repository;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Transformations;
 import android.content.SharedPreferences;
+
+import com.google.firebase.database.DatabaseReference;
 
 import java.io.File;
 import java.util.Collections;
@@ -16,8 +19,6 @@ import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.db.AppDatabase;
 import me.worric.souvenarius.data.db.model.SouvenirDb;
 import me.worric.souvenarius.data.db.tasks.SouvenirInsertTask;
-import me.worric.souvenarius.data.model.Souvenir;
-import me.worric.souvenarius.data.model.SouvenirResponse;
 import me.worric.souvenarius.ui.main.SortStyle;
 import timber.log.Timber;
 
@@ -59,9 +60,8 @@ public class SouvenirRepository {
         switch (sortStyle) {
             case DATE_DESC:
                 result.removeSource(mSouvenirsOrderByTimeAsc);
-                result.addSource(mSouvenirsOrderByTimeDesc, souvenirDbs -> {
-                    result.setValue(Result.success(souvenirDbs));
-                });
+                result.addSource(mSouvenirsOrderByTimeDesc, souvenirDbs ->
+                        result.setValue(Result.success(souvenirDbs)));
                 break;
             case DATE_ASC:
                 result.removeSource(mSouvenirsOrderByTimeDesc);
@@ -90,16 +90,23 @@ public class SouvenirRepository {
     }
 
     public LiveData<Result<List<SouvenirDb>>> getSortedSouvenirs() {
+        fetchDataFromFirebase();
+        return mSouvenirs;
+    }
+
+    private void fetchDataFromFirebase() {
         mSouvenirs.addSource(mFirebaseHandler.getResults(), result -> {
             String resultString = (result.status.equals(Result.Status.SUCCESS))
                     ? result.status.toString()
                     : Result.Status.FAILURE.toString();
             Timber.i("The fetching was a %s", resultString);
+            if (result.status.equals(Result.Status.SUCCESS)) {
+
+            }
         });
-        return mSouvenirs;
     }
 
-    public LiveData<List<SouvenirResponse>> getSouvenirs() {
+    public LiveData<List<SouvenirDb>> getSouvenirs() {
         return Transformations.map(mFirebaseHandler.getResults(), result -> {
             if (Result.Status.SUCCESS.equals(result.status)) {
                 return result.response;
@@ -110,24 +117,54 @@ public class SouvenirRepository {
         });
     }
 
-    public void addSouvenir(Souvenir souvenir, File image) {
-        mStorageHandler.uploadImage(image);
-        mFirebaseHandler.storeSouvenir(souvenir);
+    public void addNewSouvenir(SouvenirDb db, File photo) {
+        DatabaseReference.CompletionListener completionListener = (databaseError, databaseReference) -> {
+            if (databaseError != null) {
+                Timber.e(databaseError.toException(),"There was a problem uploading the data to the database");
+                return;
+            }
+            if (photo != null) {
+                mStorageHandler.uploadImage(photo);
+            } else {
+                Timber.e("The photo was null!");
+            }
+        };
+
+        DataInsertCallback callback = souvenirDb -> {
+            if (souvenirDb != null) {
+                Timber.i("souvenir is NOT null! The ID is: %d", souvenirDb.getId());
+                mFirebaseHandler.storeSouvenir(souvenirDb, completionListener);
+            }
+        };
+
+        new SouvenirInsertTask(mAppDatabase.souvenirDao(), callback).execute(db);
     }
 
-    public void updateSouvenir(Souvenir souvenir) {
-        mFirebaseHandler.storeSouvenir(souvenir);
+    public LiveData<SouvenirDb> findOne(long souvenirId) {
+        return mAppDatabase.souvenirDao().findOneById(souvenirId);
     }
 
-    public void addNewSouvenir(SouvenirDb db) {
-        DataFetchedListener listener = souvenirDbs ->
-                Timber.i("souvenirs length from SYNC db call: %d", souvenirDbs.size());
-
-        new SouvenirInsertTask(mAppDatabase.souvenirDao()).execute(db);
+    public interface DataInsertCallback {
+        void onDataInserted(SouvenirDb souvenirDb);
     }
 
-    public interface DataFetchedListener {
-        void onDataFetched(List<SouvenirDb> souvenirDbs);
+    private LiveData<SouvenirDb> mGetSouvenirDbFromResults =
+            Transformations.switchMap(getInsertId(), id ->
+                    Transformations.map(getSortedSouvenirs(), result -> {
+                        if (result.status.equals(Result.Status.SUCCESS)) {
+                            for (SouvenirDb souvenirDb : result.response) {
+                                if (souvenirDb.getId() == id) {
+                                    return souvenirDb;
+                                }
+                            }
+                        }
+                        return null;
+                    }));
+
+    private MutableLiveData<Long> mInsertedId = new MutableLiveData<>();
+
+    private LiveData<Long> getInsertId() {
+        return mInsertedId;
     }
 
 }

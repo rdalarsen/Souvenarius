@@ -11,9 +11,9 @@ import me.worric.souvenarius.data.repository.SouvenirRepository;
 public final class SouvenirFetchTask extends AsyncTask<Void, Void, List<SouvenirDb>> {
 
     private SouvenirDao mDao;
-    private SouvenirRepository.DataFetchedListener mListener;
+    private SouvenirRepository.DataInsertCallback mListener;
 
-    public SouvenirFetchTask(SouvenirDao dao, SouvenirRepository.DataFetchedListener listener) {
+    public SouvenirFetchTask(SouvenirDao dao, SouvenirRepository.DataInsertCallback listener) {
         mDao = dao;
         mListener = listener;
     }
@@ -25,7 +25,7 @@ public final class SouvenirFetchTask extends AsyncTask<Void, Void, List<Souvenir
 
     @Override
     protected void onPostExecute(List<SouvenirDb> souvenirDbs) {
-        mListener.onDataFetched(souvenirDbs);
+        //mListener.onDataInserted(souvenirDbs);
         mListener = null;
     }
 }

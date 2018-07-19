@@ -16,8 +16,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import me.worric.souvenarius.data.Result;
-import me.worric.souvenarius.data.model.Souvenir;
-import me.worric.souvenarius.data.model.SouvenirResponse;
+import me.worric.souvenarius.data.db.model.SouvenirDb;
 import timber.log.Timber;
 
 public class FirebaseHandler {
@@ -25,7 +24,7 @@ public class FirebaseHandler {
     private static final String SOUVENIRS_REFERENCE = "souvenirs";
     private final FirebaseDatabase mDatabase;
     private final DatabaseReference mRef;
-    private MutableLiveData<Result<List<SouvenirResponse>>> mResult;
+    private MutableLiveData<Result<List<SouvenirDb>>> mResult;
 
     @Inject
     public FirebaseHandler() {
@@ -37,8 +36,8 @@ public class FirebaseHandler {
         mRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                List<SouvenirResponse> resultList = parseResponseToList(dataSnapshot);
-                Result<List<SouvenirResponse>> result = Result.success(resultList);
+                List<SouvenirDb> resultList = parseResponseToList(dataSnapshot);
+                Result<List<SouvenirDb>> result = Result.success(resultList);
                 mResult.setValue(result);
             }
 
@@ -50,17 +49,17 @@ public class FirebaseHandler {
         });
     }
 
-    private List<SouvenirResponse> parseResponseToList(DataSnapshot dataSnapshot) {
-        List<SouvenirResponse> resultList = new LinkedList<>();
+    private List<SouvenirDb> parseResponseToList(DataSnapshot dataSnapshot) {
+        List<SouvenirDb> resultList = new LinkedList<>();
         if (dataSnapshot.hasChildren()) {
             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                SouvenirResponse response = snapshot.getValue(SouvenirResponse.class);
+                SouvenirDb response = snapshot.getValue(SouvenirDb.class);
                 if (response == null) {
                     Timber.w("Parsed dataSnapshot is null. Continuing...");
                     continue;
                 }
 
-                response.setFirebaseId(snapshot.getKey());
+                response.setId(Long.parseLong(snapshot.getKey()));
 
                 resultList.add(response);
             }
@@ -68,7 +67,7 @@ public class FirebaseHandler {
         return resultList;
     }
 
-    public LiveData<Result<List<SouvenirResponse>>> getResults() {
+    public LiveData<Result<List<SouvenirDb>>> getResults() {
         if (mResult == null) {
             mResult = new MutableLiveData<>();
             fetchSouvenirs();
@@ -76,11 +75,21 @@ public class FirebaseHandler {
         return mResult;
     }
 
-    public void storeSouvenir(Souvenir souvenir) {
-        String pushKey = mRef.push().getKey();
-        if (pushKey == null) throw new IllegalStateException("Key cannot be null!");
+    public void storeSouvenir(SouvenirDb souvenir, DatabaseReference.CompletionListener completionListener) {
+        /*String pushKey = mRef.push().getKey();
+        if (pushKey == null) throw new IllegalStateException("Key cannot be null!");*/
 
-        mRef.child(pushKey).setValue(souvenir);
+        mRef.child(String.valueOf(souvenir.getId())).setValue(souvenir, (databaseError, databaseReference) -> {
+            if (databaseError != null) Timber.i("DatabaseError: %s", databaseError.getMessage());
+            if (databaseReference != null) Timber.i("The databaseReference is: %s", databaseReference.toString());
+        });
+    }
+
+    public void addSouvenir(SouvenirDb db, DatabaseReference.CompletionListener listener) {
+        mRef.child(String.valueOf(db.getId())).setValue(db, (databaseError, databaseReference) -> {
+            if (databaseError != null) Timber.i("DatabaseError: %s", databaseError.getMessage());
+            if (databaseReference != null) Timber.i("The databaseReference is: %s", databaseReference.toString());
+        });
     }
 
 }

@@ -30,6 +30,11 @@ public class StorageHandler {
             if (task.isSuccessful()) {
                 Uri uploadUri = task.getResult().getUploadSessionUri();
                 Timber.i("Upload URI: %s", uploadUri.toString());
+            } else {
+                Timber.e("DID NOT upload the file! isCanceled: %s. isComplete: %s. isSuccessful: %s",
+                        task.isCanceled(),
+                        task.isComplete(),
+                        task.isSuccessful());
             }
         });
     }

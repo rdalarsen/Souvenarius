@@ -14,6 +14,7 @@ import java.util.Objects;
 import javax.inject.Inject;
 
 import me.worric.souvenarius.data.Result;
+import me.worric.souvenarius.data.db.model.SouvenirDb;
 import me.worric.souvenarius.data.model.Souvenir;
 import me.worric.souvenarius.data.repository.LocationRepository;
 import me.worric.souvenarius.data.repository.SouvenirRepository;
@@ -59,7 +60,11 @@ public class AddViewModel extends ViewModel {
         File photo = mPhotoFile.getValue();
         if (photo != null) {
             Souvenir souvenir = info.toSouvenir(photo);
-            mSouvenirRepository.addSouvenir(souvenir, photo);
+            SouvenirDb db = new SouvenirDb();
+            db.setTitle(info.getTitle());
+            db.setStory(info.getStory());
+            db.setPlace(info.getPlace());
+            mSouvenirRepository.addNewSouvenir(db, photo);
             return true;
         }
         return false;

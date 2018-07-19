@@ -22,7 +22,8 @@ import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
 import me.worric.souvenarius.R;
-import me.worric.souvenarius.data.model.Souvenir;
+import me.worric.souvenarius.data.Result;
+import me.worric.souvenarius.data.db.model.SouvenirDb;
 import me.worric.souvenarius.databinding.FragmentMainBinding;
 import timber.log.Timber;
 
@@ -78,7 +79,9 @@ public class MainFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProviders.of(getActivity(), mFactory).get(MainViewModel.class);
-        mViewModel.getNewSouvenirs().observe(this, souvenirs -> mAdapter.swapLists(souvenirs));
+        mViewModel.getSortedSouvenirDbs().observe(this, souvenirs -> {
+            if (souvenirs.status.equals(Result.Status.FAILURE)) mAdapter.swapLists(souvenirs.response);
+        });
         mViewModel.getSortStyle().observe(this, sortStyle -> mSortStyle = sortStyle);
         mViewModel.setSortStyle(mSortStyle);
         mBinding.setViewmodel(mViewModel);
@@ -112,7 +115,7 @@ public class MainFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mViewModel.getSortedSouvenirs().removeObservers(this);
+        mViewModel.getSortedSouvenirDbs().removeObservers(this);
     }
 
     @Override
@@ -131,7 +134,7 @@ public class MainFragment extends Fragment {
     };
 
     public interface ItemClickListener {
-        void onItemClicked(Souvenir souvenir);
+        void onItemClicked(SouvenirDb souvenir);
     }
 
     public final ClickHandler mClickHandler = new ClickHandler() {

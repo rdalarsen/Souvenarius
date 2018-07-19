@@ -11,17 +11,17 @@ import java.io.File;
 
 import javax.inject.Inject;
 
+import me.worric.souvenarius.data.db.model.SouvenirDb;
 import me.worric.souvenarius.data.model.Souvenir;
-import me.worric.souvenarius.data.model.SouvenirResponse;
 import me.worric.souvenarius.data.repository.SouvenirRepository;
 import timber.log.Timber;
 
 public class DetailViewModel extends ViewModel {
 
     private final SouvenirRepository mRepository;
-    private final MutableLiveData<String> mSouvenirId;
+    private final MutableLiveData<Long> mSouvenirId;
     private final MutableLiveData<Souvenir> mUpdatedSouvenir;
-    private final MediatorLiveData<Souvenir> mCurrentSouvenir;
+    private final MediatorLiveData<SouvenirDb> mCurrentSouvenir;
     private final MutableLiveData<File> mPhotoFile;
 
     @Inject
@@ -35,7 +35,7 @@ public class DetailViewModel extends ViewModel {
     }
 
     private void initCurrentSouvenir() {
-        LiveData<Souvenir> filterSouvenirsById =
+        /*LiveData<Souvenir> filterSouvenirsById =
                 Transformations.switchMap(mSouvenirId, id ->
                         Transformations.map(mRepository.getSouvenirs(), souvenirResponses -> {
                             for (SouvenirResponse response : souvenirResponses) {
@@ -45,19 +45,26 @@ public class DetailViewModel extends ViewModel {
                             }
                             return null;
                         }));
-        mCurrentSouvenir.addSource(filterSouvenirsById, mCurrentSouvenir::setValue);
+        mCurrentSouvenir.addSource(filterSouvenirsById, mCurrentSouvenir::setValue);*/
     }
 
-    public void setSouvenirId(String souvenirId) {
+    public void setSouvenirId(long souvenirId) {
         mSouvenirId.setValue(souvenirId);
     }
 
-    public LiveData<Souvenir> getCurrentSouvenir() {
+    public LiveData<SouvenirDb> getCurrentSouvenir() {
+        LiveData<SouvenirDb> findOne = Transformations.switchMap(mSouvenirId, mRepository::findOne);
+        mCurrentSouvenir.addSource(findOne, souvenirDb -> {
+            mCurrentSouvenir.removeSource(findOne);
+            if (mCurrentSouvenir.getValue() == null) {
+                mCurrentSouvenir.setValue(souvenirDb);
+            }
+        });
         return mCurrentSouvenir;
     }
 
     public void updateSouvenirText(Editable editable, DetailFragment.TextType textType) {
-        Souvenir souvenir = mCurrentSouvenir.getValue();
+        SouvenirDb souvenir = mCurrentSouvenir.getValue();
         if (souvenir != null) {
             switch (textType) {
                 case TITLE:
@@ -76,7 +83,7 @@ public class DetailViewModel extends ViewModel {
 
     public boolean deletePhoto(String photoName) {
         Timber.i("Delete photo triggered! Photo name was: %s", photoName);
-        Souvenir souvenir = mCurrentSouvenir.getValue();
+        SouvenirDb souvenir = mCurrentSouvenir.getValue();
         if (souvenir != null && souvenir.getPhotos().size() > 0) {
             boolean deleteResult = souvenir.getPhotos().remove(photoName);
             if (deleteResult) {
@@ -92,7 +99,7 @@ public class DetailViewModel extends ViewModel {
     public boolean addPhoto() {
         File currentFile = mPhotoFile.getValue();
         if (currentFile != null) {
-            Souvenir souvenir = mCurrentSouvenir.getValue();
+            SouvenirDb souvenir = mCurrentSouvenir.getValue();
             if (souvenir != null && souvenir.getPhotos().size() > 0) {
                 boolean addResult = souvenir.getPhotos().add(currentFile.getName());
                 if (addResult) {

@@ -8,19 +8,19 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import me.worric.souvenarius.R;
-import me.worric.souvenarius.data.model.Souvenir;
+import me.worric.souvenarius.data.db.model.SouvenirDb;
 import me.worric.souvenarius.databinding.ItemDetailPhotoBinding;
 
 public class SouvenirPhotoAdapter extends RecyclerView.Adapter<SouvenirPhotoAdapter.SouvenirPhotoViewholder> {
 
     private final DetailFragment.PhotoClickListener mListener;
-    private Souvenir mSouvenir;
+    private SouvenirDb mSouvenir;
 
     SouvenirPhotoAdapter(DetailFragment.PhotoClickListener listener) {
         mListener = listener;
     }
 
-    public void swapPhotos(final Souvenir newSouvenir, RecyclerView rvSouvenirPhotoList) {
+    public void swapPhotos(final SouvenirDb newSouvenir, RecyclerView rvSouvenirPhotoList) {
         // TODO: disabled
         DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
             @Override

@@ -3,12 +3,25 @@ package me.worric.souvenarius.data.db.model;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
 
+import com.google.firebase.database.Exclude;
+
+import org.threeten.bp.Instant;
+import org.threeten.bp.ZoneId;
+import org.threeten.bp.ZonedDateTime;
+import org.threeten.bp.format.DateTimeFormatter;
+import org.threeten.bp.format.FormatStyle;
+
+import java.util.ArrayList;
 import java.util.List;
+
+import me.worric.souvenarius.ui.detail.DetailFragment;
 
 @Entity(tableName = "souvenirs")
 public class SouvenirDb {
 
+    @Exclude
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     private long mId;
@@ -71,12 +84,46 @@ public class SouvenirDb {
         mTitle = title;
     }
 
+    @NonNull
     public List<String> getPhotos() {
+        if (mPhotos == null) {
+            mPhotos = new ArrayList<>();
+        }
         return mPhotos;
     }
 
     public void setPhotos(List<String> photos) {
         mPhotos = photos;
+    }
+
+    public void addPhoto(String image) {
+        getPhotos().add(image);
+    }
+
+    @Exclude
+    public String getFormattedTimestamp() {
+        return ZonedDateTime
+                .ofInstant(Instant.ofEpochMilli(getTimestamp()), ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM));
+    }
+
+    @Exclude
+    public String getFirstPhoto() {
+        return (getPhotos().size() > 0 ? getPhotos().get(0) : null );
+    }
+
+    @Exclude
+    public String getValueFromTextType(@NonNull DetailFragment.TextType textType) {
+        switch (textType) {
+            case STORY:
+                return getStory();
+            case PLACE:
+                return getPlace();
+            case TITLE:
+                return getTitle();
+            default:
+                throw new IllegalArgumentException("Unknown text type: " + textType.name());
+        }
     }
 
 }
