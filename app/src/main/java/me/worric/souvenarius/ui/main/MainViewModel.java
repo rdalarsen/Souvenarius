@@ -13,6 +13,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.db.model.SouvenirDb;
 import me.worric.souvenarius.data.model.Souvenir;
 import me.worric.souvenarius.data.model.SouvenirResponse;
@@ -22,12 +23,33 @@ import timber.log.Timber;
 public class MainViewModel extends ViewModel {
 
     private final SouvenirRepository mSouvenirRepository;
-    private final MutableLiveData<MainFragment.SortStyle> mSortStyle;
+    private final MutableLiveData<SortStyle> mSortStyle;
 
     @Inject
     public MainViewModel(SouvenirRepository souvenirRepository) {
         mSouvenirRepository = souvenirRepository;
         mSortStyle = new MutableLiveData<>();
+    }
+
+    public LiveData<List<Souvenir>> getNewSouvenirs() {
+        return Transformations.map(mSouvenirRepository.getSortedSouvenirs(), result -> {
+            if (result.status.equals(Result.Status.SUCCESS)) {
+                List<Souvenir> resultList = new ArrayList<>();
+                for (SouvenirDb souvenirDb : result.response) {
+                    Souvenir souvenir = new Souvenir();
+                    souvenir.setId(souvenirDb.getId());
+                    souvenir.setPlace(souvenirDb.getPlace());
+                    souvenir.setStory(souvenirDb.getStory());
+                    souvenir.setTitle(souvenirDb.getTitle());
+                    souvenir.setTimestamp(souvenirDb.getTimestamp());
+                    souvenir.setPhotos(souvenirDb.getPhotos());
+                    resultList.add(souvenir);
+                }
+                return resultList;
+            } else {
+                return null;
+            }
+        });
     }
 
     public LiveData<List<Souvenir>> getSouvenirs() {
@@ -46,9 +68,9 @@ public class MainViewModel extends ViewModel {
 
     public LiveData<List<Souvenir>> getSortedSouvenirs() {
         return Transformations.switchMap(mSortStyle, sortStyle -> {
-            if (sortStyle.equals(MainFragment.SortStyle.DATE_DESC)) {
+            if (sortStyle.equals(SortStyle.DATE_DESC)) {
                 return sortSouvenirs(dateComparator, false);
-            } else if (sortStyle.equals(MainFragment.SortStyle.DATE_ASC)) {
+            } else if (sortStyle.equals(SortStyle.DATE_ASC)) {
                 return sortSouvenirs(dateComparator, true);
             }
             throw new IllegalArgumentException("Unknown sort style: " + sortStyle.name());
@@ -72,21 +94,21 @@ public class MainViewModel extends ViewModel {
     }
 
     public void toggleSortStyle() {
-        MainFragment.SortStyle sortStyle = mSortStyle.getValue();
+        SortStyle sortStyle = mSortStyle.getValue();
         if (sortStyle == null) throw new IllegalStateException("SortStyle is null! Shouldn't happen!");
 
-        if (sortStyle.equals(MainFragment.SortStyle.DATE_DESC)) {
-            mSortStyle.setValue(MainFragment.SortStyle.DATE_ASC);
+        if (sortStyle.equals(SortStyle.DATE_DESC)) {
+            mSortStyle.setValue(SortStyle.DATE_ASC);
         } else {
-            mSortStyle.setValue(MainFragment.SortStyle.DATE_DESC);
+            mSortStyle.setValue(SortStyle.DATE_DESC);
         }
     }
 
-    public void setSortStyle(MainFragment.SortStyle sortStyle) {
+    public void setSortStyle(SortStyle sortStyle) {
         mSortStyle.setValue(sortStyle);
     }
 
-    public LiveData<MainFragment.SortStyle> getSortStyle() {
+    public LiveData<SortStyle> getSortStyle() {
         return mSortStyle;
     }
 
@@ -102,9 +124,9 @@ public class MainViewModel extends ViewModel {
         SouvenirDb db = new SouvenirDb();
         db.setPlace("The testPlace");
         db.setStory("The testStory");
-        db.setTimestamp(1531381740282L);
+        db.setTimestamp(1530381740282L);
         db.setTitle("The testTitle");
-        db.setPhotos(Arrays.asList("fsdjfalæskdjf.jpg"));
+        db.setPhotos(Arrays.asList("fsdjfalæskdjf.jpg", "sfhsldfhgas.jpg"));
         mSouvenirRepository.addNewSouvenir(db);
     }
 }

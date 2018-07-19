@@ -2,6 +2,8 @@ package me.worric.souvenarius.ui.main;
 
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -18,9 +20,11 @@ import android.widget.Toast;
 
 import javax.inject.Inject;
 
+import dagger.android.support.AndroidSupportInjection;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.model.Souvenir;
 import me.worric.souvenarius.databinding.FragmentMainBinding;
+import timber.log.Timber;
 
 public class MainFragment extends Fragment {
 
@@ -29,11 +33,19 @@ public class MainFragment extends Fragment {
     private static final String KEY_SORT_STYLE = "key_sort_style";
     @Inject
     protected ViewModelProvider.Factory mFactory;
+    @Inject
+    protected SharedPreferences mSharedPreferences;
     private FragmentMainBinding mBinding;
     private MainViewModel mViewModel;
     private SouvenirAdapter mAdapter;
     private ListStyle mListStyle;
     private SortStyle mSortStyle;
+
+    @Override
+    public void onAttach(Context context) {
+        AndroidSupportInjection.inject(this);
+        super.onAttach(context);
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,7 +78,7 @@ public class MainFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProviders.of(getActivity(), mFactory).get(MainViewModel.class);
-        mViewModel.getSortedSouvenirs().observe(this, strings -> mAdapter.swapLists(strings));
+        mViewModel.getNewSouvenirs().observe(this, souvenirs -> mAdapter.swapLists(souvenirs));
         mViewModel.getSortStyle().observe(this, sortStyle -> mSortStyle = sortStyle);
         mViewModel.setSortStyle(mSortStyle);
         mBinding.setViewmodel(mViewModel);
@@ -144,7 +156,17 @@ public class MainFragment extends Fragment {
 
         @Override
         public void onToggleSortClicked(View view) {
-            mViewModel.toggleSortStyle();
+            SortStyle sortStyle = getSortStyleFromPrefs();
+            Timber.i("SortStyle is: %s", sortStyle.toString());
+            if (sortStyle.equals(SortStyle.DATE_DESC)) {
+                mSharedPreferences.edit()
+                        .putString("sortStyle", SortStyle.DATE_ASC.toString())
+                        .apply();
+            } else {
+                mSharedPreferences.edit()
+                        .putString("sortStyle", SortStyle.DATE_DESC.toString())
+                        .apply();
+            }
         }
 
         @Override
@@ -152,6 +174,12 @@ public class MainFragment extends Fragment {
             mViewModel.addNewSouvenir();
         }
     };
+
+    @NonNull
+    private SortStyle getSortStyleFromPrefs() {
+        String value = mSharedPreferences.getString("sortStyle", SortStyle.DATE_DESC.toString());
+        return SortStyle.valueOf(value);
+    }
 
     public interface ClickHandler {
         void onToggleLayoutClicked(View view);
@@ -171,13 +199,6 @@ public class MainFragment extends Fragment {
     public enum ListStyle {
         LIST,
         STAGGERED
-    }
-
-    public enum SortStyle {
-        LOCATION_ASC,
-        LOCATION_DESC,
-        DATE_ASC,
-        DATE_DESC
     }
 
 }

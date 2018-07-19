@@ -21,6 +21,10 @@ public abstract class MainActivityModule {
 
     @ActivityScope
     @ContributesAndroidInjector
+    abstract MainFragment contributeMainFragment();
+
+    @ActivityScope
+    @ContributesAndroidInjector
     abstract AddFragment contributeAddFragment();
 
     @ActivityScope

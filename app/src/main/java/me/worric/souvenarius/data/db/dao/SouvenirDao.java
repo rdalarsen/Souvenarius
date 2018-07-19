@@ -5,6 +5,7 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
+import android.arch.persistence.room.Update;
 
 import java.util.List;
 
@@ -16,10 +17,22 @@ public interface SouvenirDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(List<SouvenirDb> souvenirs);
 
-    @Insert(onConflict = OnConflictStrategy.FAIL)
-    void insertAll(SouvenirDb... souvenirDbs);
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    long[] insert(SouvenirDb... souvenirDbs);
 
     @Query("SELECT * FROM souvenirs ORDER BY timestamp ASC")
     LiveData<List<SouvenirDb>> findAllOrderByTimeAsc();
+
+    @Query("SELECT * FROM souvenirs ORDER BY timestamp ASC")
+    List<SouvenirDb> findAllOrderByTimeAscSync();
+
+    @Query("SELECT * FROM souvenirs ORDER BY timestamp DESC")
+    LiveData<List<SouvenirDb>> findAllOrderByTimeDesc();
+
+    @Query("DELETE FROM souvenirs")
+    int removeDatabaseContents();
+
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    int updateOne(SouvenirDb souvenirDb);
 
 }

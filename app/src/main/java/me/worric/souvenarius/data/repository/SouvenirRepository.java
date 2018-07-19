@@ -3,10 +3,9 @@ package me.worric.souvenarius.data.repository;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.Transformations;
-import android.os.AsyncTask;
+import android.content.SharedPreferences;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -15,45 +14,89 @@ import javax.inject.Singleton;
 
 import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.db.AppDatabase;
-import me.worric.souvenarius.data.db.dao.SouvenirDao;
 import me.worric.souvenarius.data.db.model.SouvenirDb;
+import me.worric.souvenarius.data.db.tasks.SouvenirInsertTask;
 import me.worric.souvenarius.data.model.Souvenir;
 import me.worric.souvenarius.data.model.SouvenirResponse;
+import me.worric.souvenarius.ui.main.SortStyle;
 import timber.log.Timber;
 
 @Singleton
 public class SouvenirRepository {
 
+    public static final String PREFS_KEY_SORT_STYLE = "sortStyle";
     private final FirebaseHandler mFirebaseHandler;
     private final StorageHandler mStorageHandler;
     private final AppDatabase mAppDatabase;
-    private final MediatorLiveData<Souvenir> mRelayer;
+    private final LiveData<List<SouvenirDb>> mSouvenirsOrderByTimeAsc;
+    private final LiveData<List<SouvenirDb>> mSouvenirsOrderByTimeDesc;
+    private final MediatorLiveData<Result<List<SouvenirDb>>> mSouvenirs;
+    /* see: https://stackoverflow.com/questions/2542938/sharedpreferences-onsharedpreferencechangelistener-not-being-called-consistently */
+    private final SharedPreferences.OnSharedPreferenceChangeListener mPreferenceChangeListener;
 
     @Inject
-    public SouvenirRepository(FirebaseHandler firebaseHandler, StorageHandler storageHandler,
-                              AppDatabase appDatabase) {
+    public SouvenirRepository(FirebaseHandler firebaseHandler,
+                              StorageHandler storageHandler,
+                              AppDatabase appDatabase,
+                              SharedPreferences prefs) {
         mFirebaseHandler = firebaseHandler;
         mStorageHandler = storageHandler;
         mAppDatabase = appDatabase;
-        mRelayer = new MediatorLiveData<>();
-        initTestData();
+        mSouvenirsOrderByTimeAsc = mAppDatabase.souvenirDao().findAllOrderByTimeAsc();
+        mSouvenirsOrderByTimeDesc = mAppDatabase.souvenirDao().findAllOrderByTimeDesc();
+        mSouvenirs = initSouvenirs(prefs);
+        mPreferenceChangeListener = initPrefListener(prefs);
     }
 
-    public LiveData<List<Souvenir>> getSouvenirsOrderedByTimeAsc() {
-        return Transformations.map(mAppDatabase.souvenirDao().findAllOrderByTimeAsc(), souvenirResults -> {
-            if (souvenirResults.isEmpty()) return Collections.emptyList();
+    private MediatorLiveData<Result<List<SouvenirDb>>> initSouvenirs(SharedPreferences prefs) {
+        MediatorLiveData<Result<List<SouvenirDb>>> result = new MediatorLiveData<>();
+        SortStyle initialSortStyle = getSortStyleFromPrefs(prefs, PREFS_KEY_SORT_STYLE);
+        setSouvenirSource(initialSortStyle, result);
+        return result;
+    }
 
-            List<Souvenir> resultList = new ArrayList<>(souvenirResults.size());
-            for (SouvenirDb souvenirResult : souvenirResults) {
-                Souvenir souvenir = new Souvenir();
-                souvenir.setTitle(souvenirResult.getTitle());
-                souvenir.setStory(souvenirResult.getStory());
-                souvenir.setPlace(souvenirResult.getPlace());
-                souvenir.setId(souvenirResult.getId());
-                resultList.add(souvenir);
-            }
-            return resultList;
+    private void setSouvenirSource(SortStyle sortStyle, MediatorLiveData<Result<List<SouvenirDb>>> result) {
+        switch (sortStyle) {
+            case DATE_DESC:
+                result.removeSource(mSouvenirsOrderByTimeAsc);
+                result.addSource(mSouvenirsOrderByTimeDesc, souvenirDbs -> {
+                    result.setValue(Result.success(souvenirDbs));
+                });
+                break;
+            case DATE_ASC:
+                result.removeSource(mSouvenirsOrderByTimeDesc);
+                result.addSource(mSouvenirsOrderByTimeAsc, souvenirDbs ->
+                        result.setValue(Result.success(souvenirDbs)));
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown SortStyle: " + sortStyle.toString());
+        }
+    }
+
+    private SharedPreferences.OnSharedPreferenceChangeListener initPrefListener(SharedPreferences prefs) {
+        SharedPreferences.OnSharedPreferenceChangeListener listener = (sharedPreferences, key) -> {
+            SortStyle sortStyle = getSortStyleFromPrefs(sharedPreferences, key);
+            Timber.i("SortStyle is now set to: %s", sortStyle.toString());
+            setSouvenirSource(sortStyle, mSouvenirs);
+        };
+        prefs.registerOnSharedPreferenceChangeListener(listener);
+        return listener;
+    }
+
+    private SortStyle getSortStyleFromPrefs(SharedPreferences sharedPreferences, String key) {
+        Timber.i("getting sortStyle from prefs. Key is: %s, and value is: %s", key, sharedPreferences.getString(key, "defValue"));
+        String value = sharedPreferences.getString(key, SortStyle.DATE_DESC.toString());
+        return SortStyle.valueOf(value);
+    }
+
+    public LiveData<Result<List<SouvenirDb>>> getSortedSouvenirs() {
+        mSouvenirs.addSource(mFirebaseHandler.getResults(), result -> {
+            String resultString = (result.status.equals(Result.Status.SUCCESS))
+                    ? result.status.toString()
+                    : Result.Status.FAILURE.toString();
+            Timber.i("The fetching was a %s", resultString);
         });
+        return mSouvenirs;
     }
 
     public LiveData<List<SouvenirResponse>> getSouvenirs() {
@@ -76,37 +119,15 @@ public class SouvenirRepository {
         mFirebaseHandler.storeSouvenir(souvenir);
     }
 
-    private MediatorLiveData<List<SouvenirDb>> mTestMediator = new MediatorLiveData<>();
-    private LiveData<List<SouvenirDb>> mSouvenirsFromDb;
-
-    private void initTestData() {
-        mSouvenirsFromDb = mAppDatabase.souvenirDao().findAllOrderByTimeAsc();
-    }
-
     public void addNewSouvenir(SouvenirDb db) {
-        mTestMediator.addSource(mSouvenirsFromDb, souvenirDbs -> {
-            mTestMediator.removeSource(mSouvenirsFromDb);
-            Timber.i("result contains stuff: %s", souvenirDbs.isEmpty());
-        });
+        DataFetchedListener listener = souvenirDbs ->
+                Timber.i("souvenirs length from SYNC db call: %d", souvenirDbs.size());
 
         new SouvenirInsertTask(mAppDatabase.souvenirDao()).execute(db);
     }
 
-    private static class SouvenirInsertTask extends AsyncTask<SouvenirDb, Void, Void> {
-
-        private SouvenirDao mDao;
-
-        public SouvenirInsertTask(SouvenirDao dao) {
-            mDao = dao;
-        }
-
-        @Override
-        protected Void doInBackground(SouvenirDb... souvenirDbs) {
-            Timber.i("The length of the arguments is: %d\ninserting data into the database...", souvenirDbs.length);
-            SouvenirDb souvenirDb = souvenirDbs[0];
-            mDao.insertAll(souvenirDb);
-            return null;
-        }
-
+    public interface DataFetchedListener {
+        void onDataFetched(List<SouvenirDb> souvenirDbs);
     }
+
 }

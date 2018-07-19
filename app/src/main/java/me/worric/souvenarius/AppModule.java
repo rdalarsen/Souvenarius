@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.persistence.room.Room;
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import javax.inject.Singleton;
 
@@ -57,6 +58,12 @@ public abstract class AppModule {
     @Singleton
     static AppDatabase provideDatabase(@AppContext Context context) {
         return Room.databaseBuilder(context, AppDatabase.class, "souvenirdb").build();
+    }
+
+    @Provides
+    @Singleton
+    static SharedPreferences provideSharedPreferences(@AppContext Context context) {
+        return context.getSharedPreferences("skod", Context.MODE_PRIVATE);
     }
 
 }
