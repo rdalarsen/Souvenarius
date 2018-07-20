@@ -30,6 +30,7 @@ import dagger.android.support.AndroidSupportInjection;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.databinding.FragmentDetailBinding;
 import me.worric.souvenarius.ui.common.FileUtils;
+import me.worric.souvenarius.ui.main.MainActivity;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_CANCELED;
@@ -106,6 +107,10 @@ public class DetailFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.action_detail_add_photo:
                 takePhoto();
+                return true;
+            case R.id.action_detail_delete_souvenir:
+                mViewModel.deleteSouvenir();
+                ((MainActivity)getActivity()).onSouvenirDeleted();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

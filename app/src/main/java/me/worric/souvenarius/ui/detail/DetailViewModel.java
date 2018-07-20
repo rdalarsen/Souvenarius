@@ -111,4 +111,11 @@ public class DetailViewModel extends ViewModel {
         mPhotoFile.setValue(photoFile);
     }
 
+    public void deleteSouvenir() {
+        SouvenirDb souvenir = mCurrentSouvenir.getValue();
+        if (souvenir != null) {
+            mRepository.deleteSouvenir(souvenir);
+        }
+    }
+
 }

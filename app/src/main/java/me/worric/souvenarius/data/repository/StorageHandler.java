@@ -7,6 +7,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -40,10 +41,25 @@ public class StorageHandler {
     }
 
     public void removeImage(@NonNull String photoName) {
+        Timber.i("attempting deletion of A SINGLE photos of the souvenir");
         mRef.child(photoName).delete().addOnCompleteListener(task -> {
-            Timber.i("The task is successful? %s", task.isSuccessful());
-            if (!task.isSuccessful()) Timber.e(task.getException(), "Task didn't execute right!");
+            Timber.i("The DELETE task is successful? %s", task.isSuccessful());
+            if (!task.isSuccessful()) Timber.e(task.getException(), "Task DELETE didn't execute right!");
         });
     }
 
+    public void removeImages(@NonNull List<String> photos) {
+        if (photos.isEmpty()) {
+            Timber.w("list of photos for the current souvenir is empty. Skipping deletion...");
+            return;
+        }
+
+        for (String photoName : photos) {
+            Timber.i("attempting deletion of all photos of the souvenir");
+            mRef.child(photoName).delete().addOnCompleteListener(task -> {
+                Timber.i("The DELETE task is successful? %s", task.isSuccessful());
+                if (!task.isSuccessful()) Timber.e(task.getException(), "Task DELETE didn't execute right!");
+            });
+        }
+    }
 }

@@ -8,4 +8,9 @@
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_launcher_background" />
 
+    <item
+        android:id="@+id/action_detail_delete_souvenir"
+        android:title="Delete this souvenir"
+        app:showAsAction="never" />
+
 </menu>

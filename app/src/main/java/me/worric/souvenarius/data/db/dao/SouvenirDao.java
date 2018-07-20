@@ -32,6 +32,9 @@ public interface SouvenirDao {
     @Query("DELETE FROM souvenirs")
     int removeDatabaseContents();
 
+    @Query("DELETE FROM souvenirs WHERE id = :id")
+    int deleteSouvenir(long id);
+
     @Update(onConflict = OnConflictStrategy.REPLACE)
     int updateOne(SouvenirDb souvenirDb);
 

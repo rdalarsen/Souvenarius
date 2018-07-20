@@ -16,6 +16,7 @@ import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.db.AppDatabase;
 import me.worric.souvenarius.data.db.model.SouvenirDb;
 import me.worric.souvenarius.data.db.tasks.NukeDbTask;
+import me.worric.souvenarius.data.db.tasks.SouvenirDeleteTask;
 import me.worric.souvenarius.data.db.tasks.SouvenirInsertAllTask;
 import me.worric.souvenarius.data.db.tasks.SouvenirInsertTask;
 import me.worric.souvenarius.data.db.tasks.SouvenirUpdateTask;
@@ -138,6 +139,7 @@ public class SouvenirRepository {
                 return;
             }
             if (photo != null) {
+                Timber.i("attempting to upload the photo...");
                 mStorageHandler.uploadImage(photo);
             } else {
                 Timber.e("The photo was null!");
@@ -162,12 +164,26 @@ public class SouvenirRepository {
         new NukeDbTask(mAppDatabase.souvenirDao()).execute();
     }
 
+    public void deleteSouvenir(SouvenirDb souvenir) {
+        DataDeletedCallback callback = numRowsAffected -> {
+            if (numRowsAffected > 0) {
+                mFirebaseHandler.deleteSouvenir(souvenir);
+                mStorageHandler.removeImages(souvenir.getPhotos());
+            }
+        };
+        new SouvenirDeleteTask(mAppDatabase.souvenirDao(), callback).execute(souvenir);
+    }
+
     public interface DataInsertCallback {
         void onDataInserted(SouvenirDb souvenirDb);
     }
 
     public interface DataUpdateCallback {
         void onDataUpdated(int numRowsAffected);
+    }
+
+    public interface DataDeletedCallback {
+        void onDataDeleted(int numRowsAffected);
     }
 
 }

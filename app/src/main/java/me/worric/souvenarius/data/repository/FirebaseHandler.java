@@ -79,14 +79,18 @@ public class FirebaseHandler {
     public void storeSouvenir(SouvenirDb souvenir, DatabaseReference.CompletionListener completionListener) {
         mRef.child(String.valueOf(souvenir.getId())).setValue(souvenir, (databaseError, databaseReference) -> {
             if (databaseError != null) Timber.i("DatabaseError: %s", databaseError.getMessage());
-            if (databaseReference != null) Timber.i("The databaseReference is: %s", databaseReference.toString());
+            Timber.i("The databaseReference is: %s", databaseReference.toString());
         });
     }
 
     public void addSouvenir(SouvenirDb db, DatabaseReference.CompletionListener listener) {
-        mRef.child(String.valueOf(db.getId())).setValue(db, (databaseError, databaseReference) -> {
-            if (databaseError != null) Timber.i("DatabaseError: %s", databaseError.getMessage());
-            if (databaseReference != null) Timber.i("The databaseReference is: %s", databaseReference.toString());
+        mRef.child(String.valueOf(db.getId())).setValue(db, listener);
+    }
+
+    public void deleteSouvenir(SouvenirDb souvenir) {
+        mRef.child(String.valueOf(souvenir.getId())).removeValue((databaseError, databaseReference) -> {
+            Timber.i("The databaseReference is: %s", databaseReference.toString());
+            if (databaseError != null) Timber.e(databaseError.toException(), "DatabaseError: %s", databaseError.getMessage());
         });
     }
 

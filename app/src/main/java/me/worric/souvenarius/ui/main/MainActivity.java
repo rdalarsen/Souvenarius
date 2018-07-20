@@ -129,9 +129,12 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         mBinding.appbarLayout.setExpanded(true);
     }
 
+    public void onSouvenirDeleted() {
+        getSupportFragmentManager().popBackStack();
+    }
+
     @Override
     public AndroidInjector<Fragment> supportFragmentInjector() {
         return mInjector;
     }
-
 }
