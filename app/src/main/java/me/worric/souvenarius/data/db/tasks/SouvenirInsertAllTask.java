@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 
 import java.util.Arrays;
 
+import me.worric.souvenarius.data.db.AppDatabase;
 import me.worric.souvenarius.data.db.dao.SouvenirDao;
 import me.worric.souvenarius.data.db.model.SouvenirDb;
 import timber.log.Timber;
@@ -11,16 +12,27 @@ import timber.log.Timber;
 
 public final class SouvenirInsertAllTask extends AsyncTask<SouvenirDb[],Void,Long[]> {
 
+    private AppDatabase mAppDatabase;
     private SouvenirDao mDao;
 
-    public SouvenirInsertAllTask(SouvenirDao dao) {
-        mDao = dao;
+    public SouvenirInsertAllTask(AppDatabase appDatabase) {
+        mAppDatabase = appDatabase;
+        mDao = appDatabase.souvenirDao();
     }
 
     @Override
     protected Long[] doInBackground(SouvenirDb[]... souvenirs) {
-        Timber.i("Attempting to INSERT all elements in array with length: %d", souvenirs[0].length);
-        return mDao.insertAll(souvenirs[0]);
+        Timber.i("Attempting to DELETE all content in the db and INSERT all elements in array with length: %d", souvenirs[0].length);
+        Long[] ids;
+        try {
+            mAppDatabase.beginTransaction();
+            mDao.removeDatabaseContents();
+            ids = mDao.insertAll(souvenirs[0]);
+            mAppDatabase.setTransactionSuccessful();
+        } finally {
+            mAppDatabase.endTransaction();
+        }
+        return ids != null ? ids : new Long[]{};
     }
 
     @Override

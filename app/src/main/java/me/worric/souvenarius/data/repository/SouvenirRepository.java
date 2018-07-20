@@ -57,7 +57,7 @@ public class SouvenirRepository {
             Timber.d("Firebase database update triggered");
             if (result.status.equals(Result.Status.SUCCESS)) {
                 SouvenirDb[] converted = result.response.toArray(new SouvenirDb[]{});
-                new SouvenirInsertAllTask(mAppDatabase.souvenirDao()).execute(converted);
+                new SouvenirInsertAllTask(mAppDatabase).execute(converted);
             }
         });
     }
