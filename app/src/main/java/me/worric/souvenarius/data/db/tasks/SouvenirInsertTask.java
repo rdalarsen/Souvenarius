@@ -21,7 +21,7 @@ public final class SouvenirInsertTask extends AsyncTask<SouvenirDb, Void, Souven
 
     @Override
     protected SouvenirDb doInBackground(SouvenirDb... souvenirDbs) {
-        Timber.i("The length of the arguments is: %d\ninserting data into the database...", souvenirDbs.length);
+        Timber.i("The length of the arguments is: %d\nAttemting to INSERT data into the database...", souvenirDbs.length);
         SouvenirDb souvenirDb = souvenirDbs[0];
         long[] ids = mDao.insert(souvenirDb);
         if (ids[0] != -1) {

@@ -147,7 +147,8 @@ public class DetailFragment extends Fragment {
     }
 
     private PhotoClickListener mPhotoClickListener = photoName -> {
-        if (mViewModel.deletePhoto(photoName)) {
+        File thePhoto = FileUtils.getLocalFileForPhotoName(photoName, getContext());
+        if (mViewModel.deletePhoto(thePhoto)) {
             Timber.i("Successfully deleted");
         } else {
             Timber.i("Did not get deleted successfully!");

@@ -2,7 +2,6 @@ package me.worric.souvenarius.data.repository;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Transformations;
 import android.content.SharedPreferences;
 
@@ -145,11 +144,31 @@ public class SouvenirRepository {
         return mAppDatabase.souvenirDao().findOneById(souvenirId);
     }
 
-    public void updateSouvenir(SouvenirDb souvenir) {
-        DataUpdateCallback callback = numRowsAffected -> {
-            if (numRowsAffected > 0) Timber.i("data was updated just fine!");
+    public void updateSouvenir(SouvenirDb souvenir, File photo) {
+        DatabaseReference.CompletionListener completionListener = (databaseError, databaseReference) -> {
+            if (databaseError != null) {
+                Timber.e(databaseError.toException(),"There was a problem uploading the data to the database");
+                return;
+            }
+            if (photo != null) {
+                mStorageHandler.uploadImage(photo);
+            } else {
+                Timber.e("The photo was null!");
+            }
         };
+
+        DataUpdateCallback callback = numRowsAffected -> {
+            if (numRowsAffected > 0) {
+                Timber.i("data was updated just fine!");
+                mFirebaseHandler.addSouvenir(souvenir, completionListener);
+            }
+        };
+
         new SouvenirUpdateTask(mAppDatabase.souvenirDao(), callback).execute(souvenir);
+    }
+
+    public void deleteFileFromStorage(String photoName) {
+        mStorageHandler.removeImage(photoName);
     }
 
     public interface DataInsertCallback {
@@ -158,25 +177,6 @@ public class SouvenirRepository {
 
     public interface DataUpdateCallback {
         void onDataUpdated(int numRowsAffected);
-    }
-
-    private LiveData<SouvenirDb> mGetSouvenirDbFromResults =
-            Transformations.switchMap(getInsertId(), id ->
-                    Transformations.map(getSortedSouvenirs(), result -> {
-                        if (result.status.equals(Result.Status.SUCCESS)) {
-                            for (SouvenirDb souvenirDb : result.response) {
-                                if (souvenirDb.getId() == id) {
-                                    return souvenirDb;
-                                }
-                            }
-                        }
-                        return null;
-                    }));
-
-    private MutableLiveData<Long> mInsertedId = new MutableLiveData<>();
-
-    private LiveData<Long> getInsertId() {
-        return mInsertedId;
     }
 
 }

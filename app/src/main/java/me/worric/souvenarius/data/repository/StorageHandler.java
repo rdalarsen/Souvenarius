@@ -39,4 +39,11 @@ public class StorageHandler {
         });
     }
 
+    public void removeImage(@NonNull String photoName) {
+        mRef.child(photoName).delete().addOnCompleteListener(task -> {
+            Timber.i("The task is successful? %s", task.isSuccessful());
+            if (!task.isSuccessful()) Timber.e(task.getException(), "Task didn't execute right!");
+        });
+    }
+
 }

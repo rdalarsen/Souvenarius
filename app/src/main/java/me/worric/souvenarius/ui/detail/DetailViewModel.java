@@ -61,19 +61,24 @@ public class DetailViewModel extends ViewModel {
                     souvenir.setStory(editable.toString());
                     break;
             }
-            mRepository.updateSouvenir(souvenir);
+            mRepository.updateSouvenir(souvenir, null);
         }
     }
 
-    public boolean deletePhoto(String photoName) {
-        Timber.i("Delete photo triggered! Photo name was: %s", photoName);
+    public boolean deletePhoto(File photoFile) {
+        Timber.i("Delete photo triggered! Photo name was: %s", photoFile.getName());
         SouvenirDb souvenir = mCurrentSouvenir.getValue();
-        if (souvenir != null && souvenir.getPhotos().size() > 0) {
-            boolean deleteResult = souvenir.getPhotos().remove(photoName);
+        if (souvenir != null) {
+            boolean deleteResult = souvenir.getPhotos().remove(photoFile.getName());
             if (deleteResult) {
-                mCurrentSouvenir.setValue(souvenir);
-                // TODO: update in repo as well
-                //mRepository.updateSouvenir(souvenir);
+                mRepository.updateSouvenir(souvenir, null);
+                mRepository.deleteFileFromStorage(photoFile.getName());
+                if (photoFile.exists()) {
+                    Timber.d("photofile exists, deleting...");
+                    photoFile.delete();
+                } else {
+                    Timber.e("PhotoFile did NOT exist; skip delete");
+                }
             }
             return deleteResult;
         }
@@ -91,15 +96,13 @@ public class DetailViewModel extends ViewModel {
 
     public boolean addPhoto() {
         File currentFile = mPhotoFile.getValue();
-        if (currentFile != null) {
-            SouvenirDb souvenir = mCurrentSouvenir.getValue();
-            if (souvenir != null && souvenir.getPhotos().size() > 0) {
-                boolean addResult = souvenir.getPhotos().add(currentFile.getName());
-                if (addResult) {
-                    mRepository.updateSouvenir(souvenir);
-                }
-                return addResult;
+        SouvenirDb souvenir = mCurrentSouvenir.getValue();
+        if (currentFile != null && souvenir != null) {
+            boolean addResult = souvenir.getPhotos().add(currentFile.getName());
+            if (addResult) {
+                mRepository.updateSouvenir(souvenir, currentFile);
             }
+            return addResult;
         }
         return false;
     }
