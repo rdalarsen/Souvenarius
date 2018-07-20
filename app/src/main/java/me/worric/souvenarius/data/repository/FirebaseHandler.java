@@ -33,7 +33,7 @@ public class FirebaseHandler {
     }
 
     public void fetchSouvenirs() {
-        Timber.i("Fetching souvenirs from Firebase...");
+        Timber.d("Fetching souvenirs from Firebase...");
         mRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -71,8 +71,8 @@ public class FirebaseHandler {
     public LiveData<Result<List<SouvenirDb>>> getResults() {
         if (mResult == null) {
             mResult = new MutableLiveData<>();
+            fetchSouvenirs();
         }
-        fetchSouvenirs();
         return mResult;
     }
 

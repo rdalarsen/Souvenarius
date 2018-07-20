@@ -48,17 +48,22 @@ public class SouvenirRepository {
         mSouvenirsOrderByTimeDesc = mAppDatabase.souvenirDao().findAllOrderByTimeDesc();
         mSouvenirs = initSouvenirs(prefs);
         mPreferenceChangeListener = initPrefListener(prefs);
-        fetchNewSouvenirs();
+        //fetchNewSouvenirs();
+        subscribeToRemoteDatabaseUpdates();
     }
 
-    public void fetchNewSouvenirs() {
-        mSouvenirs.addSource(mFirebaseHandler.getResults(), result -> {
-            mSouvenirs.removeSource(mFirebaseHandler.getResults());
+    private void subscribeToRemoteDatabaseUpdates() {
+        mFirebaseHandler.getResults().observeForever(result -> {
+            Timber.d("Firebase database update triggered");
             if (result.status.equals(Result.Status.SUCCESS)) {
                 SouvenirDb[] converted = result.response.toArray(new SouvenirDb[]{});
                 new SouvenirInsertAllTask(mAppDatabase.souvenirDao()).execute(converted);
             }
         });
+    }
+
+    public void fetchNewSouvenirs() {
+        mFirebaseHandler.fetchSouvenirs();
     }
 
     private MediatorLiveData<Result<List<SouvenirDb>>> initSouvenirs(SharedPreferences prefs) {
