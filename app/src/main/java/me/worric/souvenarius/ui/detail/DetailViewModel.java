@@ -80,6 +80,15 @@ public class DetailViewModel extends ViewModel {
         return false;
     }
 
+    public boolean clearPhoto() {
+        File photoFile = mPhotoFile.getValue();
+        if (photoFile != null && photoFile.exists()) {
+            setCurrentPhotoFile(null);
+            return photoFile.delete();
+        }
+        return false;
+    }
+
     public boolean addPhoto() {
         File currentFile = mPhotoFile.getValue();
         if (currentFile != null) {
@@ -87,8 +96,6 @@ public class DetailViewModel extends ViewModel {
             if (souvenir != null && souvenir.getPhotos().size() > 0) {
                 boolean addResult = souvenir.getPhotos().add(currentFile.getName());
                 if (addResult) {
-//                    mCurrentSouvenir.setValue(souvenir);
-                    // TODO: update in repo as well
                     mRepository.updateSouvenir(souvenir);
                 }
                 return addResult;

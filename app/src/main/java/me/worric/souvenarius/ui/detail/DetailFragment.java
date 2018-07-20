@@ -32,6 +32,7 @@ import me.worric.souvenarius.databinding.FragmentDetailBinding;
 import me.worric.souvenarius.ui.common.FileUtils;
 import timber.log.Timber;
 
+import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
 public class DetailFragment extends Fragment {
@@ -133,11 +134,14 @@ public class DetailFragment extends Fragment {
                 if (mViewModel.addPhoto()) {
                     Toast.makeText(getContext(), "Photo successfully added!", Toast.LENGTH_SHORT).show();
                 } else {
+                    mViewModel.clearPhoto();
                     Toast.makeText(getContext(), "Photo wasn't added for some reason!", Toast.LENGTH_SHORT).show();
                 }
-            } else {
+            } else if (resultCode == RESULT_CANCELED) {
                 mViewModel.setCurrentPhotoFile(null);
                 Toast.makeText(getContext(), "Cancelled taking a photo", Toast.LENGTH_SHORT).show();
+            } else {
+                throw new IllegalArgumentException("Unknown result code: " + resultCode);
             }
         }
     }
