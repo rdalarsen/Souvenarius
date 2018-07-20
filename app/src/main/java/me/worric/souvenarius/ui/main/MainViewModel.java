@@ -132,4 +132,9 @@ public class MainViewModel extends ViewModel {
         db.setPhotos(Arrays.asList("fsdjfalæskdjf.jpg", "sfhsldfhgas.jpg"));
         mSouvenirRepository.addNewSouvenir(db, null);
     }
+
+    public void nukeDb() {
+        mSouvenirRepository.nukeDb();
+    }
+
 }

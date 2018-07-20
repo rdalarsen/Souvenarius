@@ -17,6 +17,7 @@ import javax.inject.Singleton;
 import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.db.AppDatabase;
 import me.worric.souvenarius.data.db.model.SouvenirDb;
+import me.worric.souvenarius.data.db.tasks.NukeDbTask;
 import me.worric.souvenarius.data.db.tasks.SouvenirInsertTask;
 import me.worric.souvenarius.data.db.tasks.SouvenirUpdateTask;
 import me.worric.souvenarius.ui.main.SortStyle;
@@ -169,6 +170,10 @@ public class SouvenirRepository {
 
     public void deleteFileFromStorage(String photoName) {
         mStorageHandler.removeImage(photoName);
+    }
+
+    public void nukeDb() {
+        new NukeDbTask(mAppDatabase.souvenirDao()).execute();
     }
 
     public interface DataInsertCallback {

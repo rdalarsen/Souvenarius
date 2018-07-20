@@ -14,6 +14,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -51,6 +54,7 @@ public class MainFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         restoreValues(savedInstanceState);
     }
 
@@ -123,6 +127,22 @@ public class MainFragment extends Fragment {
         super.onSaveInstanceState(outState);
         outState.putSerializable(KEY_LIST_STYLE, mListStyle);
         outState.putSerializable(KEY_SORT_STYLE, mSortStyle);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.main_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_main_nuke_db:
+                mViewModel.nukeDb();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private final ItemClickListener mItemClickListener = souvenir -> {
