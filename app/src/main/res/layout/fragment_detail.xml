@@ -8,7 +8,7 @@
             type="me.worric.souvenarius.ui.detail.DetailViewModel" />
         <variable
             name="clickHandler"
-            type="me.worric.souvenarius.ui.detail.DetailFragment.OnClickEdit" />
+            type="me.worric.souvenarius.ui.detail.DetailFragment.OnEditClickedListener" />
         <variable
             name="currentSouvenir"
             type="me.worric.souvenarius.data.db.model.SouvenirDb" />

@@ -69,45 +69,20 @@ public class DetailFragment extends Fragment {
         long souvenirId = getArguments().getLong(KEY_SOUVENIR_ID);
         mViewModel = ViewModelProviders.of(this, mFactory).get(DetailViewModel.class);
         mViewModel.setSouvenirId(souvenirId);
-
-        mBinding.setLifecycleOwner(this);
-        mBinding.setViewmodel(mViewModel);
-        mBinding.setClickHandler(v -> {
-            TextType textType;
-            int viewId = v.getId();
-            if (viewId == R.id.tv_detail_title) {
-                textType = TextType.TITLE;
-            } else if (viewId == R.id.tv_detail_place) {
-                textType = TextType.PLACE;
-            } else if (viewId == R.id.tv_detail_story) {
-                textType = TextType.STORY;
-            } else if (viewId == R.id.tv_detail_timestamp) {
-                textType = TextType.DATE;
-            } else {
-                throw new IllegalArgumentException("Unknown view ID: " + viewId);
-            }
-            EditDialogFragment.newInstance("Edit details", textType)
-                    .show(getChildFragmentManager(), "edit_title");
-        });
-
-        setupRecyclerView();
-
         mViewModel.getCurrentSouvenir().observe(this, souvenir -> {
             mAdapter.swapPhotos(souvenir, mBinding.rvSouvenirPhotoList);
             mBinding.setCurrentSouvenir(souvenir);
         });
+        mBinding.setLifecycleOwner(this);
+        mBinding.setViewmodel(mViewModel);
+        mBinding.setClickHandler(mOnEditClickedListener);
+        setupRecyclerView();
     }
 
     private void setupRecyclerView() {
         mBinding.rvSouvenirPhotoList.setLayoutManager(new LinearLayoutManager(getContext(),
                 LinearLayoutManager.HORIZONTAL, false));
-        mAdapter = new SouvenirPhotoAdapter(photoName -> {
-            if (mViewModel.deletePhoto(photoName)) {
-                Timber.i("Successfully deleted");
-            } else {
-                Timber.i("Did not get deleted successfully!");
-            }
-        });
+        mAdapter = new SouvenirPhotoAdapter(mPhotoClickListener);
         mBinding.rvSouvenirPhotoList.setAdapter(mAdapter);
         mBinding.rvSouvenirPhotoList.setHasFixedSize(true);
         SnapHelper snapHelper = new LinearSnapHelper();
@@ -146,7 +121,7 @@ public class DetailFragment extends Fragment {
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                 startActivityForResult(intent, TAKE_PHOTO_REQUEST_CODE);
             } else {
-                Toast.makeText(getContext(), "Could allocate temporary file", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Could not allocate temporary file", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -167,12 +142,38 @@ public class DetailFragment extends Fragment {
         }
     }
 
+    private PhotoClickListener mPhotoClickListener = photoName -> {
+        if (mViewModel.deletePhoto(photoName)) {
+            Timber.i("Successfully deleted");
+        } else {
+            Timber.i("Did not get deleted successfully!");
+        }
+    };
+
     public interface PhotoClickListener {
         void onDeletePhoto(String photoName);
     }
 
-    public interface OnClickEdit {
-        void onClickEdit(View view);
+    private OnEditClickedListener mOnEditClickedListener = view -> {
+        TextType textType;
+        int viewId = view.getId();
+        if (viewId == R.id.tv_detail_title) {
+            textType = TextType.TITLE;
+        } else if (viewId == R.id.tv_detail_place) {
+            textType = TextType.PLACE;
+        } else if (viewId == R.id.tv_detail_story) {
+            textType = TextType.STORY;
+        } else if (viewId == R.id.tv_detail_timestamp) {
+            textType = TextType.DATE;
+        } else {
+            throw new IllegalArgumentException("Unknown view ID: " + viewId);
+        }
+        EditDialogFragment.newInstance("Edit details", textType)
+                .show(getChildFragmentManager(), "edit_title");
+    };
+
+    public interface OnEditClickedListener {
+        void onEditClicked(View view);
     }
 
     public static DetailFragment newInstance(long souvenirId) {
