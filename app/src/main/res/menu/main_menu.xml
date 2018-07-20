@@ -5,4 +5,10 @@
         android:title="Nuke Database"
         android:id="@+id/action_main_nuke_db"
         app:showAsAction="never" />
+
+    <item
+        android:title="Sync"
+        android:id="@+id/action_main_sync"
+        app:showAsAction="never" />
+
 </menu>

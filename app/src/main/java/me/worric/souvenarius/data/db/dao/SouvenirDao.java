@@ -15,10 +15,10 @@ import me.worric.souvenarius.data.db.model.SouvenirDb;
 public interface SouvenirDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertAll(List<SouvenirDb> souvenirs);
+    Long[] insertAll(SouvenirDb[] souvenirs);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    long[] insert(SouvenirDb... souvenirDbs);
+    Long[] insert(SouvenirDb... souvenirDbs);
 
     @Query("SELECT * FROM souvenirs ORDER BY timestamp ASC")
     LiveData<List<SouvenirDb>> findAllOrderByTimeAsc();

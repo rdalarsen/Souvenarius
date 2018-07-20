@@ -90,6 +90,9 @@ public class MainFragment extends Fragment {
             case R.id.action_main_nuke_db:
                 mViewModel.nukeDb();
                 return true;
+            case R.id.action_main_sync:
+                mViewModel.sync();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

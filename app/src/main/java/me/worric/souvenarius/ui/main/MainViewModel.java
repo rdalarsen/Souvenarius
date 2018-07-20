@@ -39,4 +39,7 @@ public class MainViewModel extends ViewModel {
         mSouvenirRepository.nukeDb();
     }
 
+    public void sync() {
+        mSouvenirRepository.fetchNewSouvenirs();
+    }
 }

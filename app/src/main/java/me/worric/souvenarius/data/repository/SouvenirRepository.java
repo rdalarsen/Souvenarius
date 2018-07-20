@@ -2,13 +2,11 @@ package me.worric.souvenarius.data.repository;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
-import android.arch.lifecycle.Transformations;
 import android.content.SharedPreferences;
 
 import com.google.firebase.database.DatabaseReference;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -18,6 +16,7 @@ import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.db.AppDatabase;
 import me.worric.souvenarius.data.db.model.SouvenirDb;
 import me.worric.souvenarius.data.db.tasks.NukeDbTask;
+import me.worric.souvenarius.data.db.tasks.SouvenirInsertAllTask;
 import me.worric.souvenarius.data.db.tasks.SouvenirInsertTask;
 import me.worric.souvenarius.data.db.tasks.SouvenirUpdateTask;
 import me.worric.souvenarius.ui.main.SortStyle;
@@ -48,6 +47,17 @@ public class SouvenirRepository {
         mSouvenirsOrderByTimeDesc = mAppDatabase.souvenirDao().findAllOrderByTimeDesc();
         mSouvenirs = initSouvenirs(prefs);
         mPreferenceChangeListener = initPrefListener(prefs);
+        fetchNewSouvenirs();
+    }
+
+    public void fetchNewSouvenirs() {
+        mSouvenirs.addSource(mFirebaseHandler.getResults(), result -> {
+            mSouvenirs.removeSource(mFirebaseHandler.getResults());
+            if (result.status.equals(Result.Status.SUCCESS)) {
+                SouvenirDb[] converted = result.response.toArray(new SouvenirDb[]{});
+                new SouvenirInsertAllTask(mAppDatabase.souvenirDao()).execute(converted);
+            }
+        });
     }
 
     private MediatorLiveData<Result<List<SouvenirDb>>> initSouvenirs(SharedPreferences prefs) {
@@ -91,31 +101,7 @@ public class SouvenirRepository {
     }
 
     public LiveData<Result<List<SouvenirDb>>> getSortedSouvenirs() {
-        fetchDataFromFirebase();
         return mSouvenirs;
-    }
-
-    private void fetchDataFromFirebase() {
-        mSouvenirs.addSource(mFirebaseHandler.getResults(), result -> {
-            String resultString = (result.status.equals(Result.Status.SUCCESS))
-                    ? result.status.toString()
-                    : Result.Status.FAILURE.toString();
-            Timber.i("The fetching was a %s", resultString);
-            if (result.status.equals(Result.Status.SUCCESS)) {
-
-            }
-        });
-    }
-
-    public LiveData<List<SouvenirDb>> getSouvenirs() {
-        return Transformations.map(mFirebaseHandler.getResults(), result -> {
-            if (Result.Status.SUCCESS.equals(result.status)) {
-                return result.response;
-            } else if (Result.Status.FAILURE.equals(result.status)) {
-                return Collections.emptyList();
-            }
-            throw new IllegalArgumentException("Unknown status code: " + result.status.name());
-        });
     }
 
     public void addNewSouvenir(SouvenirDb db, File photo) {
