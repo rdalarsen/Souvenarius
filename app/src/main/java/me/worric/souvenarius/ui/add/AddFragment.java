@@ -67,6 +67,7 @@ public class AddFragment extends Fragment {
     }
 
     private void takePhoto() {
+        //TODO: delete previous image if exists
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if ((intent.resolveActivity(getContext().getPackageManager())) != null) {
             File photo = FileUtils.createTempImageFile(getContext());

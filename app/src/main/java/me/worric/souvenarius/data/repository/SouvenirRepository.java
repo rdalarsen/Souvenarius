@@ -111,6 +111,7 @@ public class SouvenirRepository {
     }
 
     public void addNewSouvenir(SouvenirDb db, File photo) {
+        //TODO: make other DB interactions use appropriate completionlisteners
         DatabaseReference.CompletionListener completionListener = (databaseError, databaseReference) -> {
             if (databaseError != null) {
                 Timber.e(databaseError.toException(),"There was a problem uploading the data to the database");

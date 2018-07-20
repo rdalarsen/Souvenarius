@@ -8,6 +8,8 @@ import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
 import android.text.Editable;
 
+import org.threeten.bp.Instant;
+
 import java.io.File;
 import java.util.Objects;
 
@@ -15,7 +17,6 @@ import javax.inject.Inject;
 
 import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.db.model.SouvenirDb;
-import me.worric.souvenarius.data.model.Souvenir;
 import me.worric.souvenarius.data.repository.LocationRepository;
 import me.worric.souvenarius.data.repository.SouvenirRepository;
 import timber.log.Timber;
@@ -59,11 +60,12 @@ public class AddViewModel extends ViewModel {
     public boolean addSouvenir(SouvenirSaveInfo info) {
         File photo = mPhotoFile.getValue();
         if (photo != null) {
-            Souvenir souvenir = info.toSouvenir(photo);
             SouvenirDb db = new SouvenirDb();
             db.setTitle(info.getTitle());
             db.setStory(info.getStory());
             db.setPlace(info.getPlace());
+            db.setTimestamp(Instant.now().toEpochMilli());
+            db.getPhotos().add(photo.getName());
             mSouvenirRepository.addNewSouvenir(db, photo);
             return true;
         }

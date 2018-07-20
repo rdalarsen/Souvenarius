@@ -77,10 +77,7 @@ public class FirebaseHandler {
     }
 
     public void storeSouvenir(SouvenirDb souvenir, DatabaseReference.CompletionListener completionListener) {
-        mRef.child(String.valueOf(souvenir.getId())).setValue(souvenir, (databaseError, databaseReference) -> {
-            if (databaseError != null) Timber.i("DatabaseError: %s", databaseError.getMessage());
-            Timber.i("The databaseReference is: %s", databaseReference.toString());
-        });
+        mRef.child(String.valueOf(souvenir.getId())).setValue(souvenir, completionListener);
     }
 
     public void addSouvenir(SouvenirDb db, DatabaseReference.CompletionListener listener) {
