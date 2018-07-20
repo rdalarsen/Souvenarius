@@ -17,22 +17,11 @@
         android:layout_height="match_parent">
 
         <Button
-            android:id="@+id/btn_debug"
+            android:id="@+id/btn_debug_sort"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btn_debug_sort"
-            app:layout_constraintHorizontal_chainStyle="spread"
-            android:onClick="@{clickHandler::onToggleLayoutClicked}"
-            android:text="toggle viewing" />
-
-        <Button
-            android:id="@+id/btn_debug_sort"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@+id/btn_debug"
-            app:layout_constraintStart_toEndOf="@+id/btn_debug"
             app:layout_constraintEnd_toStartOf="@+id/btn_debug_add"
             android:onClick="@{clickHandler::onToggleSortClicked}"
             android:text="Toggle sort" />
@@ -41,7 +30,7 @@
             android:id="@+id/btn_debug_add"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@+id/btn_debug"
+            app:layout_constraintTop_toTopOf="@+id/btn_debug_sort"
             app:layout_constraintStart_toEndOf="@+id/btn_debug_sort"
             app:layout_constraintEnd_toEndOf="parent"
             android:onClick="@{clickHandler::onAddDataClicked}"
@@ -51,11 +40,13 @@
             android:id="@+id/rv_souvenir_list"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintTop_toBottomOf="@+id/btn_debug"
+            app:layout_constraintTop_toBottomOf="@+id/btn_debug_sort"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             android:nestedScrollingEnabled="true"
+            app:layoutManager="android.support.v7.widget.StaggeredGridLayoutManager"
+            app:spanCount="@integer/souvenir_list_span_count"
             tools:listitem="@layout/souvenir_item" />
 
         <TextView
@@ -72,14 +63,14 @@
             android:id="@+id/grp_error_messages"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="@{(viewmodel.sortedSouvenirDbs == null || viewmodel.sortedSouvenirDbs.response.size() > 0) ? View.GONE : View.VISIBLE}"
+            android:visibility="@{(viewmodel.souvenirs == null || viewmodel.souvenirs.response.size() > 0) ? View.GONE : View.VISIBLE}"
             app:constraint_referenced_ids="tv_souvenir_list_error_text" />
 
         <View
             android:id="@+id/success_failure_indicator"
             android:layout_width="200dp"
             android:layout_height="56dp"
-            android:background="@{viewmodel.sortedSouvenirDbs.status == Status.FAILURE ? @android:color/holo_green_light : @android:color/holo_red_light}"
+            android:background="@{viewmodel.souvenirs.status == Status.FAILURE ? @android:color/holo_green_light : @android:color/holo_red_light}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
