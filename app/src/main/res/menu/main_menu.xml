@@ -11,4 +11,9 @@
         android:id="@+id/action_main_sync"
         app:showAsAction="never" />
 
+    <item
+        android:title="Sign out"
+        android:id="@+id/action_main_sign_out"
+        app:showAsAction="never" />
+
 </menu>

@@ -93,6 +93,9 @@ public class MainFragment extends Fragment {
             case R.id.action_main_sync:
                 mViewModel.sync();
                 return true;
+            case R.id.action_main_sign_out:
+                ((MainActivity)getActivity()).handleSignOut();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

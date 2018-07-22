@@ -4,6 +4,8 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -23,17 +25,24 @@ public class FirebaseHandler {
 
     private static final String SOUVENIRS_REFERENCE = "souvenirs";
     private final FirebaseDatabase mDatabase;
+    private final FirebaseAuth mAuth;
     private final DatabaseReference mRef;
     private MutableLiveData<Result<List<SouvenirDb>>> mResult;
 
     @Inject
     public FirebaseHandler() {
+        mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance();
         mRef = mDatabase.getReference(SOUVENIRS_REFERENCE);
     }
 
     public void fetchSouvenirs() {
         Timber.d("Fetching souvenirs from Firebase...");
+        if (mAuth.getCurrentUser() == null) {
+            Timber.w("current user is null, not retriveing souvenirs...");
+            return;
+        }
+
         mRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -77,18 +86,34 @@ public class FirebaseHandler {
     }
 
     public void storeSouvenir(SouvenirDb souvenir, DatabaseReference.CompletionListener completionListener) {
+        if (checkAuthState() == null) {
+            Timber.w("User is null, not storing souvenir");
+            return;
+        }
         mRef.child(String.valueOf(souvenir.getId())).setValue(souvenir, completionListener);
     }
 
     public void addSouvenir(SouvenirDb db, DatabaseReference.CompletionListener listener) {
+        if (checkAuthState() == null) {
+            Timber.w("User is null, not adding souvenir");
+            return;
+        }
         mRef.child(String.valueOf(db.getId())).setValue(db, listener);
     }
 
     public void deleteSouvenir(SouvenirDb souvenir) {
+        if (checkAuthState() == null) {
+            Timber.w("User is null, not deleting souvenir");
+            return;
+        }
         mRef.child(String.valueOf(souvenir.getId())).removeValue((databaseError, databaseReference) -> {
             Timber.i("The databaseReference is: %s", databaseReference.toString());
             if (databaseError != null) Timber.e(databaseError.toException(), "DatabaseError: %s", databaseError.getMessage());
         });
+    }
+
+    private FirebaseUser checkAuthState() {
+        return mAuth.getCurrentUser();
     }
 
 }

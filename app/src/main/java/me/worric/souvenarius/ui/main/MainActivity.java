@@ -7,7 +7,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.net.ConnectivityManager;
@@ -16,12 +15,13 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Collections;
 
@@ -40,13 +40,14 @@ import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity implements HasSupportFragmentInjector {
 
-    public static final int REQUEST_CODE = 404;
+    public static final String KEY_IS_CONNECTED = "key_is_connected";
+    public static final String ACTION_CONNECTIVITY_CHANGED = "action_connectivity_changed";
     private static final String KEY_SHOW_FAB_STATUS = "key_show_fab_status";
+    private static final int RC_PERMISSION_RESULTS = 404;
     private static final int RC_SIGN_IN_ACTIVITY = 909;
+    private Boolean mIsConnected;
     @Inject
     protected ViewModelProvider.Factory mFactory;
-    @Inject
-    protected SharedPreferences mSharedPreferences;
     private MainViewModel mMainViewModel;
     private ActivityMainBinding mBinding;
     private FirebaseAuth mAuth;
@@ -80,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
             ActivityCompat.requestPermissions(this, new String[]{
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                     Manifest.permission.ACCESS_FINE_LOCATION
-            }, REQUEST_CODE);
+            }, RC_PERMISSION_RESULTS);
         }
     }
 
@@ -98,13 +99,34 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
             shouldShowFab = savedInstanceState.getBoolean(KEY_SHOW_FAB_STATUS);
         }
         mBinding.setShouldShowFab(shouldShowFab);
+
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_IS_CONNECTED)) {
+            mIsConnected = savedInstanceState.getBoolean(KEY_IS_CONNECTED);
+        }
     }
 
     private void initFragment(Bundle savedInstanceState) {
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, MainFragment.newInstance(), "main")
-                    .commit();
+        if (savedInstanceState != null) return;
+
+        Fragment fragmentToAdd;
+        String tag;
+        if (mAuth.getCurrentUser() == null) {
+            fragmentToAdd = SignInFragment.newInstance();
+            tag = "signin";
+        } else {
+            fragmentToAdd = MainFragment.newInstance();
+            tag = "main";
+        }
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.fragment_container, fragmentToAdd, tag)
+                .commit();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (mAuth.getCurrentUser() == null) {
+            // alert other components of the app that they can / cannot use signed-in services
         }
     }
 
@@ -113,27 +135,17 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         super.onResume();
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         registerReceiver(mConnectionStateReceiver, filter);
-        mAuth.addAuthStateListener(mAuthStateListener);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mAuth.removeAuthStateListener(mAuthStateListener);
         unregisterReceiver(mConnectionStateReceiver);
-    }
-
-    private void updateUi(FirebaseUser currentUser) {
-        if (currentUser == null) {
-            Timber.i("current user is NULL");
-        } else {
-            Timber.i("current user NOT NULL; username is: %s", currentUser.getDisplayName());
-        }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_CODE) {
+        if (requestCode == RC_PERMISSION_RESULTS) {
             Timber.i("grantResults length: %d.", grantResults.length);
             Timber.i("Permission: %s was %s. Permission %s was %s",
                     permissions[0],
@@ -155,9 +167,12 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
 
         if (requestCode == RC_SIGN_IN_ACTIVITY) {
             if (resultCode == RESULT_OK) {
-                updateUi(mAuth.getCurrentUser());
+                Timber.i("login result ok - should add new fragment");
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, MainFragment.newInstance(), "main")
+                        .commit();
             } else {
-                updateUi(null);
+                Timber.w("login unsuccessful - should keep login fragment");
             }
         }
     }
@@ -166,6 +181,7 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(KEY_SHOW_FAB_STATUS, mBinding.getShouldShowFab());
+        outState.putBoolean(KEY_IS_CONNECTED, mIsConnected);
     }
 
     public void handleItemClicked(SouvenirDb souvenir) {
@@ -200,14 +216,6 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         return mInjector;
     }
 
-    private FirebaseAuth.AuthStateListener mAuthStateListener = firebaseAuth -> {
-        if (firebaseAuth.getCurrentUser() != null) {
-            Timber.i("AuthStateListener: user is NOT NULL; username is: %s", firebaseAuth.getCurrentUser().getDisplayName());
-        } else {
-            Timber.i("AuthStateListener: user is NULL; launcing sign-in activity");
-            launchSignInActivity();
-        }
-    };
 
     private BroadcastReceiver mConnectionStateReceiver = new BroadcastReceiver() {
         @Override
@@ -216,8 +224,41 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
             if (manager == null) return;
             NetworkInfo info = manager.getActiveNetworkInfo();
             boolean isConnected = info != null && info.isConnected();
-            Timber.i("Connection status: %s", isConnected ? "CONNECTED" : "NOT CONNECTED");
+            if (mIsConnected == null) {
+                mIsConnected = isConnected;
+                Timber.i("new connected status triggered (from null!)");
+                sendConnectivityBroadcast();
+            } else {
+                boolean needsUpdate = !(mIsConnected == isConnected);
+                if (needsUpdate) {
+                    mIsConnected = isConnected;
+                    Timber.i("new connected status triggered");
+                    sendConnectivityBroadcast();
+                }
+            }
         }
     };
+
+    private void sendConnectivityBroadcast() {
+        Intent intent = new Intent(ACTION_CONNECTIVITY_CHANGED);
+        intent.putExtra(KEY_IS_CONNECTED, mIsConnected);
+        LocalBroadcastManager.getInstance(MainActivity.this)
+                .sendBroadcast(intent);
+    }
+
+    public void handleSignInButtonClicked(boolean hasInternetAccess) {
+        if (hasInternetAccess) {
+            launchSignInActivity();
+        } else {
+            Toast.makeText(this, "Sorry, no internet access available. Try again later", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void handleSignOut() {
+        mAuth.signOut();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, SignInFragment.newInstance())
+                .commit();
+    }
 
 }
