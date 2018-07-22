@@ -3,14 +3,27 @@ package me.worric.souvenarius.ui.main;
 import android.Manifest;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+
+import com.firebase.ui.auth.AuthUI;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import java.util.Collections;
 
 import javax.inject.Inject;
 
@@ -29,10 +42,14 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
 
     public static final int REQUEST_CODE = 404;
     private static final String KEY_SHOW_FAB_STATUS = "key_show_fab_status";
+    private static final int RC_SIGN_IN_ACTIVITY = 909;
     @Inject
     protected ViewModelProvider.Factory mFactory;
+    @Inject
+    protected SharedPreferences mSharedPreferences;
     private MainViewModel mMainViewModel;
     private ActivityMainBinding mBinding;
+    private FirebaseAuth mAuth;
     @Inject
     DispatchingAndroidInjector<Fragment> mInjector;
 
@@ -46,6 +63,8 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         mBinding.setLifecycleOwner(this);
 
         setSupportActionBar(mBinding.toolbar);
+
+        mAuth = FirebaseAuth.getInstance();
 
         checkPermissions();
         initFragment(savedInstanceState);
@@ -62,8 +81,15 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                     Manifest.permission.ACCESS_FINE_LOCATION
             }, REQUEST_CODE);
-
         }
+    }
+
+    private void launchSignInActivity() {
+        startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder()
+                .setIsSmartLockEnabled(false)
+                .setAvailableProviders(Collections.singletonList(
+                        new AuthUI.IdpConfig.EmailBuilder().build()))
+                .build(), RC_SIGN_IN_ACTIVITY);
     }
 
     private void restoreSavedValues(Bundle savedInstanceState) {
@@ -83,6 +109,29 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(mConnectionStateReceiver, filter);
+        mAuth.addAuthStateListener(mAuthStateListener);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mAuth.removeAuthStateListener(mAuthStateListener);
+        unregisterReceiver(mConnectionStateReceiver);
+    }
+
+    private void updateUi(FirebaseUser currentUser) {
+        if (currentUser == null) {
+            Timber.i("current user is NULL");
+        } else {
+            Timber.i("current user NOT NULL; username is: %s", currentUser.getDisplayName());
+        }
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_CODE) {
             Timber.i("grantResults length: %d.", grantResults.length);
@@ -96,6 +145,19 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
                 Timber.i("success called");
             } else {
                 Timber.i("failed called");
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN_ACTIVITY) {
+            if (resultCode == RESULT_OK) {
+                updateUi(mAuth.getCurrentUser());
+            } else {
+                updateUi(null);
             }
         }
     }
@@ -137,4 +199,25 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     public AndroidInjector<Fragment> supportFragmentInjector() {
         return mInjector;
     }
+
+    private FirebaseAuth.AuthStateListener mAuthStateListener = firebaseAuth -> {
+        if (firebaseAuth.getCurrentUser() != null) {
+            Timber.i("AuthStateListener: user is NOT NULL; username is: %s", firebaseAuth.getCurrentUser().getDisplayName());
+        } else {
+            Timber.i("AuthStateListener: user is NULL; launcing sign-in activity");
+            launchSignInActivity();
+        }
+    };
+
+    private BroadcastReceiver mConnectionStateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (manager == null) return;
+            NetworkInfo info = manager.getActiveNetworkInfo();
+            boolean isConnected = info != null && info.isConnected();
+            Timber.i("Connection status: %s", isConnected ? "CONNECTED" : "NOT CONNECTED");
+        }
+    };
+
 }

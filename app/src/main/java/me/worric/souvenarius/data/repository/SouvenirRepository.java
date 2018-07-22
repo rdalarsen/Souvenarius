@@ -2,7 +2,13 @@ package me.worric.souvenarius.data.repository;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
 import com.google.firebase.database.DatabaseReference;
 
@@ -20,6 +26,7 @@ import me.worric.souvenarius.data.db.tasks.SouvenirDeleteTask;
 import me.worric.souvenarius.data.db.tasks.SouvenirInsertAllTask;
 import me.worric.souvenarius.data.db.tasks.SouvenirInsertTask;
 import me.worric.souvenarius.data.db.tasks.SouvenirUpdateTask;
+import me.worric.souvenarius.di.AppContext;
 import me.worric.souvenarius.ui.main.SortStyle;
 import timber.log.Timber;
 
@@ -40,7 +47,8 @@ public class SouvenirRepository {
     public SouvenirRepository(FirebaseHandler firebaseHandler,
                               StorageHandler storageHandler,
                               AppDatabase appDatabase,
-                              SharedPreferences prefs) {
+                              SharedPreferences prefs,
+                              @AppContext Context context) {
         mFirebaseHandler = firebaseHandler;
         mStorageHandler = storageHandler;
         mAppDatabase = appDatabase;
@@ -50,7 +58,34 @@ public class SouvenirRepository {
         mPreferenceChangeListener = initPrefListener(prefs);
         //fetchNewSouvenirs();
         subscribeToRemoteDatabaseUpdates();
+        registerBroadcast(context);
     }
+
+    private void registerBroadcast(Context context) {
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        context.registerReceiver(mConnectionStateReceiver, filter);
+    }
+
+    private Boolean mIsConnected;
+    private BroadcastReceiver mConnectionStateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (manager == null) return;
+            NetworkInfo info = manager.getActiveNetworkInfo();
+            boolean isConnected = info != null && info.isConnected();
+            if (mIsConnected == null) {
+                mIsConnected = isConnected;
+                Timber.i("new connected status triggered (from null!)");
+            } else {
+                boolean needsUpdate = !(mIsConnected == isConnected);
+                if (needsUpdate) {
+                    mIsConnected = isConnected;
+                    Timber.i("new connected status triggered");
+                }
+            }
+        }
+    };
 
     private void subscribeToRemoteDatabaseUpdates() {
         mFirebaseHandler.getResults().observeForever(result -> {
