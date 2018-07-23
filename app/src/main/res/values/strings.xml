@@ -18,4 +18,8 @@
     <string name="sign_in_notice_no_internet">You need to sign in to use the app. Please also make sure you\'re connected to the internet.</string>
     <string name="sign_in_notice">You need to sign in to use the app.</string>
     <string name="btn_label_sign_in">Sign in</string>
+
+    <!-- Widget -->
+    <string name="content_desc_widget_souvenir_photo">Souvenir photo</string>
+    <string name="add_widget">Add widget</string>
 </resources>
