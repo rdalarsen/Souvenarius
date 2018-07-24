@@ -24,6 +24,7 @@ import me.worric.souvenarius.ui.detail.DetailViewModel;
 import me.worric.souvenarius.ui.main.MainActivity;
 import me.worric.souvenarius.ui.main.MainActivityModule;
 import me.worric.souvenarius.ui.main.MainViewModel;
+import me.worric.souvenarius.ui.widget.UpdateWidgetService;
 
 @Module(includes = AndroidSupportInjectionModule.class)
 public abstract class AppModule {
@@ -35,6 +36,9 @@ public abstract class AppModule {
 
     @ContributesAndroidInjector(modules = MainActivityModule.class)
     abstract MainActivity contributeMainActivity();
+
+    @ContributesAndroidInjector
+    abstract UpdateWidgetService contributeUpdateWidgetService();
 
     @Binds
     abstract ViewModelProvider.Factory bindViewModelFactory(AppViewModelFactory appViewModelFactory);

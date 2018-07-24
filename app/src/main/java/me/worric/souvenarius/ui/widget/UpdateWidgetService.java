@@ -12,13 +12,27 @@ import android.text.TextUtils;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.android.AndroidInjection;
 import me.worric.souvenarius.data.db.model.SouvenirDb;
+import me.worric.souvenarius.data.repository.SouvenirRepository;
 import timber.log.Timber;
 
 public class UpdateWidgetService extends JobIntentService {
 
     private static final String UPDATE_WIDGET = "update_widget";
     private static final int JOB_ID = 345;
+    private Handler mHandler;
+    @Inject
+    protected SouvenirRepository mRepository;
+
+    @Override
+    public void onCreate() {
+        AndroidInjection.inject(this);
+        super.onCreate();
+        mHandler = new Handler(Looper.getMainLooper());
+    }
 
     public static void startWidgetUpdate(Context context) {
         Intent intent = new Intent(context, UpdateWidgetService.class);
@@ -41,14 +55,16 @@ public class UpdateWidgetService extends JobIntentService {
 
     private void handleUpdateWidget() {
         Timber.i("handleUpdateWidget triggered");
-        List<SouvenirDb> souvenirs;
+        List<SouvenirDb> souvenirs = mRepository.findAllOrderByTimeDescSync();
+        SouvenirDb firstSouvenir = souvenirs != null && !souvenirs.isEmpty() ? souvenirs.get(0) : null;
+        Timber.i("fetched results from the db: %s", souvenirs != null ? souvenirs.toString() : "souvenirs is null!");
 
         AppWidgetManager manager = AppWidgetManager.getInstance(this);
         int[] widgetIds = manager.getAppWidgetIds(new ComponentName(this, SouvenirWidgetProvider.class));
 
         /* The actual update must run on the main thread, else Glide won't work */
-        new Handler(Looper.getMainLooper()).post(() ->
-                SouvenirWidgetProvider.updateAppWidgets(this, manager, widgetIds, null));
+        mHandler.post(() ->
+                SouvenirWidgetProvider.updateAppWidgets(this, manager, widgetIds, firstSouvenir));
     }
 
 }

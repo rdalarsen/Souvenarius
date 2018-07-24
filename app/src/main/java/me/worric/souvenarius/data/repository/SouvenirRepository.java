@@ -173,6 +173,10 @@ public class SouvenirRepository {
         return mAppDatabase.souvenirDao().findOneById(souvenirId);
     }
 
+    public List<SouvenirDb> findAllOrderByTimeDescSync() {
+        return mAppDatabase.souvenirDao().findAllOrderByTimeDescSync();
+    }
+
     public void updateSouvenir(SouvenirDb souvenir, File photo) {
         DatabaseReference.CompletionListener completionListener = (databaseError, databaseReference) -> {
             if (databaseError != null) {

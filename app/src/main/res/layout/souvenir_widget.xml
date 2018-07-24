@@ -7,19 +7,17 @@
     <ImageView
         android:id="@+id/iv_widget_souvenir_photo"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:contentDescription="@string/content_desc_widget_souvenir_photo"
         android:layout_weight="1"
-        android:src="@drawable/ic_launcher_background"
-        android:scaleType="centerCrop" />
+        android:src="@drawable/ic_launcher_background" />
 
-    <TextView
-        android:id="@+id/widget_hello_world"
+    <ImageButton
+        android:id="@+id/btn_widget_add_souvenir"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:text="This is the souvenir"
-        android:textSize="24sp"
-        android:textStyle="bold|italic" />
+        android:contentDescription="@string/content_desc_widget_add_souvenir"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/ic_add_a_photo" />
 
 </LinearLayout>

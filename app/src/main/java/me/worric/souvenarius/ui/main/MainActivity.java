@@ -17,6 +17,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
 
@@ -36,6 +37,7 @@ import me.worric.souvenarius.data.db.model.SouvenirDb;
 import me.worric.souvenarius.databinding.ActivityMainBinding;
 import me.worric.souvenarius.ui.add.AddFragment;
 import me.worric.souvenarius.ui.detail.DetailFragment;
+import me.worric.souvenarius.ui.widget.SouvenirWidgetProvider;
 import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity implements HasSupportFragmentInjector {
@@ -107,6 +109,33 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
 
     private void initFragment(Bundle savedInstanceState) {
         if (savedInstanceState != null) return;
+
+        Intent launchIntent = getIntent();
+        if (launchIntent != null) {
+            String action = launchIntent.getAction();
+            if (TextUtils.isEmpty(action)) throw new IllegalArgumentException("Action cannot be null or empty");
+            Timber.i("action of launch intent is: %s", !TextUtils.isEmpty(action) ? action : "null or empty");
+
+            switch (action) {
+                case SouvenirWidgetProvider.ACTION_WIDGET_LAUNCH_ADD_SOUVENIR:
+                    // handle action of launcing add souvenir
+                    getSupportFragmentManager().beginTransaction()
+                            .add(R.id.fragment_container, MainFragment.newInstance())
+                            .replace(R.id.fragment_container, AddFragment.newInstance())
+                            .commit();
+                    return;
+                case SouvenirWidgetProvider.ACTION_WIDGET_LAUNCH_SOUVENIR_DETAILS:
+                    // handle action of launching souvenir details
+                    getSupportFragmentManager().beginTransaction()
+                            .add(R.id.fragment_container, MainFragment.newInstance())
+                            .replace(R.id.fragment_container, DetailFragment.newInstance(getIntent().getLongExtra(SouvenirWidgetProvider.EXTRA_SOUVENIR_ID, -1L)))
+                            .addToBackStack(null)
+                            .commit();
+                    return;
+                default:
+                    break;
+            }
+        }
 
         Fragment fragmentToAdd;
         String tag;
@@ -261,4 +290,10 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
                 .commit();
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Timber.i("onNewIntent called");
+        setIntent(intent);
+    }
 }
