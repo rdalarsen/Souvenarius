@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
                             .setReorderingAllowed(true)
                             .addToBackStack(null)
                             .commit();
-                    return;
+                    break;
                 case SouvenirWidgetProvider.ACTION_WIDGET_LAUNCH_SOUVENIR_DETAILS:
                     // handle action of launching souvenir details
                     getSupportFragmentManager().beginTransaction()
@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
                             .setReorderingAllowed(true)
                             .addToBackStack(null)
                             .commit();
-                    return;
+                    break;
                 case Intent.ACTION_MAIN:
                     getSupportFragmentManager().beginTransaction()
                             .add(R.id.fragment_container, MainFragment.newInstance())
