@@ -169,11 +169,11 @@ public class SouvenirRepository {
         new SouvenirInsertTask(mAppDatabase.souvenirDao(), callback).execute(db);
     }
 
-    public LiveData<SouvenirDb> findOne(long souvenirId) {
+    public LiveData<SouvenirDb> findOneById(long souvenirId) {
         return mAppDatabase.souvenirDao().findOneById(souvenirId);
     }
 
-    public List<SouvenirDb> findAllOrderByTimeDescSync() {
+    public SouvenirDb findMostRecentSouvenir() {
         return mAppDatabase.souvenirDao().findAllOrderByTimeDescSync();
     }
 

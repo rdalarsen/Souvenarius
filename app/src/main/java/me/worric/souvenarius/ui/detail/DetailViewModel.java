@@ -28,7 +28,7 @@ public class DetailViewModel extends ViewModel {
         mRepository = repository;
         mSouvenirId = new MutableLiveData<>();
         mPhotoFile = new MutableLiveData<>();
-        mFindOne = Transformations.switchMap(mSouvenirId, mRepository::findOne);
+        mFindOne = Transformations.switchMap(mSouvenirId, mRepository::findOneById);
         mCurrentSouvenir = new MediatorLiveData<>();
         mCurrentSouvenir.addSource(mFindOne, souvenirDb -> {
             Timber.i("observer triggered!");

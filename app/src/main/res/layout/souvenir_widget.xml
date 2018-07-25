@@ -4,13 +4,28 @@
     android:padding="@dimen/widget_margin"
     android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/iv_widget_souvenir_photo"
+    <FrameLayout
+        android:id="@+id/widget_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:contentDescription="@string/content_desc_widget_souvenir_photo"
-        android:layout_weight="1"
-        android:src="@drawable/ic_launcher_background" />
+        android:layout_weight="1">
+
+        <ImageView
+            android:id="@+id/iv_widget_souvenir_photo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/content_desc_widget_souvenir_photo"
+            android:src="@drawable/ic_launcher_background" />
+
+        <TextView
+            android:id="@+id/tv_widget_error_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:textAlignment="center"
+            android:layout_gravity="center" />
+
+    </FrameLayout>
 
     <ImageButton
         android:id="@+id/btn_widget_add_souvenir"

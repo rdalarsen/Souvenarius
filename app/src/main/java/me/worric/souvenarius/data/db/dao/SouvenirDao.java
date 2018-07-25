@@ -29,8 +29,8 @@ public interface SouvenirDao {
     @Query("SELECT * FROM souvenirs ORDER BY timestamp DESC")
     LiveData<List<SouvenirDb>> findAllOrderByTimeDesc();
 
-    @Query("SELECT * FROM souvenirs ORDER BY timestamp DESC")
-    List<SouvenirDb> findAllOrderByTimeDescSync();
+    @Query("SELECT * FROM souvenirs ORDER BY timestamp DESC LIMIT 1")
+    SouvenirDb findAllOrderByTimeDescSync();
 
     @Query("DELETE FROM souvenirs")
     int removeDatabaseContents();

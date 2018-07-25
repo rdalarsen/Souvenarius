@@ -38,6 +38,7 @@ import me.worric.souvenarius.databinding.ActivityMainBinding;
 import me.worric.souvenarius.ui.add.AddFragment;
 import me.worric.souvenarius.ui.detail.DetailFragment;
 import me.worric.souvenarius.ui.widget.SouvenirWidgetProvider;
+import me.worric.souvenarius.ui.widget.UpdateWidgetService;
 import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity implements HasSupportFragmentInjector {
@@ -108,47 +109,55 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     }
 
     private void initFragment(Bundle savedInstanceState) {
-        if (savedInstanceState != null) return;
+        if (savedInstanceState != null) {
+            return;
+        } else if (mAuth.getCurrentUser() == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, SignInFragment.newInstance())
+                    .commit();
+            return;
+        }
 
         Intent launchIntent = getIntent();
         if (launchIntent != null) {
             String action = launchIntent.getAction();
             if (TextUtils.isEmpty(action)) throw new IllegalArgumentException("Action cannot be null or empty");
-            Timber.i("action of launch intent is: %s", !TextUtils.isEmpty(action) ? action : "null or empty");
+            Timber.i("action of launch intent is: %s", action);
 
             switch (action) {
                 case SouvenirWidgetProvider.ACTION_WIDGET_LAUNCH_ADD_SOUVENIR:
                     // handle action of launcing add souvenir
                     getSupportFragmentManager().beginTransaction()
                             .add(R.id.fragment_container, MainFragment.newInstance())
+                            .setReorderingAllowed(true)
+                            .commit();
+                    getSupportFragmentManager().beginTransaction()
                             .replace(R.id.fragment_container, AddFragment.newInstance())
+                            .setReorderingAllowed(true)
+                            .addToBackStack(null)
                             .commit();
                     return;
                 case SouvenirWidgetProvider.ACTION_WIDGET_LAUNCH_SOUVENIR_DETAILS:
                     // handle action of launching souvenir details
                     getSupportFragmentManager().beginTransaction()
                             .add(R.id.fragment_container, MainFragment.newInstance())
+                            .setReorderingAllowed(true)
+                            .commit();
+                    getSupportFragmentManager().beginTransaction()
                             .replace(R.id.fragment_container, DetailFragment.newInstance(getIntent().getLongExtra(SouvenirWidgetProvider.EXTRA_SOUVENIR_ID, -1L)))
+                            .setReorderingAllowed(true)
                             .addToBackStack(null)
                             .commit();
                     return;
-                default:
+                case Intent.ACTION_MAIN:
+                    getSupportFragmentManager().beginTransaction()
+                            .add(R.id.fragment_container, MainFragment.newInstance())
+                            .commit();
                     break;
+                default:
+                    throw new IllegalArgumentException("Unknown action: " + action);
             }
         }
-
-        Fragment fragmentToAdd;
-        String tag;
-        if (mAuth.getCurrentUser() == null) {
-            fragmentToAdd = SignInFragment.newInstance();
-            tag = "signin";
-        } else {
-            fragmentToAdd = MainFragment.newInstance();
-            tag = "main";
-        }
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragment_container, fragmentToAdd, tag)
-                .commit();
     }
 
     @Override
@@ -196,10 +205,11 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
 
         if (requestCode == RC_SIGN_IN_ACTIVITY) {
             if (resultCode == RESULT_OK) {
-                Timber.i("login result ok - should add new fragment");
+                Timber.i("login result ok - should add new fragment\nwe should also update appwidgets to reflect this.");
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, MainFragment.newInstance(), "main")
                         .commit();
+                UpdateWidgetService.startWidgetUpdate(this);
             } else {
                 Timber.w("login unsuccessful - should keep login fragment");
             }
@@ -288,12 +298,7 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, SignInFragment.newInstance())
                 .commit();
+        UpdateWidgetService.startWidgetUpdate(this);
     }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        Timber.i("onNewIntent called");
-        setIntent(intent);
-    }
 }

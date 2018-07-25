@@ -21,6 +21,8 @@
 
     <!-- Widget -->
     <string name="content_desc_widget_souvenir_photo">Souvenir photo</string>
-    <string name="add_widget">Add widget</string>
     <string name="content_desc_widget_add_souvenir">Add souvenir</string>
+    <string name="add_widget">Add widget</string>
+    <string name="error_message_widget_no_souvenirs">No souvenirs</string>
+    <string name="error_message_widget_not_signed_in">Not signed in</string>
 </resources>

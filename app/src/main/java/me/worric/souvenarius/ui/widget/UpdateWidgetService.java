@@ -10,11 +10,13 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.JobIntentService;
 import android.text.TextUtils;
 
-import java.util.List;
+import com.google.firebase.auth.FirebaseAuth;
 
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
+import me.worric.souvenarius.R;
+import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.db.model.SouvenirDb;
 import me.worric.souvenarius.data.repository.SouvenirRepository;
 import timber.log.Timber;
@@ -24,6 +26,7 @@ public class UpdateWidgetService extends JobIntentService {
     private static final String UPDATE_WIDGET = "update_widget";
     private static final int JOB_ID = 345;
     private Handler mHandler;
+    private FirebaseAuth mAuth;
     @Inject
     protected SouvenirRepository mRepository;
 
@@ -32,6 +35,7 @@ public class UpdateWidgetService extends JobIntentService {
         AndroidInjection.inject(this);
         super.onCreate();
         mHandler = new Handler(Looper.getMainLooper());
+        mAuth = FirebaseAuth.getInstance();
     }
 
     public static void startWidgetUpdate(Context context) {
@@ -55,16 +59,28 @@ public class UpdateWidgetService extends JobIntentService {
 
     private void handleUpdateWidget() {
         Timber.i("handleUpdateWidget triggered");
-        List<SouvenirDb> souvenirs = mRepository.findAllOrderByTimeDescSync();
-        SouvenirDb firstSouvenir = souvenirs != null && !souvenirs.isEmpty() ? souvenirs.get(0) : null;
-        Timber.i("fetched results from the db: %s", souvenirs != null ? souvenirs.toString() : "souvenirs is null!");
+
+        Result<SouvenirDb> resultSouvenir;
+
+        if (mAuth.getCurrentUser() != null) {
+            SouvenirDb souvenir = mRepository.findMostRecentSouvenir();
+
+            if (souvenir == null) {
+                resultSouvenir = Result.failure(getString(R.string.error_message_widget_no_souvenirs));
+            } else {
+                resultSouvenir = Result.success(souvenir);
+            }
+        } else {
+            resultSouvenir = Result.failure(getString(R.string.error_message_widget_not_signed_in));
+        }
+
 
         AppWidgetManager manager = AppWidgetManager.getInstance(this);
         int[] widgetIds = manager.getAppWidgetIds(new ComponentName(this, SouvenirWidgetProvider.class));
 
         /* The actual update must run on the main thread, else Glide won't work */
         mHandler.post(() ->
-                SouvenirWidgetProvider.updateAppWidgets(this, manager, widgetIds, firstSouvenir));
+                SouvenirWidgetProvider.updateAppWidgets(this, manager, widgetIds, resultSouvenir));
     }
 
 }

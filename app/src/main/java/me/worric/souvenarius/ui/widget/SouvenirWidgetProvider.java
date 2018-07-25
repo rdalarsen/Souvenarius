@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.RemoteViews;
 
 import com.bumptech.glide.request.target.AppWidgetTarget;
@@ -15,6 +16,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import java.io.File;
 
 import me.worric.souvenarius.R;
+import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.db.model.SouvenirDb;
 import me.worric.souvenarius.ui.GlideApp;
 import me.worric.souvenarius.ui.common.FileUtils;
@@ -34,63 +36,66 @@ public class SouvenirWidgetProvider extends AppWidgetProvider {
     public static final int RC_LAUNCH_SOUVENIR_DETAILS = 1;
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
-                                int appWidgetId, SouvenirDb souvenirDb) {
+                                int appWidgetId, Result<SouvenirDb> souvenirDb) {
         Timber.i("updateAppWidget called");
 
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.souvenir_widget);
 
-        String photoFileName = null;
-        File localPhotoFile = null;
-        if (souvenirDb != null && !TextUtils.isEmpty(souvenirDb.getFirstPhoto())) {
-            photoFileName = souvenirDb.getFirstPhoto();
-            localPhotoFile = FileUtils.getLocalFileForPhotoName(photoFileName, context);
-        }
+        if (souvenirDb.status.equals(Result.Status.SUCCESS)) {
 
-        AppWidgetTarget appWidgetTarget = new AppWidgetTarget(context, R.id.iv_widget_souvenir_photo, views, appWidgetId);
-        if (localPhotoFile != null && localPhotoFile.exists()) {
-            // Load local file via Glide
-            Uri uriForLocalFile = FileUtils.getUriForFile(localPhotoFile, context);
-            GlideApp.with(context.getApplicationContext())
-                    .asBitmap()
-                    .load(uriForLocalFile)
-                    .centerCrop()
-                    .into(appWidgetTarget);
-        } else if (!TextUtils.isEmpty(photoFileName)){
-            // Load image hosted on Firebase image via Glide
-            GlideApp.with(context.getApplicationContext())
-                    .asBitmap()
-                    .load(FirebaseStorage.getInstance().getReference("images").child(photoFileName))
-                    .centerCrop()
-                    .into(appWidgetTarget);
-        }
+            String photoFileName = null;
+            File localPhotoFile = null;
+            if (!TextUtils.isEmpty(souvenirDb.response.getFirstPhoto())) {
+                photoFileName = souvenirDb.response.getFirstPhoto();
+                localPhotoFile = FileUtils.getLocalFileForPhotoName(photoFileName, context);
+            }
 
-        Intent addSouvenirIntent = new Intent(context, MainActivity.class);
-        addSouvenirIntent.setAction(ACTION_WIDGET_LAUNCH_ADD_SOUVENIR);
-        //addSouvenirIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent addSouvenirPendingIntent = PendingIntent.getActivity(context, RC_LAUNCH_ADD_SOUVENIR, addSouvenirIntent,
-                PendingIntent.FLAG_CANCEL_CURRENT);
-        views.setOnClickPendingIntent(R.id.btn_widget_add_souvenir, addSouvenirPendingIntent);
+            AppWidgetTarget appWidgetTarget = new AppWidgetTarget(context, R.id.iv_widget_souvenir_photo, views, appWidgetId);
+            if (localPhotoFile != null && localPhotoFile.exists()) {
+                // Load local file via Glide
+                Uri uriForLocalFile = FileUtils.getUriForFile(localPhotoFile, context);
+                GlideApp.with(context.getApplicationContext())
+                        .asBitmap()
+                        .load(uriForLocalFile)
+                        .centerCrop()
+                        .into(appWidgetTarget);
+            } else if (!TextUtils.isEmpty(photoFileName)){
+                // Load image hosted on Firebase image via Glide
+                GlideApp.with(context.getApplicationContext())
+                        .asBitmap()
+                        .load(FirebaseStorage.getInstance().getReference("images").child(photoFileName))
+                        .centerCrop()
+                        .into(appWidgetTarget);
+            }
 
-        if (souvenirDb != null) {
             Intent souvenirDetailsIntent = new Intent(context, MainActivity.class);
             souvenirDetailsIntent.setAction(ACTION_WIDGET_LAUNCH_SOUVENIR_DETAILS);
-            souvenirDetailsIntent.putExtra(EXTRA_SOUVENIR_ID, souvenirDb.getId());
-            //souvenirDetailsIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            souvenirDetailsIntent.putExtra(EXTRA_SOUVENIR_ID, souvenirDb.response.getId());
+            souvenirDetailsIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             PendingIntent souvenirDetailsPendingIntent = PendingIntent.getActivity(context, RC_LAUNCH_SOUVENIR_DETAILS,
                     souvenirDetailsIntent, PendingIntent.FLAG_CANCEL_CURRENT);
             views.setOnClickPendingIntent(R.id.iv_widget_souvenir_photo, souvenirDetailsPendingIntent);
         } else {
-            // show textview with error message and hide imageview
+            views.setViewVisibility(R.id.iv_widget_souvenir_photo, View.GONE);
+            views.setViewVisibility(R.id.tv_widget_error_text, View.VISIBLE);
+            views.setTextViewText(R.id.tv_widget_error_text, souvenirDb.message);
         }
+
+        Intent addSouvenirIntent = new Intent(context, MainActivity.class);
+        addSouvenirIntent.setAction(ACTION_WIDGET_LAUNCH_ADD_SOUVENIR);
+        addSouvenirIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent addSouvenirPendingIntent = PendingIntent.getActivity(context, RC_LAUNCH_ADD_SOUVENIR, addSouvenirIntent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
+        views.setOnClickPendingIntent(R.id.btn_widget_add_souvenir, addSouvenirPendingIntent);
 
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 
     static void updateAppWidgets(Context context, AppWidgetManager manager, int[] widgetIds,
-                                 SouvenirDb souvenirDb) {
+                                 Result<SouvenirDb> souvenirResult) {
         Timber.i("updateAppWidgets called");
         for (int appWidgetId : widgetIds) {
-            updateAppWidget(context, manager, appWidgetId, souvenirDb);
+            updateAppWidget(context, manager, appWidgetId, souvenirResult);
         }
     }
 
