@@ -41,6 +41,8 @@ public class SouvenirWidgetProvider extends AppWidgetProvider {
 
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.souvenir_widget);
 
+        Timber.w("The message of the result is: %s", souvenirDb.message);
+
         if (souvenirDb.status.equals(Result.Status.SUCCESS)) {
 
             String photoFileName = null;

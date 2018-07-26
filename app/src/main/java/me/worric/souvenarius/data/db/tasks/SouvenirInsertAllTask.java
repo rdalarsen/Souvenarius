@@ -10,7 +10,7 @@ import me.worric.souvenarius.data.db.model.SouvenirDb;
 import timber.log.Timber;
 
 
-public final class SouvenirInsertAllTask extends AsyncTask<SouvenirDb[],Void,Long[]> {
+public final class SouvenirInsertAllTask extends AsyncTask<SouvenirDb[],Void,Void> {
 
     private AppDatabase mAppDatabase;
     private SouvenirDao mDao;
@@ -21,23 +21,23 @@ public final class SouvenirInsertAllTask extends AsyncTask<SouvenirDb[],Void,Lon
     }
 
     @Override
-    protected Long[] doInBackground(SouvenirDb[]... souvenirs) {
+    protected Void doInBackground(SouvenirDb[]... souvenirs) {
         Timber.i("Attempting to DELETE all content in the db and INSERT all elements in array with length: %d", souvenirs[0].length);
-        Long[] ids;
         try {
             mAppDatabase.beginTransaction();
             mDao.removeDatabaseContents();
-            ids = mDao.insertAll(souvenirs[0]);
+            mDao.insertAll(souvenirs[0]);
             mAppDatabase.setTransactionSuccessful();
+            Timber.i("INSERT ALL --- Ids of inserted items are: %s", Arrays.toString(souvenirs[0]));
         } finally {
             mAppDatabase.endTransaction();
         }
-        return ids != null ? ids : new Long[]{};
+        return null;
     }
 
     @Override
-    protected void onPostExecute(Long[] ids) {
-        Timber.i("INSERT ALL --- Ids of inserted items are: %s", Arrays.toString(ids));
+    protected void onPostExecute(Void aVoid) {
+
     }
 
 }

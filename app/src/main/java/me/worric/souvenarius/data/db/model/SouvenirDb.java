@@ -22,9 +22,10 @@ import me.worric.souvenarius.ui.detail.DetailFragment;
 public class SouvenirDb {
 
     @Exclude
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
+    @NonNull
     @ColumnInfo(name = "id")
-    private long mId;
+    private String mId;
 
     @ColumnInfo(name = "timestamp")
     private long mTimestamp;
@@ -44,11 +45,11 @@ public class SouvenirDb {
     public SouvenirDb() {
     }
 
-    public long getId() {
+    public String getId() {
         return mId;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         mId = id;
     }
 

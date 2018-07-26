@@ -18,7 +18,7 @@ import timber.log.Timber;
 public class DetailViewModel extends ViewModel {
 
     private final SouvenirRepository mRepository;
-    private final MutableLiveData<Long> mSouvenirId;
+    private final MutableLiveData<String> mSouvenirId;
     private final MediatorLiveData<SouvenirDb> mCurrentSouvenir;
     private final LiveData<SouvenirDb> mFindOne;
     private final MutableLiveData<File> mPhotoFile;
@@ -36,7 +36,7 @@ public class DetailViewModel extends ViewModel {
         });
     }
 
-    public void setSouvenirId(long souvenirId) {
+    public void setSouvenirId(String souvenirId) {
         if (mSouvenirId.getValue() == null) {
             mSouvenirId.setValue(souvenirId);
         }

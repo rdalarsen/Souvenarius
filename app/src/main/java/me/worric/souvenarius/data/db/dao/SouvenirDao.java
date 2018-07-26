@@ -15,10 +15,10 @@ import me.worric.souvenarius.data.db.model.SouvenirDb;
 public interface SouvenirDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    Long[] insertAll(SouvenirDb[] souvenirs);
+    void insertAll(SouvenirDb[] souvenirs);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    Long[] insert(SouvenirDb... souvenirDbs);
+    void insert(SouvenirDb... souvenirDbs);
 
     @Query("SELECT * FROM souvenirs ORDER BY timestamp ASC")
     LiveData<List<SouvenirDb>> findAllOrderByTimeAsc();
@@ -30,18 +30,18 @@ public interface SouvenirDao {
     LiveData<List<SouvenirDb>> findAllOrderByTimeDesc();
 
     @Query("SELECT * FROM souvenirs ORDER BY timestamp DESC LIMIT 1")
-    SouvenirDb findAllOrderByTimeDescSync();
+    SouvenirDb findMostRecentSync();
 
     @Query("DELETE FROM souvenirs")
     int removeDatabaseContents();
 
     @Query("DELETE FROM souvenirs WHERE id = :id")
-    int deleteSouvenir(long id);
+    int deleteSouvenir(String id);
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     int updateOne(SouvenirDb souvenirDb);
 
     @Query("SELECT * FROM souvenirs WHERE id = :id")
-    LiveData<SouvenirDb> findOneById(Long id);
+    LiveData<SouvenirDb> findOneById(String id);
 
 }

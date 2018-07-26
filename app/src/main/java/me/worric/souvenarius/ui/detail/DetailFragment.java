@@ -68,7 +68,7 @@ public class DetailFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        long souvenirId = getArguments().getLong(KEY_SOUVENIR_ID);
+        String souvenirId = getArguments().getString(KEY_SOUVENIR_ID);
         mViewModel = ViewModelProviders.of(this, mFactory).get(DetailViewModel.class);
         mViewModel.setSouvenirId(souvenirId);
         mViewModel.getCurrentSouvenir().observe(this, souvenir -> {
@@ -186,10 +186,10 @@ public class DetailFragment extends Fragment {
         void onEditClicked(View view);
     }
 
-    public static DetailFragment newInstance(long souvenirId) {
+    public static DetailFragment newInstance(String souvenirId) {
         DetailFragment fragment = new DetailFragment();
         Bundle args = new Bundle();
-        args.putLong(KEY_SOUVENIR_ID, souvenirId);
+        args.putString(KEY_SOUVENIR_ID, souvenirId);
         fragment.setArguments(args);
         return fragment;
     }

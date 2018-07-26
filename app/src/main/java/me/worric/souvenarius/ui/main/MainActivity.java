@@ -144,7 +144,8 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
                             .setReorderingAllowed(true)
                             .commit();
                     getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.fragment_container, DetailFragment.newInstance(getIntent().getLongExtra(SouvenirWidgetProvider.EXTRA_SOUVENIR_ID, -1L)))
+                            .replace(R.id.fragment_container, DetailFragment.newInstance(getIntent()
+                                    .getStringExtra(SouvenirWidgetProvider.EXTRA_SOUVENIR_ID)))
                             .setReorderingAllowed(true)
                             .addToBackStack(null)
                             .commit();
@@ -224,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     }
 
     public void handleItemClicked(SouvenirDb souvenir) {
-        long souvenirId = souvenir.getId();
+        String souvenirId = souvenir.getId();
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, DetailFragment.newInstance(souvenirId), "detail")
                 .addToBackStack(null)

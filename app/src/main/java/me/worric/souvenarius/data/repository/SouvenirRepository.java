@@ -12,8 +12,11 @@ import android.net.NetworkInfo;
 
 import com.google.firebase.database.DatabaseReference;
 
+import org.threeten.bp.Instant;
+
 import java.io.File;
 import java.util.List;
+import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -149,32 +152,34 @@ public class SouvenirRepository {
         //TODO: make other DB interactions use appropriate completionlisteners
         DatabaseReference.CompletionListener completionListener = (databaseError, databaseReference) -> {
             if (databaseError != null) {
-                Timber.e(databaseError.toException(),"There was a problem uploading the data to the database");
+                Timber.e(databaseError.toException(),"There was a problem uploading the data to the database; not uploading photo to FirebaseStorage");
                 return;
             }
             if (photo != null) {
                 mStorageHandler.uploadImage(photo);
             } else {
-                Timber.e("The photo was null!");
+                Timber.e("The photo was null; not uploading photo to FirebaseStorage");
             }
         };
 
         DataInsertCallback callback = souvenirDb -> {
             if (souvenirDb != null) {
-                Timber.i("souvenir is NOT null! The ID is: %d", souvenirDb.getId());
+                Timber.i("souvenir is NOT null! The ID is: %s", souvenirDb.getId());
                 mFirebaseHandler.storeSouvenir(souvenirDb, completionListener);
             }
         };
 
+        db.setTimestamp(Instant.now().toEpochMilli());
+        db.setId(UUID.randomUUID().toString());
         new SouvenirInsertTask(mAppDatabase.souvenirDao(), callback).execute(db);
     }
 
-    public LiveData<SouvenirDb> findOneById(long souvenirId) {
+    public LiveData<SouvenirDb> findOneById(String souvenirId) {
         return mAppDatabase.souvenirDao().findOneById(souvenirId);
     }
 
     public SouvenirDb findMostRecentSouvenir() {
-        return mAppDatabase.souvenirDao().findAllOrderByTimeDescSync();
+        return mAppDatabase.souvenirDao().findMostRecentSync();
     }
 
     public void updateSouvenir(SouvenirDb souvenir, File photo) {

@@ -69,7 +69,7 @@ public class FirebaseHandler {
                     continue;
                 }
 
-                response.setId(Long.parseLong(snapshot.getKey()));
+                response.setId(snapshot.getKey());
 
                 resultList.add(response);
             }
@@ -90,7 +90,7 @@ public class FirebaseHandler {
             Timber.w("User is null, not storing souvenir");
             return;
         }
-        mRef.child(String.valueOf(souvenir.getId())).setValue(souvenir, completionListener);
+        mRef.child(souvenir.getId()).setValue(souvenir, completionListener);
     }
 
     public void addSouvenir(SouvenirDb db, DatabaseReference.CompletionListener listener) {
@@ -98,7 +98,7 @@ public class FirebaseHandler {
             Timber.w("User is null, not adding souvenir");
             return;
         }
-        mRef.child(String.valueOf(db.getId())).setValue(db, listener);
+        mRef.child(db.getId()).setValue(db, listener);
     }
 
     public void deleteSouvenir(SouvenirDb souvenir) {

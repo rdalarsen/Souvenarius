@@ -17,8 +17,8 @@ import javax.inject.Inject;
 import dagger.android.AndroidInjection;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.Result;
+import me.worric.souvenarius.data.db.AppDatabase;
 import me.worric.souvenarius.data.db.model.SouvenirDb;
-import me.worric.souvenarius.data.repository.SouvenirRepository;
 import timber.log.Timber;
 
 public class UpdateWidgetService extends JobIntentService {
@@ -28,7 +28,7 @@ public class UpdateWidgetService extends JobIntentService {
     private Handler mHandler;
     private FirebaseAuth mAuth;
     @Inject
-    protected SouvenirRepository mRepository;
+    protected AppDatabase mAppDatabase;
 
     @Override
     public void onCreate() {
@@ -63,7 +63,7 @@ public class UpdateWidgetService extends JobIntentService {
         Result<SouvenirDb> resultSouvenir;
 
         if (mAuth.getCurrentUser() != null) {
-            SouvenirDb souvenir = mRepository.findMostRecentSouvenir();
+            SouvenirDb souvenir = mAppDatabase.souvenirDao().findMostRecentSync();
 
             if (souvenir == null) {
                 resultSouvenir = Result.failure(getString(R.string.error_message_widget_no_souvenirs));

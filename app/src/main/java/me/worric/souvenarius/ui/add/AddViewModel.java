@@ -8,8 +8,6 @@ import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
 import android.text.Editable;
 
-import org.threeten.bp.Instant;
-
 import java.io.File;
 import java.util.Objects;
 
@@ -64,7 +62,6 @@ public class AddViewModel extends ViewModel {
             db.setTitle(info.getTitle());
             db.setStory(info.getStory());
             db.setPlace(info.getPlace());
-            db.setTimestamp(Instant.now().toEpochMilli());
             db.getPhotos().add(photo.getName());
             mSouvenirRepository.addNewSouvenir(db, photo);
             return true;
