@@ -285,11 +285,11 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
                 .sendBroadcast(intent);
     }
 
-    public void handleSignInButtonClicked(boolean hasInternetAccess) {
-        if (hasInternetAccess) {
+    public void handleSignInButtonClicked(boolean isConnected) {
+        if (isConnected) {
             launchSignInActivity();
         } else {
-            Toast.makeText(this, "Sorry, no internet access available. Try again later", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.main_connectivity_error_message, Toast.LENGTH_SHORT).show();
         }
     }
 

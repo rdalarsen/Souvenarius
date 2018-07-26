@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Souvenarius</string>
 
+    <!-- Main activity -->
+    <string name="main_connectivity_error_message">No internet access available. Please connect and try again.</string>
+
     <!-- Add fragment -->
     <string name="content_desc_photo_preview">Photo preview</string>
     <string name="title_hint">Title…</string>

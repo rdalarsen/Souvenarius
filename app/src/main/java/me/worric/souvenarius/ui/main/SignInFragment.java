@@ -16,12 +16,15 @@ import android.view.ViewGroup;
 
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.databinding.FragmentSigninBinding;
+import me.worric.souvenarius.ui.common.NetUtils;
 import timber.log.Timber;
 
 
 public class SignInFragment extends Fragment {
 
+    private static final String KEY_IS_CONNECTED = "key_is_connected";
     private FragmentSigninBinding mBinding;
+    private boolean mIsConnected;
 
     @Nullable
     @Override
@@ -35,29 +38,51 @@ public class SignInFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         mBinding.setLifecycleOwner(this);
         mBinding.setClickListener(mListener);
+        mIsConnected = initIsConnected(savedInstanceState);
+        mBinding.setIsConnected(mIsConnected);
+    }
+
+    private boolean initIsConnected(@Nullable Bundle savedInstanceState) {
+        if (savedInstanceState == null) {
+            return NetUtils.getIsConnected(getContext());
+        } else if (savedInstanceState.containsKey(MainActivity.KEY_IS_CONNECTED)) {
+            return savedInstanceState.getBoolean(KEY_IS_CONNECTED, false);
+        }
+        return false;
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onResume() {
+        super.onResume();
         IntentFilter filter = new IntentFilter(MainActivity.ACTION_CONNECTIVITY_CHANGED);
         LocalBroadcastManager.getInstance(getContext())
                 .registerReceiver(mReceiver, filter);
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onPause() {
+        super.onPause();
         LocalBroadcastManager.getInstance(getContext())
                 .unregisterReceiver(mReceiver);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(KEY_IS_CONNECTED, mIsConnected);
     }
 
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             boolean isConnected = intent.getBooleanExtra(MainActivity.KEY_IS_CONNECTED, false);
-            Timber.i("received internet connection status - setting in UI...");
-            mBinding.setHasInternet(isConnected);
+            Timber.i("Received connection broadcast. we are connected=%s", isConnected);
+            boolean needsUpdate = !(mIsConnected == isConnected);
+            if (needsUpdate) {
+                mIsConnected = isConnected;
+                Timber.i("connection status changed, setting new value...");
+                mBinding.setIsConnected(mIsConnected);
+            }
         }
     };
 
