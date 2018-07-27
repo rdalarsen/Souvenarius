@@ -119,13 +119,13 @@ public class MainFragment extends Fragment {
         public void onToggleSortClicked(View view) {
             SortStyle sortStyle = getSortStyleFromPrefs();
             Timber.i("SortStyle is: %s", sortStyle.toString());
-            if (sortStyle.equals(SortStyle.DATE_DESC)) {
+            if (sortStyle.equals(SortStyle.DESC)) {
                 mSharedPreferences.edit()
-                        .putString("sortStyle", SortStyle.DATE_ASC.toString())
+                        .putString("sortStyle", SortStyle.ASC.toString())
                         .apply();
             } else {
                 mSharedPreferences.edit()
-                        .putString("sortStyle", SortStyle.DATE_DESC.toString())
+                        .putString("sortStyle", SortStyle.DESC.toString())
                         .apply();
             }
         }
@@ -138,7 +138,7 @@ public class MainFragment extends Fragment {
 
     @NonNull
     private SortStyle getSortStyleFromPrefs() {
-        String value = mSharedPreferences.getString("sortStyle", SortStyle.DATE_DESC.toString());
+        String value = mSharedPreferences.getString("sortStyle", SortStyle.DESC.toString());
         return SortStyle.valueOf(value);
     }
 

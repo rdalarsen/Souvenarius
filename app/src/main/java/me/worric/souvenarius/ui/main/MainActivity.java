@@ -46,6 +46,8 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
 
     public static final String KEY_IS_CONNECTED = "key_is_connected";
     public static final String ACTION_CONNECTIVITY_CHANGED = "action_connectivity_changed";
+    public static final String ACTION_AUTH_SIGNED_IN = "action_auth_signed_in";
+    public static final String ACTION_AUTH_SIGNED_OUT = "action_auth_signed_out";
     private static final String KEY_SHOW_FAB_STATUS = "key_show_fab_status";
     private static final int RC_PERMISSION_RESULTS = 404;
     private static final int RC_SIGN_IN_ACTIVITY = 909;
@@ -55,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     private MainViewModel mMainViewModel;
     private ActivityMainBinding mBinding;
     private FirebaseAuth mAuth;
+    private LocalBroadcastManager mBroadcastManager;
     @Inject
     DispatchingAndroidInjector<Fragment> mInjector;
 
@@ -70,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         setSupportActionBar(mBinding.toolbar);
 
         mAuth = FirebaseAuth.getInstance();
+        mBroadcastManager = LocalBroadcastManager.getInstance(this);
 
         checkPermissions();
         initFragment(savedInstanceState);
@@ -212,6 +216,7 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
                         .replace(R.id.fragment_container, MainFragment.newInstance(), "main")
                         .commit();
                 UpdateWidgetService.startWidgetUpdate(this);
+                mBroadcastManager.sendBroadcast(new Intent(ACTION_AUTH_SIGNED_IN));
             } else {
                 Timber.w("login unsuccessful - should keep login fragment");
             }
@@ -283,8 +288,7 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     private void sendConnectivityBroadcast() {
         Intent intent = new Intent(ACTION_CONNECTIVITY_CHANGED);
         intent.putExtra(KEY_IS_CONNECTED, mIsConnected);
-        LocalBroadcastManager.getInstance(MainActivity.this)
-                .sendBroadcast(intent);
+        mBroadcastManager.sendBroadcast(intent);
     }
 
     public void handleSignInButtonClicked(boolean isConnected) {
@@ -301,6 +305,7 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
                 .replace(R.id.fragment_container, SignInFragment.newInstance())
                 .commit();
         UpdateWidgetService.startWidgetUpdate(this);
+        mBroadcastManager.sendBroadcast(new Intent(ACTION_AUTH_SIGNED_OUT));
     }
 
 }
