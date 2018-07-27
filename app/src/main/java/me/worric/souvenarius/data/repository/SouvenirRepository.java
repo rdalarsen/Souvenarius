@@ -7,9 +7,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.support.v4.content.LocalBroadcastManager;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 
 import org.threeten.bp.Instant;
@@ -30,6 +30,8 @@ import me.worric.souvenarius.data.db.tasks.SouvenirInsertAllTask;
 import me.worric.souvenarius.data.db.tasks.SouvenirInsertTask;
 import me.worric.souvenarius.data.db.tasks.SouvenirUpdateTask;
 import me.worric.souvenarius.di.AppContext;
+import me.worric.souvenarius.ui.common.NetUtils;
+import me.worric.souvenarius.ui.main.MainActivity;
 import me.worric.souvenarius.ui.main.SortStyle;
 import timber.log.Timber;
 
@@ -39,12 +41,14 @@ public class SouvenirRepository {
     public static final String PREFS_KEY_SORT_STYLE = "sortStyle";
     private final FirebaseHandler mFirebaseHandler;
     private final StorageHandler mStorageHandler;
+    private final FirebaseAuth mAuth;
     private final AppDatabase mAppDatabase;
     private final LiveData<List<SouvenirDb>> mSouvenirsOrderByTimeAsc;
     private final LiveData<List<SouvenirDb>> mSouvenirsOrderByTimeDesc;
     private final MediatorLiveData<Result<List<SouvenirDb>>> mSouvenirs;
     /* see: https://stackoverflow.com/questions/2542938/sharedpreferences-onsharedpreferencechangelistener-not-being-called-consistently */
     private final SharedPreferences.OnSharedPreferenceChangeListener mPreferenceChangeListener;
+    private Boolean mIsConnected;
 
     @Inject
     public SouvenirRepository(FirebaseHandler firebaseHandler,
@@ -54,6 +58,7 @@ public class SouvenirRepository {
                               @AppContext Context context) {
         mFirebaseHandler = firebaseHandler;
         mStorageHandler = storageHandler;
+        mAuth = FirebaseAuth.getInstance();
         mAppDatabase = appDatabase;
         mSouvenirsOrderByTimeAsc = mAppDatabase.souvenirDao().findAllOrderByTimeAsc();
         mSouvenirsOrderByTimeDesc = mAppDatabase.souvenirDao().findAllOrderByTimeDesc();
@@ -61,31 +66,24 @@ public class SouvenirRepository {
         mPreferenceChangeListener = initPrefListener(prefs);
         //fetchNewSouvenirs();
         subscribeToRemoteDatabaseUpdates();
-        registerBroadcast(context);
+        initConnectionStateDetection(context);
     }
 
-    private void registerBroadcast(Context context) {
-        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        context.registerReceiver(mConnectionStateReceiver, filter);
+    private void initConnectionStateDetection(Context context) {
+        mIsConnected = NetUtils.getIsConnected(context);
+        IntentFilter filter = new IntentFilter(MainActivity.ACTION_CONNECTIVITY_CHANGED);
+        LocalBroadcastManager.getInstance(context).registerReceiver(mConnectionStateReceiver, filter);
     }
 
-    private Boolean mIsConnected;
     private BroadcastReceiver mConnectionStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            if (manager == null) return;
-            NetworkInfo info = manager.getActiveNetworkInfo();
-            boolean isConnected = info != null && info.isConnected();
-            if (mIsConnected == null) {
+            boolean isConnected = intent.getBooleanExtra(MainActivity.KEY_IS_CONNECTED, false);
+            Timber.i("Received connection broadcast. we are connected=%s", isConnected);
+            boolean needsUpdate = !(mIsConnected == isConnected);
+            if (needsUpdate) {
                 mIsConnected = isConnected;
-                Timber.i("new connected status triggered (from null!)");
-            } else {
-                boolean needsUpdate = !(mIsConnected == isConnected);
-                if (needsUpdate) {
-                    mIsConnected = isConnected;
-                    Timber.i("new connected status triggered");
-                }
+                Timber.i("new connected status triggered");
             }
         }
     };
@@ -171,6 +169,7 @@ public class SouvenirRepository {
 
         db.setTimestamp(Instant.now().toEpochMilli());
         db.setId(UUID.randomUUID().toString());
+        db.setUID(mAuth.getCurrentUser().getUid());
         new SouvenirInsertTask(mAppDatabase.souvenirDao(), callback).execute(db);
     }
 

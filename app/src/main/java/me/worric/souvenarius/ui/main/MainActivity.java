@@ -37,6 +37,7 @@ import me.worric.souvenarius.data.db.model.SouvenirDb;
 import me.worric.souvenarius.databinding.ActivityMainBinding;
 import me.worric.souvenarius.ui.add.AddFragment;
 import me.worric.souvenarius.ui.detail.DetailFragment;
+import me.worric.souvenarius.ui.signin.SignInFragment;
 import me.worric.souvenarius.ui.widget.SouvenirWidgetProvider;
 import me.worric.souvenarius.ui.widget.UpdateWidgetService;
 import timber.log.Timber;

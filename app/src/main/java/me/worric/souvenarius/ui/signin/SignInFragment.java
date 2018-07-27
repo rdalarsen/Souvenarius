@@ -1,4 +1,4 @@
-package me.worric.souvenarius.ui.main;
+package me.worric.souvenarius.ui.signin;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.databinding.FragmentSigninBinding;
 import me.worric.souvenarius.ui.common.NetUtils;
+import me.worric.souvenarius.ui.main.MainActivity;
 import timber.log.Timber;
 
 
@@ -86,9 +87,8 @@ public class SignInFragment extends Fragment {
         }
     };
 
-    private SignInButtonClickedListener mListener = hasInternetAccess -> {
-        ((MainActivity)getActivity()).handleSignInButtonClicked(hasInternetAccess);
-    };
+    private SignInButtonClickedListener mListener = hasInternetAccess ->
+            ((MainActivity)getActivity()).handleSignInButtonClicked(hasInternetAccess);
 
     public interface SignInButtonClickedListener {
         void onSignInButtonClicked(boolean hasInternetAccess);
