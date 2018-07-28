@@ -27,7 +27,7 @@ import me.worric.souvenarius.ui.main.MainViewModel;
 import me.worric.souvenarius.ui.widget.UpdateWidgetService;
 
 @Module(includes = AndroidSupportInjectionModule.class)
-public abstract class AppModule {
+public abstract class SouvenirAppModule {
 
     @Binds
     @Singleton

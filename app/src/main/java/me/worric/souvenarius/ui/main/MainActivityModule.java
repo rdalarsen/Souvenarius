@@ -19,19 +19,15 @@ public abstract class MainActivityModule {
     @ActivityContext
     abstract Context bindContext(MainActivity mainActivity);
 
-    @ActivityScope
     @ContributesAndroidInjector
     abstract MainFragment contributeMainFragment();
 
-    @ActivityScope
     @ContributesAndroidInjector
     abstract AddFragment contributeAddFragment();
 
-    @ActivityScope
     @ContributesAndroidInjector
     abstract DetailFragment contributeDetailFragment();
 
-    @ActivityScope
     @ContributesAndroidInjector
     abstract EditDialogFragment contributeEditDiablogFragment();
 

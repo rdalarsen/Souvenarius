@@ -34,8 +34,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintDimensionRatio="h,16:9"
                 android:contentDescription="@string/content_desc_photo_preview"
-                app:imageUri="@{viewmodel.photoFile.absolutePath}"
-                app:placeholder="@{@drawable/ic_launcher_background}"
+                app:imageName="@{viewmodel.photoFile.name}"
                 android:onClick="@{clickHandler::onAddPhotoClicked}"
                 tools:src="@drawable/ic_launcher_background" />
 

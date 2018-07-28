@@ -14,7 +14,7 @@ import dagger.android.HasActivityInjector;
 import dagger.android.HasServiceInjector;
 import timber.log.Timber;
 
-public class App extends Application implements HasActivityInjector, HasServiceInjector {
+public class SouvenirApp extends Application implements HasActivityInjector, HasServiceInjector {
 
     @Inject
     DispatchingAndroidInjector<Activity> mActivityDispatcher;
@@ -26,7 +26,7 @@ public class App extends Application implements HasActivityInjector, HasServiceI
         super.onCreate();
         Timber.plant(new Timber.DebugTree());
         AndroidThreeTen.init(this);
-        DaggerAppComponent.builder()
+        DaggerSouvenirAppComponent.builder()
                 .application(this)
                 .build()
                 .inject(this);
