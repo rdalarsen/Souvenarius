@@ -15,6 +15,8 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.InputStream;
 
+import me.worric.souvenarius.R;
+
 @GlideModule
 public class GlideConfig extends AppGlideModule {
 
@@ -23,6 +25,8 @@ public class GlideConfig extends AppGlideModule {
         builder.setDefaultRequestOptions(
                 new RequestOptions()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .placeholder(R.drawable.ic_photo)
+                        .error(R.drawable.ic_broken_image)
         );
     }
 

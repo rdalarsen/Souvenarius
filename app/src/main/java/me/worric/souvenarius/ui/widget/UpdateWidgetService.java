@@ -23,7 +23,7 @@ import timber.log.Timber;
 
 public class UpdateWidgetService extends JobIntentService {
 
-    private static final String UPDATE_WIDGET = "update_widget";
+    private static final String ACTION_UPDATE_WIDGET = "action_update_widget";
     private static final int JOB_ID = 345;
     private Handler mHandler;
     private FirebaseAuth mAuth;
@@ -40,7 +40,7 @@ public class UpdateWidgetService extends JobIntentService {
 
     public static void startWidgetUpdate(Context context) {
         Intent intent = new Intent(context, UpdateWidgetService.class);
-        intent.setAction(UPDATE_WIDGET);
+        intent.setAction(ACTION_UPDATE_WIDGET);
         enqueueWork(context, UpdateWidgetService.class, JOB_ID, intent);
     }
 
@@ -49,7 +49,7 @@ public class UpdateWidgetService extends JobIntentService {
         String action = intent.getAction();
         if (TextUtils.isEmpty(action)) throw new IllegalArgumentException("Null or empty action");
         switch (action) {
-            case UPDATE_WIDGET:
+            case ACTION_UPDATE_WIDGET:
                 handleUpdateWidget();
                 break;
             default:
