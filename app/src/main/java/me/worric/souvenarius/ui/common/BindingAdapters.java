@@ -5,12 +5,10 @@ import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
 
 import com.bumptech.glide.RequestBuilder;
-import com.bumptech.glide.request.RequestOptions;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 
-import me.worric.souvenarius.R;
 import me.worric.souvenarius.ui.GlideApp;
 import timber.log.Timber;
 
@@ -20,9 +18,6 @@ public class BindingAdapters {
     public static void loadImageFromName(ImageView view, String imageName) {
         Timber.d("imageName is: %s", imageName);
         File localPhoto = FileUtils.getLocalFileForPhotoName(imageName, view.getContext());
-        RequestOptions options = new RequestOptions()
-                .error(R.drawable.ic_launcher_background)
-                .placeholder(R.drawable.ic_launcher_background);
         RequestBuilder<Drawable> requestBuilder;
 
         if (localPhoto != null && localPhoto.exists()) {
@@ -34,7 +29,7 @@ public class BindingAdapters {
             requestBuilder = GlideApp.with(view.getContext()).load(reference);
         }
 
-        requestBuilder.apply(options).into(view);
+        requestBuilder.into(view);
     }
 
 }
