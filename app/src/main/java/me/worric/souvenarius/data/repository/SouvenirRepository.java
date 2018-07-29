@@ -48,7 +48,7 @@ import static me.worric.souvenarius.ui.common.PrefsUtils.getSortStyleFromPrefs;
 public class SouvenirRepository {
 
     public static final String PREFS_KEY_SORT_STYLE = "sortStyle";
-    private static final String DEFAULT_QUERY = "SELECT * FROM souvenirs WHERE uid = ? ORDER BY timestamp %s";
+    private static final String QUERY_STRING = "SELECT * FROM souvenirs WHERE uid = ? ORDER BY timestamp %s";
     private final FirebaseHandler mFirebaseHandler;
     private final StorageHandler mStorageHandler;
     private final FirebaseAuth mAuth;
@@ -77,6 +77,7 @@ public class SouvenirRepository {
         subscribeToRemoteDatabaseUpdates();
         initConnectionStateDetection(context);
         initAuthStateDetection(context);
+        refreshSouvenirsFromRemote();
     }
 
     private void setupQueryParameters() {
@@ -112,8 +113,22 @@ public class SouvenirRepository {
         @Override
         public void onReceive(Context context, Intent intent) {
             Timber.i("auth state changed received! action was: %s", intent.getAction());
+            if (intent.getAction().equals(MainActivity.ACTION_AUTH_SIGNED_IN)) {
+                refreshSouvenirsFromRemote();
+            } else if (intent.getAction().equals(MainActivity.ACTION_AUTH_SIGNED_OUT)) {
+                mFirebaseHandler.clearResults();
+            }
+            setQueryParameters(mAuth.getUid());
         }
     };
+
+    private void setQueryParameters(String uid) {
+        QueryParameters parameters = mQueryParameters.getValue();
+        if (parameters != null) {
+            parameters.setUid(uid);
+            mQueryParameters.setValue(parameters);
+        }
+    }
 
     private void subscribeToRemoteDatabaseUpdates() {
         mFirebaseHandler.getResults().observeForever(result -> {
@@ -125,8 +140,8 @@ public class SouvenirRepository {
         });
     }
 
-    public void fetchNewSouvenirs() {
-        mFirebaseHandler.fetchSouvenirs();
+    public void refreshSouvenirsFromRemote() {
+        mFirebaseHandler.fetchSouvenirsForCurrentUser();
     }
 
     private MediatorLiveData<Result<List<SouvenirDb>>> initSouvenirs(SharedPreferences prefs) {
@@ -165,15 +180,14 @@ public class SouvenirRepository {
     }
 
     public LiveData<Result<List<SouvenirDb>>> getSortedSouvenirs() {
-        // Set logged-in user
-        return Transformations.switchMap(mQueryParameters, theQuery -> {
-            if (TextUtils.isEmpty(theQuery.uid)) {
+        return Transformations.switchMap(mQueryParameters, parameters -> {
+            if (TextUtils.isEmpty(parameters.getUid())) {
                 MutableLiveData<Result<List<SouvenirDb>>> errorLiveData = new MutableLiveData<>();
                 errorLiveData.setValue(Result.failure("Not logged in."));
                 return errorLiveData;
             }
-            String queryString = String.format(DEFAULT_QUERY, theQuery.sortStyle.toString());
-            SupportSQLiteQuery simpleQuery = new SimpleSQLiteQuery(queryString, new Object[]{theQuery.uid});
+            String queryString = String.format(QUERY_STRING, parameters.getSortStyle().toString());
+            SupportSQLiteQuery simpleQuery = new SimpleSQLiteQuery(queryString, new Object[]{parameters.getUid()});
             return Transformations.map(mAppDatabase.souvenirDao().getSouvenirs(simpleQuery),
                     Result::success);
         });
@@ -186,10 +200,10 @@ public class SouvenirRepository {
                 Timber.e(databaseError.toException(), "There was a problem uploading the data to the database; not uploading photo to FirebaseStorage");
                 return;
             }
-            if (photo != null) {
+            if (photo != null && photo.exists()) {
                 mStorageHandler.uploadImage(photo);
             } else {
-                Timber.e("The photo was null; not uploading photo to FirebaseStorage");
+                Timber.e("The photo was null or did not exist; not uploading...");
             }
         };
 
@@ -202,7 +216,7 @@ public class SouvenirRepository {
 
         db.setTimestamp(Instant.now().toEpochMilli());
         db.setId(UUID.randomUUID().toString());
-        db.setUID(mAuth.getCurrentUser().getUid());
+        db.setUID(mAuth.getUid());
         new SouvenirInsertTask(mAppDatabase.souvenirDao(), callback).execute(db);
     }
 
@@ -220,18 +234,18 @@ public class SouvenirRepository {
                 Timber.e(databaseError.toException(), "There was a problem uploading the data to the database");
                 return;
             }
-            if (photo != null) {
+            if (photo != null && photo.exists()) {
                 Timber.i("attempting to upload the photo...");
                 mStorageHandler.uploadImage(photo);
             } else {
-                Timber.e("The photo was null!");
+                Timber.e("The photo was null or did not exist; not uploading...");
             }
         };
 
         DataUpdateCallback callback = numRowsAffected -> {
             if (numRowsAffected > 0) {
                 Timber.i("data was updated just fine!");
-                mFirebaseHandler.addSouvenir(souvenir, completionListener);
+                mFirebaseHandler.storeSouvenir(souvenir, completionListener);
             }
         };
 
@@ -270,13 +284,30 @@ public class SouvenirRepository {
 
     static class QueryParameters {
 
-        final String uid;
-        final SortStyle sortStyle;
+        private String uid;
+        private SortStyle sortStyle;
 
-        public QueryParameters(@Nullable String uid, @NonNull SortStyle sortStyle) {
+        QueryParameters(@Nullable String uid, @NonNull SortStyle sortStyle) {
             this.uid = uid;
             this.sortStyle = sortStyle;
         }
+
+        String getUid() {
+            return uid;
+        }
+
+        void setUid(String uid) {
+            this.uid = uid;
+        }
+
+        SortStyle getSortStyle() {
+            return sortStyle;
+        }
+
+        public void setSortStyle(SortStyle sortStyle) {
+            this.sortStyle = sortStyle;
+        }
+
     }
 
 }

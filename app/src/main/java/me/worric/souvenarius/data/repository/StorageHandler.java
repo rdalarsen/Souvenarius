@@ -2,9 +2,9 @@ package me.worric.souvenarius.data.repository;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -27,16 +27,14 @@ public class StorageHandler {
         mAuth = FirebaseAuth.getInstance();
         mFirebaseStorage = FirebaseStorage.getInstance();
         mRef = mFirebaseStorage.getReference(STORAGE_REFERENCE);
+        Timber.i("Constructor called");
     }
 
     public void uploadImage(@NonNull File imageFile) {
-        if (checkAuthState() == null) {
-            Timber.w("User is null, not uploading image");
-            return;
+        if (TextUtils.isEmpty(mAuth.getUid())) {
+            Timber.i("User null, not uploading photo");
         }
-
-        StorageReference ref = mRef.child(imageFile.getName());
-        ref.putFile(Uri.fromFile(imageFile)).addOnCompleteListener(task -> {
+        mRef.child(imageFile.getName()).putFile(Uri.fromFile(imageFile)).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Uri uploadUri = task.getResult().getUploadSessionUri();
                 Timber.i("Upload URI: %s", uploadUri.toString());
@@ -50,12 +48,6 @@ public class StorageHandler {
     }
 
     public void removeImage(@NonNull String photoName) {
-        Timber.i("attempting deletion of A SINGLE photos of the souvenir");
-        if (checkAuthState() == null) {
-            Timber.w("User is null, not removing image");
-            return;
-        }
-
         mRef.child(photoName).delete().addOnCompleteListener(task -> {
             Timber.i("The DELETE task is successful? %s", task.isSuccessful());
             if (!task.isSuccessful()) Timber.e(task.getException(), "Task DELETE didn't execute right!");
@@ -63,11 +55,6 @@ public class StorageHandler {
     }
 
     public void removeImages(@NonNull List<String> photos) {
-        if (checkAuthState() == null) {
-            Timber.w("User is null, not removing multiple images");
-            return;
-        }
-
         if (photos.isEmpty()) {
             Timber.w("list of photos for the current souvenir is empty. Skipping deletion...");
             return;
@@ -80,10 +67,6 @@ public class StorageHandler {
                 if (!task.isSuccessful()) Timber.e(task.getException(), "Task DELETE didn't execute right!");
             });
         }
-    }
-
-    private FirebaseUser checkAuthState() {
-        return mAuth.getCurrentUser();
     }
 
 }

@@ -40,6 +40,6 @@ public class MainViewModel extends ViewModel {
     }
 
     public void sync() {
-        mSouvenirRepository.fetchNewSouvenirs();
+        mSouvenirRepository.refreshSouvenirsFromRemote();
     }
 }
