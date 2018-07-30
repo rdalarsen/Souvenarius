@@ -24,7 +24,10 @@ import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.db.model.SouvenirDb;
 import me.worric.souvenarius.databinding.FragmentMainBinding;
+import me.worric.souvenarius.ui.common.PrefsUtils;
 import timber.log.Timber;
+
+import static me.worric.souvenarius.data.repository.SouvenirRepository.PREFS_KEY_SORT_STYLE;
 
 public class MainFragment extends Fragment {
 
@@ -59,8 +62,8 @@ public class MainFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProviders.of(getActivity(), mFactory).get(MainViewModel.class);
-        mViewModel.getSouvenirs().observe(this, souvenirs -> {
-            if (souvenirs.status.equals(Result.Status.SUCCESS)) mAdapter.swapLists(souvenirs.response);
+        mViewModel.getSouvenirs().observe(this, souvenirResult -> {
+            if (souvenirResult.status.equals(Result.Status.SUCCESS)) mAdapter.swapLists(souvenirResult.response);
         });
         mBinding.setViewmodel(mViewModel);
         mBinding.setLifecycleOwner(this);
@@ -96,54 +99,45 @@ public class MainFragment extends Fragment {
             case R.id.action_main_sign_out:
                 ((MainActivity)getActivity()).handleSignOut();
                 return true;
+            case R.id.action_main_toggle_sort:
+                SortStyle sortStyle = PrefsUtils.getSortStyleFromPrefs(mSharedPreferences, PREFS_KEY_SORT_STYLE);
+                Timber.i("SortStyle is: %s", sortStyle.toString());
+                commitToggledSortStyleToPrefs(sortStyle);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    private final ItemClickListener mItemClickListener = souvenir -> {
-        try {
-            ((MainActivity)getActivity()).handleItemClicked(souvenir);
-        } catch (ClassCastException e) {
-            Toast.makeText(getContext(), "Something went wrong!", Toast.LENGTH_SHORT).show();
+    private void commitToggledSortStyleToPrefs(SortStyle sortStyle) {
+        if (sortStyle.equals(SortStyle.DESC)) {
+            Toast.makeText(getContext(), R.string.main_toast_sort_asc, Toast.LENGTH_SHORT).show();
+            mSharedPreferences.edit()
+                    .putString(PREFS_KEY_SORT_STYLE, SortStyle.ASC.toString())
+                    .apply();
+        } else {
+            Toast.makeText(getContext(), R.string.main_toast_sort_desc, Toast.LENGTH_SHORT).show();
+            mSharedPreferences.edit()
+                    .putString(PREFS_KEY_SORT_STYLE, SortStyle.DESC.toString())
+                    .apply();
         }
-    };
+    }
+
+    private final ItemClickListener mItemClickListener = souvenir ->
+            ((MainActivity)getActivity()).handleItemClicked(souvenir);
 
     public interface ItemClickListener {
         void onItemClicked(SouvenirDb souvenir);
     }
 
     public final ClickHandler mClickHandler = new ClickHandler() {
-
-        @Override
-        public void onToggleSortClicked(View view) {
-            SortStyle sortStyle = getSortStyleFromPrefs();
-            Timber.i("SortStyle is: %s", sortStyle.toString());
-            if (sortStyle.equals(SortStyle.DESC)) {
-                mSharedPreferences.edit()
-                        .putString("sortStyle", SortStyle.ASC.toString())
-                        .apply();
-            } else {
-                mSharedPreferences.edit()
-                        .putString("sortStyle", SortStyle.DESC.toString())
-                        .apply();
-            }
-        }
-
         @Override
         public void onAddDataClicked(View view) {
             mViewModel.addNewSouvenir();
         }
     };
 
-    @NonNull
-    private SortStyle getSortStyleFromPrefs() {
-        String value = mSharedPreferences.getString("sortStyle", SortStyle.DESC.toString());
-        return SortStyle.valueOf(value);
-    }
-
     public interface ClickHandler {
-        void onToggleSortClicked(View view);
         void onAddDataClicked(View view);
     }
 
@@ -154,11 +148,6 @@ public class MainFragment extends Fragment {
         MainFragment fragment = new MainFragment();
         fragment.setArguments(args);
         return fragment;
-    }
-
-    public enum ListStyle {
-        LIST,
-        STAGGERED
     }
 
 }

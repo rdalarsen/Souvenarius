@@ -7,13 +7,19 @@
         app:showAsAction="never" />
 
     <item
-        android:title="Sync"
+        android:title="Synchronize data"
         android:id="@+id/action_main_sync"
         app:showAsAction="never" />
 
     <item
-        android:title="Sign out"
+        android:title="@string/menu_main_sign_out"
         android:id="@+id/action_main_sign_out"
         app:showAsAction="never" />
+
+    <item
+        android:title="@string/menu_main_sort_by_date_asc_desc"
+        android:id="@+id/action_main_toggle_sort"
+        android:icon="@drawable/ic_sort"
+        app:showAsAction="ifRoom" />
 
 </menu>
