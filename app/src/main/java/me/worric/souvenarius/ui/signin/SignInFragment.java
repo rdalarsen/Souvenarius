@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.databinding.FragmentSigninBinding;
 import me.worric.souvenarius.ui.common.NetUtils;
+import me.worric.souvenarius.ui.main.FabState;
 import me.worric.souvenarius.ui.main.MainActivity;
 import timber.log.Timber;
 
@@ -58,6 +59,7 @@ public class SignInFragment extends Fragment {
         IntentFilter filter = new IntentFilter(MainActivity.ACTION_CONNECTIVITY_CHANGED);
         LocalBroadcastManager.getInstance(getContext())
                 .registerReceiver(mReceiver, filter);
+        ((MainActivity)getActivity()).handleFabState(FabState.HIDDEN);
     }
 
     @Override

@@ -48,16 +48,15 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     public static final String ACTION_CONNECTIVITY_CHANGED = "action_connectivity_changed";
     public static final String ACTION_AUTH_SIGNED_IN = "action_auth_signed_in";
     public static final String ACTION_AUTH_SIGNED_OUT = "action_auth_signed_out";
-    private static final String KEY_SHOW_FAB_STATUS = "key_show_fab_status";
     private static final int RC_PERMISSION_RESULTS = 404;
     private static final int RC_SIGN_IN_ACTIVITY = 909;
     private Boolean mIsConnected;
-    @Inject
-    protected ViewModelProvider.Factory mFactory;
     private MainViewModel mMainViewModel;
     private ActivityMainBinding mBinding;
     private FirebaseAuth mAuth;
     private LocalBroadcastManager mBroadcastManager;
+    @Inject
+    protected ViewModelProvider.Factory mFactory;
     @Inject
     DispatchingAndroidInjector<Fragment> mInjector;
 
@@ -102,12 +101,6 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     }
 
     private void restoreSavedValues(Bundle savedInstanceState) {
-        boolean shouldShowFab = true;
-        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_SHOW_FAB_STATUS)) {
-            shouldShowFab = savedInstanceState.getBoolean(KEY_SHOW_FAB_STATUS);
-        }
-        mBinding.setShouldShowFab(shouldShowFab);
-
         if (savedInstanceState != null && savedInstanceState.containsKey(KEY_IS_CONNECTED)) {
             mIsConnected = savedInstanceState.getBoolean(KEY_IS_CONNECTED);
         }
@@ -131,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
 
             switch (action) {
                 case SouvenirWidgetProvider.ACTION_WIDGET_LAUNCH_ADD_SOUVENIR:
-                    // handle action of launcing add souvenir
+                    // handle widget action of launcing add souvenir
                     getSupportFragmentManager().beginTransaction()
                             .add(R.id.fragment_container, MainFragment.newInstance())
                             .setReorderingAllowed(true)
@@ -143,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
                             .commit();
                     break;
                 case SouvenirWidgetProvider.ACTION_WIDGET_LAUNCH_SOUVENIR_DETAILS:
-                    // handle action of launching souvenir details
+                    // handle widget action of launching souvenir details
                     getSupportFragmentManager().beginTransaction()
                             .add(R.id.fragment_container, MainFragment.newInstance())
                             .setReorderingAllowed(true)
@@ -226,7 +219,6 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(KEY_SHOW_FAB_STATUS, mBinding.getShouldShowFab());
         outState.putBoolean(KEY_IS_CONNECTED, mIsConnected);
     }
 
@@ -238,12 +230,11 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
                 .commit();
     }
 
-    public void handleFab(View view) {
+    public void onAddFabClicked(View view) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, AddFragment.newInstance(), "add")
                 .addToBackStack(null)
                 .commit();
-        mBinding.setShouldShowFab(false);
         mBinding.appbarLayout.setExpanded(true);
     }
 
@@ -297,6 +288,10 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         } else {
             Toast.makeText(this, R.string.main_connectivity_error_message, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void handleFabState(FabState fabState) {
+        mBinding.setFabState(fabState);
     }
 
     public void handleSignOut() {

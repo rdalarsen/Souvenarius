@@ -4,12 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools">
     <data>
         <import type="android.view.View" />
+        <import type="me.worric.souvenarius.ui.main.FabState" />
         <variable
             name="viewmodel"
             type="me.worric.souvenarius.ui.main.MainViewModel" />
         <variable
-            name="shouldShowFab"
-            type="Boolean" />
+            name="fabState"
+            type="me.worric.souvenarius.ui.main.FabState" />
     </data>
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
@@ -38,18 +39,19 @@
         </android.support.design.widget.AppBarLayout>
 
         <android.support.design.widget.FloatingActionButton
-            android:id="@+id/btn_fab"
+            android:id="@+id/btn_fab_add_souvenir"
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
-            android:visibility="@{shouldShowFab ? View.VISIBLE : View.GONE}"
+            android:visibility="@{fabState == FabState.HIDDEN ? View.GONE : View.VISIBLE}"
             app:fabSize="normal"
             app:elevation="6dp"
             app:pressedTranslationZ="12dp"
-            android:layout_gravity="bottom|end"
+            app:layout_anchor="@+id/fragment_container"
             app:layout_anchorGravity="bottom|end"
-            android:onClick="handleFab" />
+            android:src="@drawable/ic_add_a_photo"
+            android:onClick="onAddFabClicked" />
 
     </android.support.design.widget.CoordinatorLayout>
 </layout>

@@ -26,6 +26,8 @@ import dagger.android.support.AndroidSupportInjection;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.databinding.FragmentAddBinding;
 import me.worric.souvenarius.ui.common.FileUtils;
+import me.worric.souvenarius.ui.main.FabState;
+import me.worric.souvenarius.ui.main.MainActivity;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
@@ -64,6 +66,12 @@ public class AddFragment extends Fragment {
         mBinding.setLifecycleOwner(this);
         mBinding.setClickHandler(mClickHandler);
         mBinding.etPlace.addTextChangedListener(mWatcher);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((MainActivity)getActivity()).handleFabState(FabState.HIDDEN);
     }
 
     private void takePhoto() {

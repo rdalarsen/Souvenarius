@@ -77,6 +77,12 @@ public class MainFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        ((MainActivity)getActivity()).handleFabState(FabState.ADD);
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         mViewModel.getSouvenirs().removeObservers(this);
@@ -135,10 +141,16 @@ public class MainFragment extends Fragment {
         public void onAddDataClicked(View view) {
             mViewModel.addNewSouvenir();
         }
+
+        @Override
+        public void onAddFabClicked(View view) {
+            ((MainActivity)getActivity()).onAddFabClicked(view);
+        }
     };
 
     public interface ClickHandler {
         void onAddDataClicked(View view);
+        void onAddFabClicked(View view);
     }
 
     public static MainFragment newInstance() {

@@ -30,6 +30,7 @@ import dagger.android.support.AndroidSupportInjection;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.databinding.FragmentDetailBinding;
 import me.worric.souvenarius.ui.common.FileUtils;
+import me.worric.souvenarius.ui.main.FabState;
 import me.worric.souvenarius.ui.main.MainActivity;
 import timber.log.Timber;
 
@@ -89,6 +90,12 @@ public class DetailFragment extends Fragment {
         mBinding.rvSouvenirPhotoList.setHasFixedSize(true);
         SnapHelper snapHelper = new LinearSnapHelper();
         snapHelper.attachToRecyclerView(mBinding.rvSouvenirPhotoList);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((MainActivity)getActivity()).handleFabState(FabState.HIDDEN);
     }
 
     @Override
