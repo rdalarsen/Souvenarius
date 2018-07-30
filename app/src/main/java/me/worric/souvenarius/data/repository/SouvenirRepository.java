@@ -224,8 +224,8 @@ public class SouvenirRepository {
         return mAppDatabase.souvenirDao().findOneById(souvenirId);
     }
 
-    public SouvenirDb findMostRecentSouvenir() {
-        return mAppDatabase.souvenirDao().findMostRecentSync();
+    public SouvenirDb findMostRecentSouvenir(String uid) {
+        return mAppDatabase.souvenirDao().findMostRecentSync(uid);
     }
 
     public void updateSouvenir(SouvenirDb souvenir, File photo) {

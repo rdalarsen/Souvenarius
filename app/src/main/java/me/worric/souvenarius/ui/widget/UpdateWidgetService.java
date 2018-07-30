@@ -62,8 +62,9 @@ public class UpdateWidgetService extends JobIntentService {
 
         Result<SouvenirDb> resultSouvenir;
 
-        if (mAuth.getCurrentUser() != null) {
-            SouvenirDb souvenir = mAppDatabase.souvenirDao().findMostRecentSync();
+        String uid = mAuth.getUid();
+        if (!TextUtils.isEmpty(uid)) {
+            SouvenirDb souvenir = mAppDatabase.souvenirDao().findMostRecentSync(uid);
 
             if (souvenir == null) {
                 resultSouvenir = Result.failure(getString(R.string.error_message_widget_no_souvenirs));

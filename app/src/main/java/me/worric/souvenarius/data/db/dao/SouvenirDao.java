@@ -23,16 +23,10 @@ public interface SouvenirDao {
     void insert(SouvenirDb... souvenirDbs);
 
     @Query("SELECT * FROM souvenirs ORDER BY timestamp ASC")
-    LiveData<List<SouvenirDb>> findAllOrderByTimeAsc();
-
-    @Query("SELECT * FROM souvenirs ORDER BY timestamp ASC")
     List<SouvenirDb> findAllOrderByTimeAscSync();
 
-    @Query("SELECT * FROM souvenirs ORDER BY timestamp DESC")
-    LiveData<List<SouvenirDb>> findAllOrderByTimeDesc();
-
-    @Query("SELECT * FROM souvenirs ORDER BY timestamp DESC LIMIT 1")
-    SouvenirDb findMostRecentSync();
+    @Query("SELECT * FROM souvenirs WHERE uid = :uid ORDER BY timestamp DESC LIMIT 1")
+    SouvenirDb findMostRecentSync(String uid);
 
     @Query("DELETE FROM souvenirs")
     int removeDatabaseContents();

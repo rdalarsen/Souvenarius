@@ -72,7 +72,7 @@ public class DetailFragment extends Fragment {
         mViewModel = ViewModelProviders.of(this, mFactory).get(DetailViewModel.class);
         mViewModel.setSouvenirId(souvenirId);
         mViewModel.getCurrentSouvenir().observe(this, souvenir -> {
-            mAdapter.swapPhotos(souvenir, mBinding.rvSouvenirPhotoList);
+            mAdapter.swapPhotos(souvenir);
             mBinding.setCurrentSouvenir(souvenir);
         });
         mBinding.setLifecycleOwner(this);
@@ -173,8 +173,6 @@ public class DetailFragment extends Fragment {
             textType = TextType.PLACE;
         } else if (viewId == R.id.tv_detail_story) {
             textType = TextType.STORY;
-        } else if (viewId == R.id.tv_detail_timestamp) {
-            textType = TextType.DATE;
         } else {
             throw new IllegalArgumentException("Unknown view ID: " + viewId);
         }
@@ -197,7 +195,6 @@ public class DetailFragment extends Fragment {
     public enum TextType {
         TITLE,
         PLACE,
-        DATE,
         STORY
     }
 

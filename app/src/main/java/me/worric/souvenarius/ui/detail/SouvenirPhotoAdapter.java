@@ -2,7 +2,6 @@ package me.worric.souvenarius.ui.detail;
 
 import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
-import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -20,36 +19,7 @@ public class SouvenirPhotoAdapter extends RecyclerView.Adapter<SouvenirPhotoAdap
         mListener = listener;
     }
 
-    public void swapPhotos(final SouvenirDb newSouvenir, RecyclerView rvSouvenirPhotoList) {
-        // TODO: disabled
-        DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
-            @Override
-            public int getOldListSize() {
-                return (mSouvenir != null) ? mSouvenir.getPhotos().size() : 0;
-            }
-
-            @Override
-            public int getNewListSize() {
-                return (newSouvenir != null) ? newSouvenir.getPhotos().size() : 0;
-            }
-
-            @Override
-            public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                if (mSouvenir != null && newSouvenir != null) {
-                    return mSouvenir.getPhotos().get(oldItemPosition).equals(newSouvenir.getPhotos().get(newItemPosition));
-                }
-                return false;
-            }
-
-            @Override
-            public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-                if (mSouvenir != null && newSouvenir != null) {
-                    return mSouvenir.getPhotos().get(oldItemPosition).equals(newSouvenir.getPhotos().get(newItemPosition));
-                }
-                return false;
-            }
-        });
-
+    public void swapPhotos(final SouvenirDb newSouvenir) {
         mSouvenir = newSouvenir;
         notifyDataSetChanged();
     }
@@ -86,6 +56,7 @@ public class SouvenirPhotoAdapter extends RecyclerView.Adapter<SouvenirPhotoAdap
         }
 
         void bind(String photoName) {
+            mBinding.setPlaceInArray(getAdapterPosition());
             mBinding.setPhotoName(photoName);
             mBinding.executePendingBindings();
         }

@@ -66,7 +66,7 @@ public class DetailViewModel extends ViewModel {
     }
 
     public boolean deletePhoto(File photoFile) {
-        Timber.i("Delete photo triggered! Photo name was: %s", photoFile.getName());
+        Timber.i("Delete photo triggered! Photo name was: %s", photoFile != null ? photoFile.getName() : "(PHOTO IS NULL)");
         SouvenirDb souvenir = mCurrentSouvenir.getValue();
         if (souvenir != null) {
             boolean deleteResult = souvenir.getPhotos().remove(photoFile.getName());

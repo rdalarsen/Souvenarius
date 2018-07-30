@@ -16,6 +16,8 @@
     <!-- Detail fragment -->
     <string name="content_desc_photo">Souvenir photo</string>
     <string name="content_desc_item_detail_photo">Souvenir photo</string>
+    <string name="menu_detail_add_a_photo">Add a photo</string>
+    <string name="menu_detail_delete_souvenir">Delete this souvenir</string>
 
     <!-- Sign in fragment -->
     <string name="sign_in_notice_no_internet">You need to sign in to use the app. Please also make sure you\'re connected to the internet.</string>
