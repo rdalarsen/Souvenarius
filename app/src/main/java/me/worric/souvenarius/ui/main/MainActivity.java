@@ -160,14 +160,6 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        if (mAuth.getCurrentUser() == null) {
-            // alert other components of the app that they can / cannot use signed-in services
-        }
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
