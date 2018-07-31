@@ -48,7 +48,7 @@
                 android:inputType="text"
                 android:maxLines="1"
                 android:ems="10"
-                android:hint="@string/title_hint" />
+                android:hint="@string/hint_title_add" />
 
             <EditText
                 android:id="@+id/et_place"
@@ -59,8 +59,8 @@
                 android:inputType="text"
                 android:maxLines="1"
                 android:ems="10"
-                android:text='@{viewmodel.locationInfo ?? "loading..."}'
-                android:hint="Location..." />
+                app:locationResult="@{viewmodel.locationInfo}"
+                android:hint="@string/hint_location_add" />
 
             <EditText
                 android:id="@+id/et_story"
@@ -71,9 +71,8 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/et_place"
                 app:layout_constraintBottom_toTopOf="@+id/btn_add_done"
-                app:layout_constraintVertical_bias="0.0"
                 android:inputType="textMultiLine"
-                android:hint="@string/story_hint"
+                android:hint="@string/hint_story_add"
                 android:ems="10" />
 
             <Button

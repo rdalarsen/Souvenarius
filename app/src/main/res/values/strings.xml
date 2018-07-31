@@ -6,9 +6,11 @@
 
     <!-- Add fragment -->
     <string name="content_desc_photo_preview">Photo preview</string>
-    <string name="title_hint">Title…</string>
-    <string name="story_hint">Your story here…</string>
+    <string name="hint_title_add">Title…</string>
+    <string name="hint_story_add">Your story here…</string>
     <string name="btn_done">Done!</string>
+    <string name="hint_location_add">Location</string>
+    <string name="format_location_add">%s, %s</string>
 
     <!-- Main fragment -->
     <string name="souvenir_list_error_message">There are no souvenirs. Go get some :)!</string>

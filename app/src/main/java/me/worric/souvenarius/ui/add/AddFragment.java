@@ -39,11 +39,11 @@ import static android.app.Activity.RESULT_OK;
 public class AddFragment extends Fragment {
 
     private static final int TAKE_PHOTO_REQUEST_CODE = 909;
-
-    @Inject
-    protected ViewModelProvider.Factory mFactory;
+    private static final String KEY_FILE_PATH = "key_file_path";
     private FragmentAddBinding mBinding;
     private AddViewModel mViewModel;
+    @Inject
+    protected ViewModelProvider.Factory mFactory;
 
     @Override
     public void onAttach(Context context) {
@@ -62,16 +62,32 @@ public class AddFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProviders.of(this, mFactory).get(AddViewModel.class);
+        restoreFile(savedInstanceState);
         mBinding.setViewmodel(mViewModel);
         mBinding.setLifecycleOwner(this);
         mBinding.setClickHandler(mClickHandler);
-        mBinding.etPlace.addTextChangedListener(mWatcher);
+        //mBinding.etPlace.addTextChangedListener(mWatcher);
+    }
+
+    private void restoreFile(Bundle savedInstanceState) {
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_FILE_PATH)) {
+            mViewModel.setPhotoFile(savedInstanceState.getString(KEY_FILE_PATH));
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
         ((MainActivity)getActivity()).handleFabState(FabState.HIDDEN);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        File currentFile = mViewModel.getPhotoFile().getValue();
+        if (currentFile != null) {
+            outState.putString(KEY_FILE_PATH, currentFile.getAbsolutePath());
+        }
     }
 
     private void takePhoto() {
@@ -150,10 +166,7 @@ public class AddFragment extends Fragment {
     };
 
     public static AddFragment newInstance() {
-        Bundle args = new Bundle();
-        AddFragment fragment = new AddFragment();
-        fragment.setArguments(args);
-        return fragment;
+        return new AddFragment();
     }
 
     public AddFragment() {

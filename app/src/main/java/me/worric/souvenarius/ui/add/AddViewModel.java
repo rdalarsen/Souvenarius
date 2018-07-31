@@ -3,13 +3,12 @@ package me.worric.souvenarius.ui.add;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
+import android.location.Address;
 import android.support.annotation.NonNull;
 import android.text.Editable;
 
 import java.io.File;
-import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -25,7 +24,6 @@ public class AddViewModel extends ViewModel {
     private final SouvenirRepository mSouvenirRepository;
     private final MutableLiveData<File> mPhotoFile;
     private final MediatorLiveData<String> mLocation;
-    private final LiveData<String> mResultAddress;
 
     @Inject
     public AddViewModel(SouvenirRepository souvenirRepository, LocationRepository locationRepository) {
@@ -33,22 +31,6 @@ public class AddViewModel extends ViewModel {
         mLocationRepository = locationRepository;
         mPhotoFile = new MutableLiveData<>();
         mLocation = new MediatorLiveData<>();
-        mResultAddress = getLiveData();
-        mLocation.addSource(mResultAddress, mLocation::setValue);
-    }
-
-    @NonNull
-    private LiveData<String> getLiveData() {
-        return Transformations.map(mLocationRepository.getLocation(), result -> {
-            Timber.i("Result status is: %s", result.status.name());
-            if (result.status.equals(Result.Status.SUCCESS)) {
-                return String.format("%s, %s", result.response.getLocality(),
-                        result.response.getCountryName());
-            } else if (result.status.equals(Result.Status.FAILURE)) {
-                return result.message;
-            }
-            throw new IllegalArgumentException("Unknown status: " + result.status.name());
-        });
     }
 
     public void setText(Editable editable) {
@@ -73,20 +55,32 @@ public class AddViewModel extends ViewModel {
         mPhotoFile.setValue(theFile);
     }
 
+    public void setPhotoFile(@NonNull String path) {
+        File currentPhotoFile = mPhotoFile.getValue();
+        Timber.i("currentFile: path=%s", currentPhotoFile != null ? currentPhotoFile.getAbsoluteFile() : "(WAS NULL)");
+        if (currentPhotoFile == null) {
+            Timber.i("Restoring file...");
+            File restoredFile = new File(path);
+            mPhotoFile.setValue(restoredFile);
+        }
+    }
+
     public LiveData<File> getPhotoFile() {
         return mPhotoFile;
     }
 
     public boolean deleteTempImage() {
-        boolean wasDeletedSuccessfully = Objects.requireNonNull(mPhotoFile.getValue()).delete();
-        if (wasDeletedSuccessfully) {
+        File currentFile = mPhotoFile.getValue();
+        if (currentFile != null) {
             mPhotoFile.setValue(null);
+            return currentFile.delete();
         }
-        return wasDeletedSuccessfully;
+        return false;
     }
 
-    public LiveData<String> getLocationInfo() {
-        return mLocation;
+    public LiveData<Result<Address>> getLocationInfo() {
+        Timber.i("getLocationInfo called");
+        return mLocationRepository.getLocation();
     }
 
     @Override
