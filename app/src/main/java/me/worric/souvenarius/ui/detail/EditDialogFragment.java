@@ -12,12 +12,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.databinding.DialogEditBinding;
+import me.worric.souvenarius.ui.common.NetUtils;
 
 /**
  * Inspired by <a href="https://guides.codepath.com/android/using-dialogfragment">this article</a>.
@@ -26,22 +28,16 @@ public class EditDialogFragment extends DialogFragment {
 
     private static final String KEY_TEXT_TYPE = "key_text_type";
     private static final String KEY_DIALOG_TITLE = "key_dialog_title";
-    @Inject
-    protected ViewModelProvider.Factory mFactory;
     private DetailViewModel mViewModel;
     private DetailFragment.TextType mTextType;
     private DialogEditBinding mBinding;
+    @Inject
+    protected ViewModelProvider.Factory mFactory;
 
     @Override
     public void onAttach(Context context) {
         AndroidSupportInjection.inject(this);
         super.onAttach(context);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mTextType = (DetailFragment.TextType) getArguments().getSerializable(KEY_TEXT_TYPE);
     }
 
     @Nullable
@@ -54,22 +50,23 @@ public class EditDialogFragment extends DialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mTextType = (DetailFragment.TextType) getArguments().getSerializable(KEY_TEXT_TYPE);
         mViewModel = ViewModelProviders.of(getParentFragment(), mFactory).get(DetailViewModel.class);
         mBinding.setTextType(mTextType);
         mBinding.setViewmodel(mViewModel);
         mBinding.setLifecycleOwner(this);
         mBinding.setClickHandler(mTextClickHandler);
-
-        /*String title = getArguments().getString(KEY_DIALOG_TITLE, "default title");
-        getDialog().setTitle("Edit the " + title);*/
-
         getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
     }
 
     private EditTextClickHandler mTextClickHandler = new EditTextClickHandler() {
         @Override
         public void onTextEdited(View view) {
-            mViewModel.updateSouvenirText(mBinding.etEditDetail.getText(), mTextType);
+            if (!NetUtils.getIsConnected(getContext())) {
+                showErrorToast();
+            } else {
+                mViewModel.updateSouvenirText(mBinding.etEditDetail.getText(), mTextType);
+            }
             getDialog().dismiss();
         }
 
@@ -78,6 +75,10 @@ public class EditDialogFragment extends DialogFragment {
             getDialog().dismiss();
         }
     };
+
+    private void showErrorToast() {
+        Toast.makeText(getContext(), "No internet connection. Cannot edit.", Toast.LENGTH_SHORT).show();
+    }
 
     public interface EditTextClickHandler {
         void onTextEdited(View view);

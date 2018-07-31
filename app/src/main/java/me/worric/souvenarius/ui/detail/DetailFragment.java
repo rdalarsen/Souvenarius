@@ -30,6 +30,7 @@ import dagger.android.support.AndroidSupportInjection;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.databinding.FragmentDetailBinding;
 import me.worric.souvenarius.ui.common.FileUtils;
+import me.worric.souvenarius.ui.common.NetUtils;
 import me.worric.souvenarius.ui.main.FabState;
 import me.worric.souvenarius.ui.main.MainActivity;
 import timber.log.Timber;
@@ -41,11 +42,11 @@ public class DetailFragment extends Fragment {
 
     private static final String KEY_SOUVENIR_ID = "key_souvenir_id";
     private static final int TAKE_PHOTO_REQUEST_CODE = 1009;
-    @Inject
-    protected ViewModelProvider.Factory mFactory;
     private DetailViewModel mViewModel;
     private FragmentDetailBinding mBinding;
     private SouvenirPhotoAdapter mAdapter;
+    @Inject
+    protected ViewModelProvider.Factory mFactory;
 
     @Override
     public void onAttach(Context context) {
@@ -172,6 +173,10 @@ public class DetailFragment extends Fragment {
     }
 
     private OnEditClickedListener mOnEditClickedListener = view -> {
+        if (!NetUtils.getIsConnected(getContext())) {
+            showErrorToast();
+            return;
+        }
         TextType textType;
         int viewId = view.getId();
         if (viewId == R.id.tv_detail_title) {
@@ -186,6 +191,10 @@ public class DetailFragment extends Fragment {
         EditDialogFragment.newInstance("Edit details", textType)
                 .show(getChildFragmentManager(), "edit_title");
     };
+
+    private void showErrorToast() {
+        Toast.makeText(getContext(), "No internet connection. Cannot edit.", Toast.LENGTH_SHORT).show();
+    }
 
     public interface OnEditClickedListener {
         void onEditClicked(View view);
