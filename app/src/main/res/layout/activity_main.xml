@@ -50,6 +50,8 @@
             app:pressedTranslationZ="12dp"
             app:layout_anchor="@+id/fragment_container"
             app:layout_anchorGravity="bottom|end"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             android:src="@drawable/ic_add_a_photo"
             android:onClick="onAddFabClicked" />
 
