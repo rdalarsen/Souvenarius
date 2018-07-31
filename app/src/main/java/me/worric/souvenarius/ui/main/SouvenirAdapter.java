@@ -10,7 +10,7 @@ import java.util.List;
 
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.db.model.SouvenirDb;
-import me.worric.souvenarius.databinding.SouvenirItemBinding;
+import me.worric.souvenarius.databinding.ItemMainSouvenirBinding;
 
 public class SouvenirAdapter extends RecyclerView.Adapter<SouvenirAdapter.SouvenirViewholder> {
 
@@ -35,8 +35,7 @@ public class SouvenirAdapter extends RecyclerView.Adapter<SouvenirAdapter.Souven
     @Override
     public SouvenirViewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        SouvenirItemBinding binding =
-                DataBindingUtil.inflate(inflater, R.layout.souvenir_item, parent, false);
+        ItemMainSouvenirBinding binding = DataBindingUtil.inflate(inflater, R.layout.item_main_souvenir, parent, false);
         binding.setItemClickListener(mListener);
         return new SouvenirViewholder(binding);
     }
@@ -53,9 +52,9 @@ public class SouvenirAdapter extends RecyclerView.Adapter<SouvenirAdapter.Souven
 
     static class SouvenirViewholder extends RecyclerView.ViewHolder {
 
-        private final SouvenirItemBinding mBinding;
+        private final ItemMainSouvenirBinding mBinding;
 
-        SouvenirViewholder(SouvenirItemBinding binding) {
+        SouvenirViewholder(ItemMainSouvenirBinding binding) {
             super(binding.getRoot());
             mBinding = binding;
         }
