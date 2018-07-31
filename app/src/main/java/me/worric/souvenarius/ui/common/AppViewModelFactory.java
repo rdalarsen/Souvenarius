@@ -11,39 +11,39 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 
 /**
- * The code for this generified ViewmodelFactory can be found in
- * <a href="https://stackoverflow.com/a/44506312">this</a> SO post. The post references the JAVA version
- * of the file from <a href="https://github.com/googlesamples/android-architecture-components/blob/master/GithubBrowserSample/app/src/main/java/com/android/example/github/viewmodel/GithubViewModelFactory.kt">Google's Github browser example</a>.
+ * The code for this generified ViewmodelFactory is inspired by
+ * <a href="https://github.com/googlesamples/android-architecture-components/blob/ea59732402708c8e7bca3ecc24a7c9ca85736b55/GithubBrowserSample/app/src/main/java/com/android/example/github/viewmodel/GithubViewModelFactory.java">this</a>
+ * file from the GitHubBrowser Google sample repository.
  */
 @Singleton
 public class AppViewModelFactory implements ViewModelProvider.Factory {
 
-    private final Map<Class<? extends ViewModel>, Provider<ViewModel>> creators;
+    private final Map<Class<? extends ViewModel>,Provider<ViewModel>> mDaggerMultiBindingMap;
 
     @Inject
-    public AppViewModelFactory(Map<Class<? extends ViewModel>, Provider<ViewModel>> creators) {
-        this.creators = creators;
+    public AppViewModelFactory(Map<Class<? extends ViewModel>, Provider<ViewModel>> daggerMultiBindingMap) {
+        mDaggerMultiBindingMap = daggerMultiBindingMap;
     }
 
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        Provider<? extends ViewModel> creator = creators.get(modelClass);
-        if (creator == null) {
-            for (Map.Entry<Class<? extends ViewModel>, Provider<ViewModel>> entry : creators.entrySet()) {
-                if (modelClass.isAssignableFrom(entry.getKey())) {
-                    creator = entry.getValue();
+        Provider<? extends ViewModel> viewmodelProvider = mDaggerMultiBindingMap.get(modelClass);
+
+        if (viewmodelProvider == null) {
+            for (Map.Entry<Class<? extends ViewModel>, Provider<ViewModel>> entry : mDaggerMultiBindingMap.entrySet()) {
+                Class classKey = entry.getKey();
+
+                if (modelClass.isAssignableFrom(classKey)) {
+                    viewmodelProvider = entry.getValue();
                     break;
                 }
             }
         }
-        if (creator == null) {
-            throw new IllegalArgumentException("unknown model class " + modelClass);
-        }
-        try {
-            return (T) creator.get();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+
+        if (viewmodelProvider == null) throw new IllegalArgumentException("Unknown class: " + modelClass);
+
+        return (T) viewmodelProvider.get();
     }
+
 }

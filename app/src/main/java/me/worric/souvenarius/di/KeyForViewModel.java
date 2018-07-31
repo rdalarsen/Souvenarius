@@ -8,9 +8,9 @@ import java.lang.annotation.RetentionPolicy;
 
 import dagger.MapKey;
 
+@MapKey
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@MapKey
-public @interface ViewModelKey {
+public @interface KeyForViewModel {
     Class<? extends ViewModel> value();
 }

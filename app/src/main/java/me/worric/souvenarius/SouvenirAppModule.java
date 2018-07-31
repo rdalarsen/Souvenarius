@@ -17,7 +17,7 @@ import dagger.android.support.AndroidSupportInjectionModule;
 import dagger.multibindings.IntoMap;
 import me.worric.souvenarius.data.db.AppDatabase;
 import me.worric.souvenarius.di.AppContext;
-import me.worric.souvenarius.di.ViewModelKey;
+import me.worric.souvenarius.di.KeyForViewModel;
 import me.worric.souvenarius.ui.add.AddViewModel;
 import me.worric.souvenarius.ui.common.AppViewModelFactory;
 import me.worric.souvenarius.ui.detail.DetailViewModel;
@@ -45,17 +45,17 @@ public abstract class SouvenirAppModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(MainViewModel.class)
+    @KeyForViewModel(MainViewModel.class)
     abstract ViewModel bindViewModel(MainViewModel mainViewModel);
 
     @Binds
     @IntoMap
-    @ViewModelKey(DetailViewModel.class)
+    @KeyForViewModel(DetailViewModel.class)
     abstract ViewModel bindDetailViewModel(DetailViewModel detailViewModel);
 
     @Binds
     @IntoMap
-    @ViewModelKey(AddViewModel.class)
+    @KeyForViewModel(AddViewModel.class)
     abstract ViewModel bindAddViewModel(AddViewModel addViewModel);
 
     @Provides

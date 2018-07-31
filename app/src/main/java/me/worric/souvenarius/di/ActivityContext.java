@@ -6,8 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 
 import javax.inject.Qualifier;
 
-@Documented
 @Qualifier
+@Documented
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ActivityContext {
 }
