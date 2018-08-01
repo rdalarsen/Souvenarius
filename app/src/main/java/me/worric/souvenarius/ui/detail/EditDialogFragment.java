@@ -76,13 +76,13 @@ public class EditDialogFragment extends DialogFragment {
         }
     };
 
-    private void showErrorToast() {
-        Toast.makeText(getContext(), "No internet connection. Cannot edit.", Toast.LENGTH_SHORT).show();
-    }
-
     public interface EditTextClickHandler {
         void onTextEdited(View view);
         void onCancelled(View view);
+    }
+
+    private void showErrorToast() {
+        Toast.makeText(getContext(), "No internet connection. Cannot edit.", Toast.LENGTH_SHORT).show();
     }
 
     public static EditDialogFragment newInstance(String title, DetailFragment.TextType textType) {
@@ -95,6 +95,7 @@ public class EditDialogFragment extends DialogFragment {
         return fragment;
     }
 
-    public EditDialogFragment() {}
+    public EditDialogFragment() {
+    }
 
 }

@@ -42,6 +42,7 @@ public class DetailFragment extends Fragment {
 
     private static final String KEY_SOUVENIR_ID = "key_souvenir_id";
     private static final int TAKE_PHOTO_REQUEST_CODE = 1009;
+    private static final String TAG_EDIT_DETAIL = "edit_detail";
     private DetailViewModel mViewModel;
     private FragmentDetailBinding mBinding;
     private SouvenirPhotoAdapter mAdapter;
@@ -96,7 +97,7 @@ public class DetailFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity)getActivity()).handleFabState(FabState.HIDDEN);
+        ((MainActivity)getActivity()).setFabState(FabState.HIDDEN);
     }
 
     @Override
@@ -118,7 +119,7 @@ public class DetailFragment extends Fragment {
                 return true;
             case R.id.action_detail_delete_souvenir:
                 mViewModel.deleteSouvenir();
-                ((MainActivity)getActivity()).onSouvenirDeleted();
+                ((MainActivity)getActivity()).handleSouvenirDeleted();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -160,6 +161,11 @@ public class DetailFragment extends Fragment {
     }
 
     private PhotoClickListener mPhotoClickListener = photoName -> {
+        if (!NetUtils.getIsConnected(getContext())) {
+            showErrorToast();
+            return;
+        }
+
         File thePhoto = FileUtils.getLocalFileForPhotoName(photoName, getContext());
         if (mViewModel.deletePhoto(thePhoto)) {
             Timber.i("Successfully deleted");
@@ -177,6 +183,7 @@ public class DetailFragment extends Fragment {
             showErrorToast();
             return;
         }
+
         TextType textType;
         int viewId = view.getId();
         if (viewId == R.id.tv_detail_title) {
@@ -189,15 +196,15 @@ public class DetailFragment extends Fragment {
             throw new IllegalArgumentException("Unknown view ID: " + viewId);
         }
         EditDialogFragment.newInstance("Edit details", textType)
-                .show(getChildFragmentManager(), "edit_title");
+                .show(getChildFragmentManager(), TAG_EDIT_DETAIL);
     };
-
-    private void showErrorToast() {
-        Toast.makeText(getContext(), "No internet connection. Cannot edit.", Toast.LENGTH_SHORT).show();
-    }
 
     public interface OnEditClickedListener {
         void onEditClicked(View view);
+    }
+
+    private void showErrorToast() {
+        Toast.makeText(getContext(), R.string.error_message_detail_no_connection, Toast.LENGTH_SHORT).show();
     }
 
     public static DetailFragment newInstance(String souvenirId) {

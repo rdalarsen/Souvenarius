@@ -17,18 +17,13 @@ public class SouvenirAdapter extends RecyclerView.Adapter<SouvenirAdapter.Souven
     private final MainFragment.ItemClickListener mListener;
     private List<SouvenirDb> mSouvenirs;
 
-    public SouvenirAdapter(MainFragment.ItemClickListener listener) {
+    SouvenirAdapter(MainFragment.ItemClickListener listener) {
         mListener = listener;
     }
 
     public void swapLists(List<SouvenirDb> souvenirs) {
-        if (mSouvenirs == null) {
-            mSouvenirs = souvenirs;
-            notifyItemRangeInserted(0, souvenirs.size());
-        } else {
-            mSouvenirs = souvenirs;
-            notifyDataSetChanged();
-        }
+        mSouvenirs = souvenirs;
+        notifyDataSetChanged();
     }
 
     @NonNull

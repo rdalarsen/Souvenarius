@@ -8,9 +8,6 @@
         <variable
             name="viewmodel"
             type="me.worric.souvenarius.ui.main.MainViewModel" />
-        <variable
-            name="clickHandler"
-            type="me.worric.souvenarius.ui.main.MainFragment.ClickHandler" />
     </data>
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"

@@ -59,10 +59,9 @@ public class UpdateWidgetService extends JobIntentService {
 
     private void handleUpdateWidget() {
         Timber.i("handleUpdateWidget triggered");
-
         Result<SouvenirDb> resultSouvenir;
-
         String uid = mAuth.getUid();
+
         if (!TextUtils.isEmpty(uid)) {
             SouvenirDb souvenir = mAppDatabase.souvenirDao().findMostRecentSync(uid);
 

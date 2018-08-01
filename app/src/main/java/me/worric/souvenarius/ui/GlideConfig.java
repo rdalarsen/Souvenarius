@@ -22,12 +22,10 @@ public class GlideConfig extends AppGlideModule {
 
     @Override
     public void applyOptions(@NonNull Context context, @NonNull GlideBuilder builder) {
-        builder.setDefaultRequestOptions(
-                new RequestOptions()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .placeholder(R.drawable.ic_photo)
-                        .error(R.drawable.ic_broken_image)
-        );
+        builder.setDefaultRequestOptions(new RequestOptions()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .placeholder(R.drawable.ic_photo)
+                .error(R.drawable.ic_broken_image));
     }
 
     @Override

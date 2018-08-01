@@ -14,6 +14,8 @@ import timber.log.Timber;
 
 public final class NetUtils {
 
+    public static final String STORAGE_PATH = "images";
+
     private NetUtils() {
     }
 
@@ -42,7 +44,7 @@ public final class NetUtils {
         if (TextUtils.isEmpty(imageName)) {
             return null;
         }
-        return FirebaseStorage.getInstance().getReference().child(imageName);
+        return FirebaseStorage.getInstance().getReference(STORAGE_PATH).child(imageName);
     }
 
 }

@@ -20,6 +20,7 @@ import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.db.model.SouvenirDb;
 import me.worric.souvenarius.ui.GlideApp;
 import me.worric.souvenarius.ui.common.FileUtils;
+import me.worric.souvenarius.ui.common.NetUtils;
 import me.worric.souvenarius.ui.main.MainActivity;
 import timber.log.Timber;
 
@@ -59,38 +60,51 @@ public class SouvenirWidgetProvider extends AppWidgetProvider {
                 GlideApp.with(context.getApplicationContext())
                         .asBitmap()
                         .load(uriForLocalFile)
+                        .placeholder(R.drawable.ic_photo)
+                        .error(R.drawable.ic_broken_image)
                         .centerCrop()
                         .into(appWidgetTarget);
             } else if (!TextUtils.isEmpty(photoFileName)){
                 // Load image hosted on Firebase image via Glide
                 GlideApp.with(context.getApplicationContext())
                         .asBitmap()
-                        .load(FirebaseStorage.getInstance().getReference("images").child(photoFileName))
+                        .load(FirebaseStorage.getInstance().getReference(NetUtils.STORAGE_PATH)
+                                .child(photoFileName))
+                        .placeholder(R.drawable.ic_photo)
+                        .error(R.drawable.ic_broken_image)
                         .centerCrop()
                         .into(appWidgetTarget);
             }
 
-            Intent souvenirDetailsIntent = new Intent(context, MainActivity.class);
-            souvenirDetailsIntent.setAction(ACTION_WIDGET_LAUNCH_SOUVENIR_DETAILS);
-            souvenirDetailsIntent.putExtra(EXTRA_SOUVENIR_ID, souvenirDb.response.getId());
-            souvenirDetailsIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            PendingIntent souvenirDetailsPendingIntent = PendingIntent.getActivity(context, RC_LAUNCH_SOUVENIR_DETAILS,
-                    souvenirDetailsIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-            views.setOnClickPendingIntent(R.id.iv_widget_souvenir_photo, souvenirDetailsPendingIntent);
+            views.setOnClickPendingIntent(R.id.iv_widget_souvenir_photo,
+                    createSouvenirDetailsPendingIntent(context, souvenirDb));
         } else {
             views.setViewVisibility(R.id.iv_widget_souvenir_photo, View.GONE);
             views.setViewVisibility(R.id.tv_widget_error_text, View.VISIBLE);
             views.setTextViewText(R.id.tv_widget_error_text, souvenirDb.message);
         }
 
+        views.setOnClickPendingIntent(R.id.btn_widget_add_souvenir,
+                createAddSouvenirPendingIntent(context));
+
+        appWidgetManager.updateAppWidget(appWidgetId, views);
+    }
+
+    private static PendingIntent createAddSouvenirPendingIntent(Context context) {
         Intent addSouvenirIntent = new Intent(context, MainActivity.class);
         addSouvenirIntent.setAction(ACTION_WIDGET_LAUNCH_ADD_SOUVENIR);
         addSouvenirIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent addSouvenirPendingIntent = PendingIntent.getActivity(context, RC_LAUNCH_ADD_SOUVENIR, addSouvenirIntent,
+        return PendingIntent.getActivity(context, RC_LAUNCH_ADD_SOUVENIR, addSouvenirIntent,
                 PendingIntent.FLAG_CANCEL_CURRENT);
-        views.setOnClickPendingIntent(R.id.btn_widget_add_souvenir, addSouvenirPendingIntent);
+    }
 
-        appWidgetManager.updateAppWidget(appWidgetId, views);
+    private static PendingIntent createSouvenirDetailsPendingIntent(Context context, Result<SouvenirDb> souvenirDb) {
+        Intent souvenirDetailsIntent = new Intent(context, MainActivity.class);
+        souvenirDetailsIntent.setAction(ACTION_WIDGET_LAUNCH_SOUVENIR_DETAILS);
+        souvenirDetailsIntent.putExtra(EXTRA_SOUVENIR_ID, souvenirDb.response.getId());
+        souvenirDetailsIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        return PendingIntent.getActivity(context, RC_LAUNCH_SOUVENIR_DETAILS,
+                souvenirDetailsIntent, PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
     static void updateAppWidgets(Context context, AppWidgetManager manager, int[] widgetIds,
@@ -116,5 +130,6 @@ public class SouvenirWidgetProvider extends AppWidgetProvider {
     public void onDisabled(Context context) {
 
     }
+
 }
 

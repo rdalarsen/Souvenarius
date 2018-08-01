@@ -2,12 +2,6 @@ package me.worric.souvenarius.ui.add;
 
 import android.text.TextUtils;
 
-import org.threeten.bp.Instant;
-
-import java.io.File;
-
-import me.worric.souvenarius.data.model.Souvenir;
-
 public final class SouvenirSaveInfo {
 
     private String mStory;
@@ -48,15 +42,4 @@ public final class SouvenirSaveInfo {
         mTitle = title;
     }
 
-    public Souvenir toSouvenir(File photo) {
-        Souvenir souvenir = new Souvenir();
-        souvenir.setPlace(mPlace);
-        souvenir.setTimestamp(Instant.now().toEpochMilli());
-        souvenir.setTitle(mTitle);
-        souvenir.setStory(mStory);
-        if (photo != null) {
-            souvenir.addPhoto(photo.getName());
-        }
-        return souvenir;
-    }
 }

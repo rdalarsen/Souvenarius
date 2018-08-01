@@ -33,6 +33,7 @@ public class AddViewModel extends ViewModel {
         mLocation = new MediatorLiveData<>();
     }
 
+    @Deprecated
     public void setText(Editable editable) {
         mLocation.setValue(editable.toString());
     }
@@ -88,4 +89,5 @@ public class AddViewModel extends ViewModel {
         Timber.i("Clearing result data...");
         mLocationRepository.clearResult();
     }
+
 }

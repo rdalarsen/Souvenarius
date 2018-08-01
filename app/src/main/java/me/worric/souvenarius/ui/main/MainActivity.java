@@ -74,12 +74,12 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         mAuth = FirebaseAuth.getInstance();
         mBroadcastManager = LocalBroadcastManager.getInstance(this);
 
-        checkPermissions();
-        initFragment(savedInstanceState);
+        checkLocationPermissions();
+        setupNavigation(savedInstanceState);
         restoreSavedValues(savedInstanceState);
     }
 
-    private void checkPermissions() {
+    private void checkLocationPermissions() {
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this,
@@ -92,21 +92,7 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         }
     }
 
-    private void launchSignInActivity() {
-        startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder()
-                .setIsSmartLockEnabled(false)
-                .setAvailableProviders(Collections.singletonList(
-                        new AuthUI.IdpConfig.EmailBuilder().build()))
-                .build(), RC_SIGN_IN_ACTIVITY);
-    }
-
-    private void restoreSavedValues(Bundle savedInstanceState) {
-        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_IS_CONNECTED)) {
-            mIsConnected = savedInstanceState.getBoolean(KEY_IS_CONNECTED);
-        }
-    }
-
-    private void initFragment(Bundle savedInstanceState) {
+    private void setupNavigation(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             return;
         } else if (mAuth.getCurrentUser() == null) {
@@ -159,6 +145,12 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         }
     }
 
+    private void restoreSavedValues(Bundle savedInstanceState) {
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_IS_CONNECTED)) {
+            mIsConnected = savedInstanceState.getBoolean(KEY_IS_CONNECTED);
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -170,6 +162,12 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     protected void onPause() {
         super.onPause();
         unregisterReceiver(mConnectionStateReceiver);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        mBinding.appbarLayout.setExpanded(true);
     }
 
     @Override
@@ -214,7 +212,7 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         outState.putBoolean(KEY_IS_CONNECTED, mIsConnected);
     }
 
-    public void handleItemClicked(SouvenirDb souvenir) {
+    public void handleSouvenirClicked(SouvenirDb souvenir) {
         String souvenirId = souvenir.getId();
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, DetailFragment.newInstance(souvenirId), "detail")
@@ -222,7 +220,7 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
                 .commit();
     }
 
-    public void onAddFabClicked(View view) {
+    public void handleAddFabClicked(View view) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, AddFragment.newInstance(), "add")
                 .addToBackStack(null)
@@ -230,21 +228,38 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         mBinding.appbarLayout.setExpanded(true);
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        mBinding.appbarLayout.setExpanded(true);
-    }
-
-    public void onSouvenirDeleted() {
+    public void handleSouvenirDeleted() {
         getSupportFragmentManager().popBackStack();
     }
 
-    @Override
-    public AndroidInjector<Fragment> supportFragmentInjector() {
-        return mInjector;
+    public void setFabState(FabState fabState) {
+        mBinding.setFabState(fabState);
     }
 
+    public void handleSignIn(boolean isConnected) {
+        if (isConnected) {
+            launchSignInActivity();
+        } else {
+            Toast.makeText(this, R.string.main_connectivity_error_message, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void launchSignInActivity() {
+        startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder()
+                .setIsSmartLockEnabled(false)
+                .setAvailableProviders(Collections.singletonList(
+                        new AuthUI.IdpConfig.EmailBuilder().build()))
+                .build(), RC_SIGN_IN_ACTIVITY);
+    }
+
+    public void handleSignOut() {
+        mAuth.signOut();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, SignInFragment.newInstance())
+                .commit();
+        UpdateWidgetService.startWidgetUpdate(this);
+        mBroadcastManager.sendBroadcast(new Intent(ACTION_AUTH_SIGNED_OUT));
+    }
 
     private BroadcastReceiver mConnectionStateReceiver = new BroadcastReceiver() {
         @Override
@@ -256,43 +271,27 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
             if (mIsConnected == null) {
                 mIsConnected = isConnected;
                 Timber.i("new connected status triggered (from null!)");
-                sendConnectivityBroadcast();
+                sendLocalConnectivityBroadcast();
             } else {
                 boolean needsUpdate = !(mIsConnected == isConnected);
                 if (needsUpdate) {
                     mIsConnected = isConnected;
                     Timber.i("new connected status triggered");
-                    sendConnectivityBroadcast();
+                    sendLocalConnectivityBroadcast();
                 }
             }
         }
     };
 
-    private void sendConnectivityBroadcast() {
+    private void sendLocalConnectivityBroadcast() {
         Intent intent = new Intent(ACTION_CONNECTIVITY_CHANGED);
         intent.putExtra(KEY_IS_CONNECTED, mIsConnected);
         mBroadcastManager.sendBroadcast(intent);
     }
 
-    public void handleSignInButtonClicked(boolean isConnected) {
-        if (isConnected) {
-            launchSignInActivity();
-        } else {
-            Toast.makeText(this, R.string.main_connectivity_error_message, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    public void handleFabState(FabState fabState) {
-        mBinding.setFabState(fabState);
-    }
-
-    public void handleSignOut() {
-        mAuth.signOut();
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, SignInFragment.newInstance())
-                .commit();
-        UpdateWidgetService.startWidgetUpdate(this);
-        mBroadcastManager.sendBroadcast(new Intent(ACTION_AUTH_SIGNED_OUT));
+    @Override
+    public AndroidInjector<Fragment> supportFragmentInjector() {
+        return mInjector;
     }
 
 }

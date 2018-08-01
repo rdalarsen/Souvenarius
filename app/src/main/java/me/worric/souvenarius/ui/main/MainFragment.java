@@ -31,13 +31,13 @@ import static me.worric.souvenarius.data.repository.SouvenirRepository.PREFS_KEY
 
 public class MainFragment extends Fragment {
 
+    private FragmentMainBinding mBinding;
+    private MainViewModel mViewModel;
+    private SouvenirAdapter mAdapter;
     @Inject
     protected ViewModelProvider.Factory mFactory;
     @Inject
     protected SharedPreferences mSharedPreferences;
-    private FragmentMainBinding mBinding;
-    private MainViewModel mViewModel;
-    private SouvenirAdapter mAdapter;
 
     @Override
     public void onAttach(Context context) {
@@ -67,7 +67,6 @@ public class MainFragment extends Fragment {
         });
         mBinding.setViewmodel(mViewModel);
         mBinding.setLifecycleOwner(this);
-        mBinding.setClickHandler(mClickHandler);
         setupRecyclerView();
     }
 
@@ -79,7 +78,7 @@ public class MainFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity)getActivity()).handleFabState(FabState.ADD);
+        ((MainActivity)getActivity()).setFabState(FabState.ADD);
     }
 
     @Override
@@ -130,36 +129,17 @@ public class MainFragment extends Fragment {
     }
 
     private final ItemClickListener mItemClickListener = souvenir ->
-            ((MainActivity)getActivity()).handleItemClicked(souvenir);
+            ((MainActivity)getActivity()).handleSouvenirClicked(souvenir);
 
     public interface ItemClickListener {
         void onItemClicked(SouvenirDb souvenir);
     }
 
-    public final ClickHandler mClickHandler = new ClickHandler() {
-        @Override
-        public void onAddDataClicked(View view) {
-            mViewModel.addNewSouvenir();
-        }
-
-        @Override
-        public void onAddFabClicked(View view) {
-            ((MainActivity)getActivity()).onAddFabClicked(view);
-        }
-    };
-
-    public interface ClickHandler {
-        void onAddDataClicked(View view);
-        void onAddFabClicked(View view);
+    public static MainFragment newInstance() {
+        return new MainFragment();
     }
 
-    public static MainFragment newInstance() {
-
-        Bundle args = new Bundle();
-
-        MainFragment fragment = new MainFragment();
-        fragment.setArguments(args);
-        return fragment;
+    public MainFragment() {
     }
 
 }

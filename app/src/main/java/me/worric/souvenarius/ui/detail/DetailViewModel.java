@@ -20,7 +20,6 @@ public class DetailViewModel extends ViewModel {
     private final SouvenirRepository mRepository;
     private final MutableLiveData<String> mSouvenirId;
     private final MediatorLiveData<SouvenirDb> mCurrentSouvenir;
-    private final LiveData<SouvenirDb> mFindOne;
     private final MutableLiveData<File> mPhotoFile;
 
     @Inject
@@ -28,9 +27,9 @@ public class DetailViewModel extends ViewModel {
         mRepository = repository;
         mSouvenirId = new MutableLiveData<>();
         mPhotoFile = new MutableLiveData<>();
-        mFindOne = Transformations.switchMap(mSouvenirId, mRepository::findOneById);
         mCurrentSouvenir = new MediatorLiveData<>();
-        mCurrentSouvenir.addSource(mFindOne, souvenirDb -> {
+        LiveData<SouvenirDb> findOne = Transformations.switchMap(mSouvenirId, mRepository::findOneById);
+        mCurrentSouvenir.addSource(findOne, souvenirDb -> {
             Timber.i("observer triggered!");
             mCurrentSouvenir.setValue(souvenirDb);
         });
@@ -43,7 +42,6 @@ public class DetailViewModel extends ViewModel {
     }
 
     public LiveData<SouvenirDb> getCurrentSouvenir() {
-        Timber.i("getCurrentSouvenir called!");
         return mCurrentSouvenir;
     }
 
@@ -87,9 +85,11 @@ public class DetailViewModel extends ViewModel {
 
     public boolean clearPhoto() {
         File photoFile = mPhotoFile.getValue();
-        if (photoFile != null && photoFile.exists()) {
+        if (photoFile != null) {
             setCurrentPhotoFile(null);
-            return photoFile.delete();
+            if (photoFile.exists()) {
+                return photoFile.delete();
+            }
         }
         return false;
     }

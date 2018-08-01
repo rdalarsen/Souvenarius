@@ -53,7 +53,7 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:src="@drawable/ic_add_a_photo"
-            android:onClick="onAddFabClicked" />
+            android:onClick="handleAddFabClicked" />
 
     </android.support.design.widget.CoordinatorLayout>
 </layout>

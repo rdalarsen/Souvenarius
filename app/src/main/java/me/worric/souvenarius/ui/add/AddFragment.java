@@ -78,7 +78,7 @@ public class AddFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity)getActivity()).handleFabState(FabState.HIDDEN);
+        ((MainActivity)getActivity()).setFabState(FabState.HIDDEN);
     }
 
     @Override
@@ -148,6 +148,7 @@ public class AddFragment extends Fragment {
         void onSaveSouvenirClicked(View view);
     }
 
+    @Deprecated
     private final TextWatcher mWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
