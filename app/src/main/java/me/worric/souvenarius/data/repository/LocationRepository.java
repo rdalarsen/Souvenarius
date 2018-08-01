@@ -5,6 +5,8 @@ import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
+import android.os.AsyncTask;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 
@@ -22,6 +24,7 @@ import timber.log.Timber;
 @Singleton
 public class LocationRepository {
 
+    private static final int MAX_ADDRESS_RESULTS = 1;
     private final FusedLocationProviderClient mClient;
     private final Geocoder mGeocoder;
     private MutableLiveData<Result<Address>> mResult;
@@ -42,34 +45,68 @@ public class LocationRepository {
     }
 
     private void fetchLocation() {
-        mClient.getLastLocation().addOnSuccessListener(location -> {
-            Result<Address> result;
-            if (location != null) {
-                List<Address> addresses;
-                try {
-                    addresses = mGeocoder.getFromLocation(location.getLatitude(),
-                            location.getLongitude(), 1);
-                    if (addresses != null && addresses.size() > 0) {
-                        result = Result.success(addresses.get(0));
-                    } else {
-                        result = Result.failure("No matching addresses");
-                    }
-                } catch (IOException e) {
-                    Timber.e(e, "getLocation: There was an error fetching the stuff");
-                    result = Result.failure(e.getMessage());
-                }
-            } else {
-                 result = Result.failure("No locations found. Is location services disabled?");
-            }
-            mResult.setValue(result);
-        }).addOnFailureListener(e -> {
-            Result<Address> result = Result.failure(e.getMessage());
-            mResult.setValue(result);
-        });
+        try {
+            mClient.getLastLocation().addOnSuccessListener(location -> {
+                LocationCallback callback = result -> mResult.setValue(result);
+                new LocationAsyncTask(callback, mGeocoder).execute(location);
+            }).addOnFailureListener(e -> {
+                Result<Address> result = Result.failure("Cannot get device location");
+                mResult.setValue(result);
+            });
+        } catch (SecurityException e) {
+            Timber.e(e, "Missing permission for fetching location");
+            mResult.setValue(Result.failure("Missing permission for fetching location"));
+        }
     }
 
     public void clearResult() {
         mResult = null;
+    }
+
+    private static class LocationAsyncTask extends AsyncTask<Location, Void, Result<Address>> {
+
+        private final LocationCallback mCallback;
+        private final Geocoder mGeocoder;
+
+        LocationAsyncTask(LocationCallback callback, Geocoder geocoder) {
+            mCallback = callback;
+            mGeocoder = geocoder;
+        }
+
+        @Override
+        protected Result<Address> doInBackground(Location... locations) {
+            Location location = locations[0];
+            Result<Address> result;
+            if (location != null) {
+                try {
+                    List<Address> addresses = mGeocoder.getFromLocation(
+                            location.getLatitude(),
+                            location.getLongitude(),
+                            MAX_ADDRESS_RESULTS);
+                    if (addresses != null && addresses.size() > 0) {
+                        result = Result.success(addresses.get(0));
+                    } else {
+                        result = Result.failure("No matching address");
+                    }
+                } catch (IOException e) {
+                    Timber.e(e, "There was an error fetching the location");
+                    result = Result.failure("There was an error fetching the location");
+                }
+            } else {
+                result = Result.failure("Cannot get device location");
+            }
+
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Result<Address> addressResult) {
+            mCallback.onFetchFinished(addressResult);
+        }
+    }
+
+    public interface LocationCallback {
+        void onFetchFinished(Result<Address> result);
     }
 
 }
