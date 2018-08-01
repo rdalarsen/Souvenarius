@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -36,6 +37,7 @@ public class MainFragment extends Fragment {
     private MainViewModel mViewModel;
     private SouvenirAdapter mAdapter;
     private boolean mIgnoreLayoutManagerSavedState = false;
+    private Parcelable mLayoutManagerState;
     @Inject
     protected ViewModelProvider.Factory mFactory;
     @Inject
@@ -76,10 +78,13 @@ public class MainFragment extends Fragment {
     }
 
     private void restoreLayoutManagerState(@Nullable Bundle savedInstanceState) {
-        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_LAYOUT_MANAGER_STATE)
-                && !mIgnoreLayoutManagerSavedState) {
-            mBinding.rvSouvenirList.getLayoutManager().onRestoreInstanceState(savedInstanceState
-                    .getParcelable(KEY_LAYOUT_MANAGER_STATE));
+        if (!mIgnoreLayoutManagerSavedState) {
+            if (mLayoutManagerState != null) {
+                mBinding.rvSouvenirList.getLayoutManager().onRestoreInstanceState(mLayoutManagerState);
+            } else if (savedInstanceState != null && savedInstanceState.containsKey(KEY_LAYOUT_MANAGER_STATE)) {
+                mBinding.rvSouvenirList.getLayoutManager().onRestoreInstanceState(savedInstanceState
+                        .getParcelable(KEY_LAYOUT_MANAGER_STATE));
+            }
         }
         mIgnoreLayoutManagerSavedState = false;
     }
@@ -94,6 +99,12 @@ public class MainFragment extends Fragment {
     public void onResume() {
         super.onResume();
         ((MainActivity)getActivity()).setFabState(FabState.ADD);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mLayoutManagerState = mBinding.rvSouvenirList.getLayoutManager().onSaveInstanceState();
     }
 
     @Override
@@ -148,8 +159,12 @@ public class MainFragment extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(KEY_LAYOUT_MANAGER_STATE, mBinding.rvSouvenirList.getLayoutManager()
-                .onSaveInstanceState());
+        if (mLayoutManagerState != null) {
+            outState.putParcelable(KEY_LAYOUT_MANAGER_STATE, mLayoutManagerState);
+        } else {
+            outState.putParcelable(KEY_LAYOUT_MANAGER_STATE, mBinding.rvSouvenirList.getLayoutManager()
+                    .onSaveInstanceState());
+        }
     }
 
     private final ItemClickListener mItemClickListener = souvenir ->
