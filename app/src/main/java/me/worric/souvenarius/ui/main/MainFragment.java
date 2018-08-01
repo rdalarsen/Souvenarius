@@ -31,9 +31,11 @@ import static me.worric.souvenarius.data.repository.SouvenirRepository.PREFS_KEY
 
 public class MainFragment extends Fragment {
 
+    private static final String KEY_LAYOUT_MANAGER_STATE = "key_layout_manager_state";
     private FragmentMainBinding mBinding;
     private MainViewModel mViewModel;
     private SouvenirAdapter mAdapter;
+    private boolean mIgnoreLayoutManagerSavedState = false;
     @Inject
     protected ViewModelProvider.Factory mFactory;
     @Inject
@@ -63,16 +65,29 @@ public class MainFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProviders.of(getActivity(), mFactory).get(MainViewModel.class);
         mViewModel.getSouvenirs().observe(this, souvenirResult -> {
-            if (souvenirResult.status.equals(Result.Status.SUCCESS)) mAdapter.swapLists(souvenirResult.response);
+            if (souvenirResult.status.equals(Result.Status.SUCCESS)) {
+                mAdapter.swapLists(souvenirResult.response);
+                restoreLayoutManagerState(savedInstanceState);
+            }
         });
         mBinding.setViewmodel(mViewModel);
         mBinding.setLifecycleOwner(this);
         setupRecyclerView();
     }
 
+    private void restoreLayoutManagerState(@Nullable Bundle savedInstanceState) {
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_LAYOUT_MANAGER_STATE)
+                && !mIgnoreLayoutManagerSavedState) {
+            mBinding.rvSouvenirList.getLayoutManager().onRestoreInstanceState(savedInstanceState
+                    .getParcelable(KEY_LAYOUT_MANAGER_STATE));
+        }
+        mIgnoreLayoutManagerSavedState = false;
+    }
+
     private void setupRecyclerView() {
         mAdapter = new SouvenirAdapter(mItemClickListener);
         mBinding.rvSouvenirList.setAdapter(mAdapter);
+        mBinding.rvSouvenirList.setHasFixedSize(true);
     }
 
     @Override
@@ -105,8 +120,10 @@ public class MainFragment extends Fragment {
                 ((MainActivity)getActivity()).handleSignOut();
                 return true;
             case R.id.action_main_toggle_sort:
-                SortStyle sortStyle = PrefsUtils.getSortStyleFromPrefs(mSharedPreferences, PREFS_KEY_SORT_STYLE);
+                SortStyle sortStyle = PrefsUtils.getSortStyleFromPrefs(mSharedPreferences,
+                        PREFS_KEY_SORT_STYLE);
                 Timber.i("SortStyle is: %s", sortStyle.toString());
+                mIgnoreLayoutManagerSavedState = true;
                 commitToggledSortStyleToPrefs(sortStyle);
                 return true;
             default:
@@ -126,6 +143,13 @@ public class MainFragment extends Fragment {
                     .putString(PREFS_KEY_SORT_STYLE, SortStyle.DESC.toString())
                     .apply();
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(KEY_LAYOUT_MANAGER_STATE, mBinding.rvSouvenirList.getLayoutManager()
+                .onSaveInstanceState());
     }
 
     private final ItemClickListener mItemClickListener = souvenir ->
