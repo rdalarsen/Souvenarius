@@ -80,14 +80,14 @@ public class DetailFragment extends Fragment {
         });
         mBinding.setLifecycleOwner(this);
         mBinding.setViewmodel(mViewModel);
-        mBinding.setClickHandler(mOnEditClickedListener);
+        mBinding.setClickHandler(mEditClickListener);
         setupRecyclerView();
     }
 
     private void setupRecyclerView() {
         mBinding.rvSouvenirPhotoList.setLayoutManager(new LinearLayoutManager(getContext(),
                 LinearLayoutManager.HORIZONTAL, false));
-        mAdapter = new SouvenirPhotoAdapter(mPhotoClickListener);
+        mAdapter = new SouvenirPhotoAdapter(mDeletePhotoClickListener);
         mBinding.rvSouvenirPhotoList.setAdapter(mAdapter);
         mBinding.rvSouvenirPhotoList.setHasFixedSize(true);
         SnapHelper snapHelper = new LinearSnapHelper();
@@ -160,7 +160,7 @@ public class DetailFragment extends Fragment {
         }
     }
 
-    private PhotoClickListener mPhotoClickListener = photoName -> {
+    private DeletePhotoClickListener mDeletePhotoClickListener = photoName -> {
         if (!NetUtils.getIsConnected(getContext())) {
             showErrorToast();
             return;
@@ -174,11 +174,11 @@ public class DetailFragment extends Fragment {
         }
     };
 
-    public interface PhotoClickListener {
+    public interface DeletePhotoClickListener {
         void onDeletePhoto(String photoName);
     }
 
-    private OnEditClickedListener mOnEditClickedListener = view -> {
+    private EditClickListener mEditClickListener = view -> {
         if (!NetUtils.getIsConnected(getContext())) {
             showErrorToast();
             return;
@@ -199,7 +199,7 @@ public class DetailFragment extends Fragment {
                 .show(getChildFragmentManager(), TAG_EDIT_DETAIL);
     };
 
-    public interface OnEditClickedListener {
+    public interface EditClickListener {
         void onEditClicked(View view);
     }
 

@@ -11,8 +11,8 @@
             name="placeInArray"
             type="Integer" />
         <variable
-            name="photoClickListener"
-            type="me.worric.souvenarius.ui.detail.DetailFragment.PhotoClickListener" />
+            name="deletePhotoClickListener"
+            type="me.worric.souvenarius.ui.detail.DetailFragment.DeletePhotoClickListener" />
     </data>
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
@@ -27,6 +27,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintDimensionRatio="h,4:3"
+            app:layout_constraintWidth_percent="@fraction/photo_width_percent"
             android:contentDescription="@string/content_desc_item_detail_photo"
             android:scaleType="centerCrop"
             app:imageName="@{photoName}"
@@ -34,13 +35,14 @@
 
         <ImageView
             android:id="@+id/iv_detail_item_delete_button"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
+            android:layout_width="@dimen/icon_dimension_small"
+            android:layout_height="@dimen/icon_dimension_small"
             app:layout_constraintEnd_toEndOf="@+id/iv_detail_item_photo"
             app:layout_constraintBottom_toBottomOf="@+id/iv_detail_item_photo"
-            android:src="@drawable/ic_add_a_photo"
+            android:contentDescription="@string/content_desc_detail_delete_photo"
+            android:src="@drawable/ic_delete"
             android:visibility="@{placeInArray > 0 ? View.VISIBLE : View.GONE}"
-            android:onClick="@{() -> photoClickListener.onDeletePhoto(photoName)}" />
+            android:onClick="@{() -> deletePhotoClickListener.onDeletePhoto(photoName)}" />
 
     </android.support.constraint.ConstraintLayout>
 </layout>

@@ -12,10 +12,10 @@ import me.worric.souvenarius.databinding.ItemDetailPhotoBinding;
 
 public class SouvenirPhotoAdapter extends RecyclerView.Adapter<SouvenirPhotoAdapter.SouvenirPhotoViewholder> {
 
-    private final DetailFragment.PhotoClickListener mListener;
+    private final DetailFragment.DeletePhotoClickListener mListener;
     private SouvenirDb mSouvenir;
 
-    SouvenirPhotoAdapter(DetailFragment.PhotoClickListener listener) {
+    SouvenirPhotoAdapter(DetailFragment.DeletePhotoClickListener listener) {
         mListener = listener;
     }
 
@@ -29,7 +29,7 @@ public class SouvenirPhotoAdapter extends RecyclerView.Adapter<SouvenirPhotoAdap
     public SouvenirPhotoViewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         ItemDetailPhotoBinding binding = DataBindingUtil.inflate(inflater, R.layout.item_detail_photo, parent, false);
-        binding.setPhotoClickListener(mListener);
+
         return new SouvenirPhotoViewholder(binding);
     }
 
