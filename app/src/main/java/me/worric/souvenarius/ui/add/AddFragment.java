@@ -24,6 +24,7 @@ import dagger.android.support.AndroidSupportInjection;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.databinding.FragmentAddBinding;
 import me.worric.souvenarius.ui.common.FileUtils;
+import me.worric.souvenarius.ui.common.NetUtils;
 import me.worric.souvenarius.ui.main.FabState;
 import me.worric.souvenarius.ui.main.MainActivity;
 import timber.log.Timber;
@@ -124,6 +125,11 @@ public class AddFragment extends Fragment {
 
         @Override
         public void onSaveSouvenirClicked(View view) {
+            if (!NetUtils.getIsConnected(getContext())) {
+                showErrorToast();
+                return;
+            }
+
             String story = mBinding.etStory.getText().toString();
             String title = mBinding.etSouvenirTitle.getText().toString();
             String place = mBinding.etPlace.getText().toString();
@@ -140,6 +146,10 @@ public class AddFragment extends Fragment {
             }
         }
     };
+
+    private void showErrorToast() {
+        Toast.makeText(getContext(), R.string.error_message_add_no_connection, Toast.LENGTH_SHORT).show();
+    }
 
     public interface ClickHandler {
         void onAddPhotoClicked(View view);

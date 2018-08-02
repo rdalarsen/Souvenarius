@@ -114,6 +114,17 @@ public class MainFragment extends Fragment {
     }
 
     @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mLayoutManagerState != null) {
+            outState.putParcelable(KEY_LAYOUT_MANAGER_STATE, mLayoutManagerState);
+        } else {
+            outState.putParcelable(KEY_LAYOUT_MANAGER_STATE, mBinding.rvSouvenirList.getLayoutManager()
+                    .onSaveInstanceState());
+        }
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.main_menu, menu);
     }
@@ -153,17 +164,6 @@ public class MainFragment extends Fragment {
             mSharedPreferences.edit()
                     .putString(PREFS_KEY_SORT_STYLE, SortStyle.DESC.toString())
                     .apply();
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        if (mLayoutManagerState != null) {
-            outState.putParcelable(KEY_LAYOUT_MANAGER_STATE, mLayoutManagerState);
-        } else {
-            outState.putParcelable(KEY_LAYOUT_MANAGER_STATE, mBinding.rvSouvenirList.getLayoutManager()
-                    .onSaveInstanceState());
         }
     }
 

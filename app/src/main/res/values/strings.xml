@@ -17,6 +17,7 @@
     <string name="error_message_add_no_photo_app">No photo app available.</string>
     <string name="take_photo_add">Tap here to take a photo!</string>
     <string name="btn_add_save_souvenir">Save souvenir</string>
+    <string name="error_message_add_no_connection">No internet connection. Cannot add souvenir.</string>
 
     <!-- Main fragment -->
     <string name="souvenir_list_error_message">There are no souvenirs. Go get some :)!</string>
