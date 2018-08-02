@@ -41,6 +41,8 @@
             app:layout_constraintBottom_toBottomOf="@+id/iv_detail_item_photo"
             android:contentDescription="@string/content_desc_detail_delete_photo"
             android:src="@drawable/ic_delete"
+            android:tint="@color/colorAccent"
+            android:alpha="0.75"
             android:visibility="@{placeInArray > 0 ? View.VISIBLE : View.GONE}"
             android:onClick="@{() -> deletePhotoClickListener.onDeletePhoto(photoName)}" />
 
