@@ -15,11 +15,14 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
+import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.db.model.SouvenirDb;
+import me.worric.souvenarius.di.FirebaseErrorMsgs;
 import timber.log.Timber;
 
 public class FirebaseHandler {
@@ -28,13 +31,15 @@ public class FirebaseHandler {
     private final FirebaseDatabase mDatabase;
     private final FirebaseAuth mAuth;
     private final DatabaseReference mRef;
+    private final Map<Integer,String> mErrorMessages;
     private MutableLiveData<Result<List<SouvenirDb>>> mResult;
 
     @Inject
-    public FirebaseHandler() {
+    public FirebaseHandler(@FirebaseErrorMsgs Map<Integer,String> errorMessages) {
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance();
         mRef = mDatabase.getReference(SOUVENIRS_REFERENCE);
+        mErrorMessages = errorMessages;
     }
 
     public void fetchSouvenirsForCurrentUser() {
@@ -105,7 +110,8 @@ public class FirebaseHandler {
     }
 
     public void clearResults() {
-        mResult.setValue(Result.failure("Result cleared"));
+        mResult.setValue(Result.failure(mErrorMessages
+                .get(R.string.error_message_firebase_result_cleared)));
     }
 
     private FirebaseUser checkAuthState() {

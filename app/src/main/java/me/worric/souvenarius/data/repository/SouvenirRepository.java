@@ -22,11 +22,13 @@ import org.threeten.bp.Instant;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.db.AppDatabase;
 import me.worric.souvenarius.data.db.model.SouvenirDb;
@@ -36,6 +38,7 @@ import me.worric.souvenarius.data.db.tasks.SouvenirInsertAllTask;
 import me.worric.souvenarius.data.db.tasks.SouvenirInsertTask;
 import me.worric.souvenarius.data.db.tasks.SouvenirUpdateTask;
 import me.worric.souvenarius.di.AppContext;
+import me.worric.souvenarius.di.SouvenirErrorMsgs;
 import me.worric.souvenarius.ui.common.NetUtils;
 import me.worric.souvenarius.ui.main.MainActivity;
 import me.worric.souvenarius.ui.main.SortStyle;
@@ -50,10 +53,10 @@ public class SouvenirRepository {
     private static final String QUERY_STRING = "SELECT * FROM souvenirs WHERE uid = ? ORDER BY timestamp %s";
     private final FirebaseHandler mFirebaseHandler;
     private final StorageHandler mStorageHandler;
+    private final Map<Integer,String> mErrorMessages;
     private final FirebaseAuth mAuth;
     private final AppDatabase mAppDatabase;
     private final MutableLiveData<QueryParameters> mQueryParameters = new MutableLiveData<>();
-    //private final MediatorLiveData<Result<List<SouvenirDb>>> mSouvenirs;
     /* see: https://stackoverflow.com/questions/2542938/sharedpreferences-onsharedpreferencechangelistener-not-being-called-consistently */
     private final SharedPreferences.OnSharedPreferenceChangeListener mPrefsChangeListener;
     private final SharedPreferences mPrefs;
@@ -62,11 +65,13 @@ public class SouvenirRepository {
     @Inject
     public SouvenirRepository(FirebaseHandler firebaseHandler,
                               StorageHandler storageHandler,
+                              @SouvenirErrorMsgs Map<Integer,String> errorMessages,
                               AppDatabase appDatabase,
                               SharedPreferences prefs,
                               @AppContext Context context) {
         mFirebaseHandler = firebaseHandler;
         mStorageHandler = storageHandler;
+        mErrorMessages = errorMessages;
         mAuth = FirebaseAuth.getInstance();
         mAppDatabase = appDatabase;
         mPrefs = prefs;
@@ -82,7 +87,6 @@ public class SouvenirRepository {
         SharedPreferences.OnSharedPreferenceChangeListener listener = (sharedPreferences, key) -> {
             SortStyle sortStyle = getSortStyleFromPrefs(sharedPreferences, key);
             Timber.i("SortStyle is now set to: %s", sortStyle.toString());
-            //setSouvenirSource(sortStyle, mSouvenirs);
             mQueryParameters.setValue(new QueryParameters(mAuth.getUid(), sortStyle));
         };
         prefs.registerOnSharedPreferenceChangeListener(listener);
@@ -123,7 +127,8 @@ public class SouvenirRepository {
         return Transformations.switchMap(mQueryParameters, parameters -> {
             if (TextUtils.isEmpty(parameters.getUid())) {
                 MutableLiveData<Result<List<SouvenirDb>>> errorLiveData = new MutableLiveData<>();
-                errorLiveData.setValue(Result.failure("Not logged in."));
+                errorLiveData.setValue(Result.failure(mErrorMessages
+                        .get(R.string.error_message_souvenir_repo_not_logged_in)));
                 return errorLiveData;
             }
             String queryString = String.format(QUERY_STRING, parameters.getSortStyle().toString());

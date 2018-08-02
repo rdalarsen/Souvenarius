@@ -8,6 +8,7 @@ import timber.log.Timber;
 public final class PrefsUtils {
 
     public static final String DEFAULT_SORT_VALUE = SortStyle.DESC.toString();
+    public static final String PREFS_NAME = "souvenarius";
 
     private PrefsUtils() {
     }

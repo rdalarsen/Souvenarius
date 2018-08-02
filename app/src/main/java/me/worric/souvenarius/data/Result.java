@@ -27,5 +27,6 @@ public final class Result<T> {
         SUCCESS,
         FAILURE
     }
+
 }
 

@@ -27,13 +27,14 @@ public class StorageHandler {
         mAuth = FirebaseAuth.getInstance();
         mFirebaseStorage = FirebaseStorage.getInstance();
         mRef = mFirebaseStorage.getReference(STORAGE_REFERENCE);
-        Timber.i("Constructor called");
     }
 
     public void uploadImage(@NonNull File imageFile) {
         if (TextUtils.isEmpty(mAuth.getUid())) {
             Timber.i("User null, not uploading photo");
+            return;
         }
+
         mRef.child(imageFile.getName()).putFile(Uri.fromFile(imageFile)).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Uri uploadUri = task.getResult().getUploadSessionUri();

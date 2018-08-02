@@ -11,6 +11,8 @@ import me.worric.souvenarius.data.db.model.SouvenirDb;
 @TypeConverters(Converters.class)
 public abstract class AppDatabase extends RoomDatabase {
 
+    public static final String DB_NAME = "souvenirdb";
+
     public abstract SouvenirDao souvenirDao();
 
 }

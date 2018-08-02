@@ -1,12 +1,10 @@
 package me.worric.souvenarius.ui.add;
 
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.location.Address;
 import android.support.annotation.NonNull;
-import android.text.Editable;
 
 import java.io.File;
 
@@ -23,19 +21,12 @@ public class AddViewModel extends ViewModel {
     private final LocationRepository mLocationRepository;
     private final SouvenirRepository mSouvenirRepository;
     private final MutableLiveData<File> mPhotoFile;
-    private final MediatorLiveData<String> mLocation;
 
     @Inject
     public AddViewModel(SouvenirRepository souvenirRepository, LocationRepository locationRepository) {
         mSouvenirRepository = souvenirRepository;
         mLocationRepository = locationRepository;
         mPhotoFile = new MutableLiveData<>();
-        mLocation = new MediatorLiveData<>();
-    }
-
-    @Deprecated
-    public void setText(Editable editable) {
-        mLocation.setValue(editable.toString());
     }
 
     public boolean addSouvenir(SouvenirSaveInfo info) {

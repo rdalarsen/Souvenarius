@@ -11,8 +11,6 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,7 +64,6 @@ public class AddFragment extends Fragment {
         mBinding.setViewmodel(mViewModel);
         mBinding.setLifecycleOwner(this);
         mBinding.setClickHandler(mClickHandler);
-        //mBinding.etPlace.addTextChangedListener(mWatcher);
     }
 
     private void restoreFile(Bundle savedInstanceState) {
@@ -91,7 +88,6 @@ public class AddFragment extends Fragment {
     }
 
     private void takePhoto() {
-        //TODO: delete previous image if exists
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if ((intent.resolveActivity(getContext().getPackageManager())) != null) {
             File photo = FileUtils.createTempImageFile(getContext());
@@ -101,7 +97,7 @@ public class AddFragment extends Fragment {
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                 startActivityForResult(intent, TAKE_PHOTO_REQUEST_CODE);
             } else {
-                Toast.makeText(getContext(), "Could allocate temporary file", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.error_message_add_temp_file, Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -131,13 +127,13 @@ public class AddFragment extends Fragment {
             String place = mBinding.etPlace.getText().toString();
             SouvenirSaveInfo info = new SouvenirSaveInfo(story, title, place);
             if (info.hasMissingValues()) {
-                Toast.makeText(getContext(), "There are missing values. Please input them",
+                Toast.makeText(getContext(), R.string.error_message_add_missing_values,
                         Toast.LENGTH_SHORT).show();
             } else {
                 if (mViewModel.addSouvenir(info)) {
-                    Toast.makeText(getContext(), "Souvenir successfully saved", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.success_message_add_souvenir_saved, Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(getContext(), "Souvenir COULD NOT be saved!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.error_message_souvenir_not_saved, Toast.LENGTH_SHORT).show();
                 }
             }
         }
@@ -147,24 +143,6 @@ public class AddFragment extends Fragment {
         void onAddPhotoClicked(View view);
         void onSaveSouvenirClicked(View view);
     }
-
-    @Deprecated
-    private final TextWatcher mWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-            mViewModel.setText(s);
-        }
-    };
 
     public static AddFragment newInstance() {
         return new AddFragment();
