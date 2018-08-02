@@ -24,10 +24,9 @@ import me.worric.souvenarius.ui.common.NetUtils;
 /**
  * Inspired by <a href="https://guides.codepath.com/android/using-dialogfragment">this article</a>.
  */
-public class EditDialogFragment extends DialogFragment {
+public class EditDialog extends DialogFragment {
 
     private static final String KEY_TEXT_TYPE = "key_text_type";
-    private static final String KEY_DIALOG_TITLE = "key_dialog_title";
     private DetailViewModel mViewModel;
     private DetailFragment.TextType mTextType;
     private DialogEditBinding mBinding;
@@ -85,15 +84,15 @@ public class EditDialogFragment extends DialogFragment {
         Toast.makeText(getContext(), "No internet connection. Cannot edit.", Toast.LENGTH_SHORT).show();
     }
 
-    public static EditDialogFragment newInstance(DetailFragment.TextType textType) {
+    public static EditDialog newInstance(DetailFragment.TextType textType) {
         Bundle args = new Bundle();
         args.putSerializable(KEY_TEXT_TYPE, textType);
-        EditDialogFragment fragment = new EditDialogFragment();
+        EditDialog fragment = new EditDialog();
         fragment.setArguments(args);
         return fragment;
     }
 
-    public EditDialogFragment() {
+    public EditDialog() {
     }
 
 }

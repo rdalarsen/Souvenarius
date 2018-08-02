@@ -245,7 +245,7 @@ public class DetailFragment extends Fragment {
             throw new IllegalArgumentException("Unknown view ID: " + viewId);
         }
 
-        EditDialogFragment.newInstance(textType)
+        EditDialog.newInstance(textType)
                 .show(getChildFragmentManager(), TAG_EDIT_DETAIL);
     };
 

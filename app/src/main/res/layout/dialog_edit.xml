@@ -6,7 +6,7 @@
             type="me.worric.souvenarius.ui.detail.DetailViewModel" />
         <variable
             name="clickHandler"
-            type="me.worric.souvenarius.ui.detail.EditDialogFragment.EditTextClickHandler" />
+            type="me.worric.souvenarius.ui.detail.EditDialog.EditTextClickHandler" />
         <variable
             name="textType"
             type="me.worric.souvenarius.ui.detail.DetailFragment.TextType" />

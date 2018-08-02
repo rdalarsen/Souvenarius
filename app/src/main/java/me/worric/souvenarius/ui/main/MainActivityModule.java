@@ -9,7 +9,7 @@ import me.worric.souvenarius.di.ActivityContext;
 import me.worric.souvenarius.di.ActivityScope;
 import me.worric.souvenarius.ui.add.AddFragment;
 import me.worric.souvenarius.ui.detail.DetailFragment;
-import me.worric.souvenarius.ui.detail.EditDialogFragment;
+import me.worric.souvenarius.ui.detail.EditDialog;
 
 @Module
 public abstract class MainActivityModule {
@@ -29,6 +29,6 @@ public abstract class MainActivityModule {
     abstract DetailFragment contributeDetailFragment();
 
     @ContributesAndroidInjector
-    abstract EditDialogFragment contributeEditDiablogFragment();
+    abstract EditDialog contributeEditDiablogFragment();
 
 }
