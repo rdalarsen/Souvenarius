@@ -8,16 +8,19 @@ import android.support.v7.app.AlertDialog;
 
 import me.worric.souvenarius.R;
 
-public class DeleteConfirmationDialogFragment extends DialogFragment {
+public class DeletePhotoConfirmationDialog extends DialogFragment {
+
+    public static final String KEY_PHOTO_NAME = "key_photo_name";
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        String photoName = getArguments().getString(KEY_PHOTO_NAME, "");
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext())
-                .setTitle(R.string.dialog_title_detail)
-                .setMessage(R.string.dialog_message_detail)
+                .setTitle(R.string.dialog_photo_deletion_title_detail)
+                .setMessage(R.string.dialog_photo_deletion_message_detail)
                 .setPositiveButton(R.string.dialog_positive_label_detail, (dialog, which) -> {
-                    ((DetailFragment)getParentFragment()).onDeleteSouvenir();
+                    ((DetailFragment) getParentFragment()).onDeletePhoto(photoName);
                     dialog.dismiss();
                 })
                 .setNegativeButton(R.string.dialog_negative_label_detail, (dialog, which) ->
@@ -25,8 +28,12 @@ public class DeleteConfirmationDialogFragment extends DialogFragment {
         return dialogBuilder.create();
     }
 
-    public static DeleteConfirmationDialogFragment newInstance() {
-        return new DeleteConfirmationDialogFragment();
+    public static DeletePhotoConfirmationDialog newInstance(String photoName) {
+        Bundle args = new Bundle();
+        args.putString(KEY_PHOTO_NAME, photoName);
+        DeletePhotoConfirmationDialog fragment = new DeletePhotoConfirmationDialog();
+        fragment.setArguments(args);
+        return fragment;
     }
 
 }

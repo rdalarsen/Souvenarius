@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -40,12 +41,15 @@ import static android.app.Activity.RESULT_OK;
 
 public class DetailFragment extends Fragment {
 
+    private static final String KEY_LAYOUT_MANAGER_STATE = "key_layout_manager_state";
     private static final String KEY_SOUVENIR_ID = "key_souvenir_id";
-    private static final int TAKE_PHOTO_REQUEST_CODE = 1009;
     private static final String TAG_EDIT_DETAIL = "edit_detail";
+    private static final String TAG_DELETE_PHOTO = "delete_photo";
+    private static final int TAKE_PHOTO_REQUEST_CODE = 1009;
     private DetailViewModel mViewModel;
     private FragmentDetailBinding mBinding;
     private SouvenirPhotoAdapter mAdapter;
+    private Parcelable mLayoutManagerState;
     @Inject
     protected ViewModelProvider.Factory mFactory;
 
@@ -69,19 +73,29 @@ public class DetailFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         String souvenirId = getArguments().getString(KEY_SOUVENIR_ID);
         mViewModel = ViewModelProviders.of(this, mFactory).get(DetailViewModel.class);
         mViewModel.setSouvenirId(souvenirId);
         mViewModel.getCurrentSouvenir().observe(this, souvenir -> {
             mAdapter.swapPhotos(souvenir);
             mBinding.setCurrentSouvenir(souvenir);
+            restoreLayoutManagerState(savedInstanceState);
         });
         mBinding.setLifecycleOwner(this);
         mBinding.setViewmodel(mViewModel);
         mBinding.setClickHandler(mEditClickListener);
         setupRecyclerView();
+    }
+
+    private void restoreLayoutManagerState(Bundle savedInstanceState) {
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_LAYOUT_MANAGER_STATE)) {
+            Parcelable savedLayoutManagerState = savedInstanceState
+                    .getParcelable(KEY_LAYOUT_MANAGER_STATE);
+            mBinding.rvSouvenirPhotoList.getLayoutManager()
+                    .onRestoreInstanceState(savedLayoutManagerState);
+        }
     }
 
     private void setupRecyclerView() {
@@ -101,9 +115,23 @@ public class DetailFragment extends Fragment {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        mLayoutManagerState = mBinding.rvSouvenirPhotoList.getLayoutManager().onSaveInstanceState();
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         mViewModel.getCurrentSouvenir().removeObservers(this);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mLayoutManagerState != null) {
+            outState.putParcelable(KEY_LAYOUT_MANAGER_STATE, mLayoutManagerState);
+        }
     }
 
     @Override
@@ -126,7 +154,7 @@ public class DetailFragment extends Fragment {
                     showErrorToast();
                     return true;
                 }
-                DeleteConfirmationDialogFragment.newInstance().show(getChildFragmentManager(), "delete_dialog");
+                DeleteSouvenirConfirmationDialog.newInstance().show(getChildFragmentManager(), "delete_dialog");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -178,16 +206,21 @@ public class DetailFragment extends Fragment {
             return;
         }
 
+        DeletePhotoConfirmationDialog.newInstance(photoName).show(getChildFragmentManager(),
+                TAG_DELETE_PHOTO);
+    };
+
+    public interface DeletePhotoClickListener {
+        void onDeletePhoto(String photoName);
+    }
+
+    public void onDeletePhoto(String photoName) {
         File thePhoto = FileUtils.getLocalFileForPhotoName(photoName, getContext());
         if (mViewModel.deletePhoto(thePhoto)) {
             Timber.i("Successfully deleted");
         } else {
             Timber.i("Did not get deleted successfully!");
         }
-    };
-
-    public interface DeletePhotoClickListener {
-        void onDeletePhoto(String photoName);
     }
 
     private EditClickListener mEditClickListener = view -> {

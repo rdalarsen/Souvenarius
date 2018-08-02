@@ -30,8 +30,10 @@
     <string name="num_photos_detail">Photos: %s</string>
     <string name="dialog_positive_label_detail">YES</string>
     <string name="dialog_negative_label_detail">NO</string>
-    <string name="dialog_title_detail">Souvenir deletion</string>
-    <string name="dialog_message_detail">Really delete this souvenir?</string>
+    <string name="dialog_souvenir_deletion_title_detail">Souvenir deletion</string>
+    <string name="dialog_souvenir_deletion_message_detail">Really delete this souvenir?</string>
+    <string name="dialog_photo_deletion_title_detail">Photo deletion</string>
+    <string name="dialog_photo_deletion_message_detail">Really delete this photo?</string>
 
     <!-- Sign in fragment -->
     <string name="sign_in_notice_no_internet">You need to sign in to use the app. Please also make sure you\'re connected to the internet.</string>
