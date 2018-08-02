@@ -85,11 +85,9 @@ public class EditDialogFragment extends DialogFragment {
         Toast.makeText(getContext(), "No internet connection. Cannot edit.", Toast.LENGTH_SHORT).show();
     }
 
-    public static EditDialogFragment newInstance(String title, DetailFragment.TextType textType) {
+    public static EditDialogFragment newInstance(DetailFragment.TextType textType) {
         Bundle args = new Bundle();
-        args.putString(KEY_DIALOG_TITLE, title);
         args.putSerializable(KEY_TEXT_TYPE, textType);
-
         EditDialogFragment fragment = new EditDialogFragment();
         fragment.setArguments(args);
         return fragment;

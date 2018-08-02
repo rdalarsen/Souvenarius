@@ -45,6 +45,7 @@ public class DetailFragment extends Fragment {
     private static final String KEY_SOUVENIR_ID = "key_souvenir_id";
     private static final String TAG_EDIT_DETAIL = "edit_detail";
     private static final String TAG_DELETE_PHOTO = "delete_photo";
+    private static final String TAG_DELETE_SOUVENIR = "delete_dialog";
     private static final int TAKE_PHOTO_REQUEST_CODE = 1009;
     private DetailViewModel mViewModel;
     private FragmentDetailBinding mBinding;
@@ -147,6 +148,7 @@ public class DetailFragment extends Fragment {
                     showErrorToast();
                     return true;
                 }
+
                 takePhoto();
                 return true;
             case R.id.action_detail_delete_souvenir:
@@ -154,7 +156,9 @@ public class DetailFragment extends Fragment {
                     showErrorToast();
                     return true;
                 }
-                DeleteSouvenirConfirmationDialog.newInstance().show(getChildFragmentManager(), "delete_dialog");
+
+                DeleteSouvenirConfirmationDialog.newInstance()
+                        .show(getChildFragmentManager(), TAG_DELETE_SOUVENIR);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -206,8 +210,8 @@ public class DetailFragment extends Fragment {
             return;
         }
 
-        DeletePhotoConfirmationDialog.newInstance(photoName).show(getChildFragmentManager(),
-                TAG_DELETE_PHOTO);
+        DeletePhotoConfirmationDialog.newInstance(photoName)
+                .show(getChildFragmentManager(), TAG_DELETE_PHOTO);
     };
 
     public interface DeletePhotoClickListener {
@@ -240,7 +244,8 @@ public class DetailFragment extends Fragment {
         } else {
             throw new IllegalArgumentException("Unknown view ID: " + viewId);
         }
-        EditDialogFragment.newInstance("Edit details", textType)
+
+        EditDialogFragment.newInstance(textType)
                 .show(getChildFragmentManager(), TAG_EDIT_DETAIL);
     };
 

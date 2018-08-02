@@ -36,7 +36,7 @@ public class MainFragment extends Fragment {
     private FragmentMainBinding mBinding;
     private MainViewModel mViewModel;
     private SouvenirAdapter mAdapter;
-    private boolean mIgnoreLayoutManagerSavedState = false;
+    private boolean mShouldRestoreLayoutManagerState = true;
     private Parcelable mLayoutManagerState;
     @Inject
     protected ViewModelProvider.Factory mFactory;
@@ -78,7 +78,7 @@ public class MainFragment extends Fragment {
     }
 
     private void restoreLayoutManagerState(@Nullable Bundle savedInstanceState) {
-        if (!mIgnoreLayoutManagerSavedState) {
+        if (mShouldRestoreLayoutManagerState) {
             if (mLayoutManagerState != null) {
                 mBinding.rvSouvenirList.getLayoutManager().onRestoreInstanceState(mLayoutManagerState);
             } else if (savedInstanceState != null && savedInstanceState.containsKey(KEY_LAYOUT_MANAGER_STATE)) {
@@ -86,7 +86,7 @@ public class MainFragment extends Fragment {
                         .getParcelable(KEY_LAYOUT_MANAGER_STATE));
             }
         }
-        mIgnoreLayoutManagerSavedState = false;
+        mShouldRestoreLayoutManagerState = true;
     }
 
     private void setupRecyclerView() {
@@ -134,7 +134,7 @@ public class MainFragment extends Fragment {
                 SortStyle sortStyle = PrefsUtils.getSortStyleFromPrefs(mSharedPreferences,
                         PREFS_KEY_SORT_STYLE);
                 Timber.i("SortStyle is: %s", sortStyle.toString());
-                mIgnoreLayoutManagerSavedState = true;
+                mShouldRestoreLayoutManagerState = false;
                 commitToggledSortStyleToPrefs(sortStyle);
                 return true;
             default:
