@@ -20,6 +20,20 @@ import timber.log.Timber;
 
 public class BindingAdapters {
 
+    @BindingAdapter("photoFile")
+    public static void photoFile(ImageView view, File photoFile) {
+        if (photoFile == null) {
+            Timber.w("photoFile was null; returning");
+            return;
+        }
+
+        GlideApp.with(view.getContext())
+                .load(photoFile)
+                .error(android.R.color.transparent)
+                .centerCrop()
+                .into(view);
+    }
+
     @BindingAdapter("locationResult")
     public static void inputLocation(EditText editText, Result<Address> locationResult) {
         if (locationResult == null) {

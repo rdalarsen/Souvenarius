@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <fraction name="photo_width_percent">0.6</fraction>
+    <fraction name="edit_text_width_percent_add">0.8</fraction>
 </resources>

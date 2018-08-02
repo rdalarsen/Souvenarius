@@ -11,7 +11,7 @@
             type="me.worric.souvenarius.ui.add.AddFragment.ClickHandler" />
     </data>
     <ScrollView
-        android:id="@+id/add_fragment_scroll_view"
+        android:id="@+id/sv_add_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:nestedScrollingEnabled="true">
@@ -25,26 +25,48 @@
             android:paddingBottom="8dp"
             tools:context=".ui.main.MainActivity">
 
-            <ImageView
-                android:id="@+id/iv_photo_preview"
+            <android.support.v7.widget.CardView
+                android:id="@+id/cv_add_container"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintDimensionRatio="h,16:9"
-                android:contentDescription="@string/content_desc_photo_preview"
-                app:imageName="@{viewmodel.photoFile.name}"
-                android:onClick="@{clickHandler::onAddPhotoClicked}"
-                tools:src="@drawable/ic_launcher_background" />
+                app:layout_constraintDimensionRatio="h,4:3"
+                app:layout_constraintWidth_percent="@fraction/photo_width_percent"
+                app:cardCornerRadius="@dimen/card_corner_radius"
+                app:cardElevation="@dimen/card_elevation"
+                app:cardUseCompatPadding="true">
+
+                <TextView
+                    android:id="@+id/tv_take_photo_hint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:text="@string/take_photo_add" />
+
+                <ImageView
+                    android:id="@+id/iv_photo_preview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="4dp"
+                    android:contentDescription="@string/content_desc_photo_preview"
+                    app:photoFile="@{viewmodel.photoFile}"
+                    android:onClick="@{clickHandler::onAddPhotoClicked}"
+                    tools:src="@drawable/ic_launcher_background" />
+
+            </android.support.v7.widget.CardView>
 
             <EditText
                 android:id="@+id/et_souvenir_title"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/iv_photo_preview"
+                app:layout_constraintTop_toBottomOf="@+id/cv_add_container"
+                app:layout_constraintWidth_percent="@fraction/edit_text_width_percent_add"
                 android:inputType="text"
                 android:maxLines="1"
                 android:ems="10"
@@ -52,10 +74,13 @@
 
             <EditText
                 android:id="@+id/et_place"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 app:layout_constraintTop_toBottomOf="@+id/et_souvenir_title"
-                app:layout_constraintStart_toStartOf="@+id/et_souvenir_title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintWidth_percent="@fraction/edit_text_width_percent_add"
                 android:inputType="text"
                 android:maxLines="1"
                 android:ems="10"
@@ -70,20 +95,21 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/et_place"
-                app:layout_constraintBottom_toTopOf="@+id/btn_add_done"
+                app:layout_constraintWidth_percent="@fraction/edit_text_width_percent_add"
                 android:inputType="textMultiLine"
                 android:hint="@string/hint_story_add"
                 android:ems="10" />
 
             <Button
-                android:id="@+id/btn_add_done"
+                android:id="@+id/btn_add_save_souvenir"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="8dp"
+                app:layout_constraintTop_toBottomOf="@+id/et_story"
                 app:layout_constraintEnd_toEndOf="parent"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
                 android:onClick="@{clickHandler::onSaveSouvenirClicked}"
-                android:text="@string/btn_done" />
+                android:text="@string/btn_add_save_souvenir" />
 
         </android.support.constraint.ConstraintLayout>
     </ScrollView>

@@ -2,4 +2,5 @@
 <resources>
     <fraction name="photo_width_percent">1.0</fraction>
     <fraction name="edit_icon_alpha_level">0.45</fraction>
+    <fraction name="edit_text_width_percent_add">1.0</fraction>
 </resources>

@@ -8,13 +8,15 @@
     <string name="content_desc_photo_preview">Photo preview</string>
     <string name="hint_title_add">Title…</string>
     <string name="hint_story_add">Your story here…</string>
-    <string name="btn_done">Done!</string>
-    <string name="hint_location_add">Location</string>
+    <string name="hint_location_add">Location…</string>
     <string name="format_location_add">%s, %s</string>
     <string name="error_message_add_temp_file">Could allocate temporary file.</string>
     <string name="error_message_add_missing_values">There are missing values. Please input them.</string>
     <string name="success_message_add_souvenir_saved">Souvenir successfully saved.</string>
     <string name="error_message_souvenir_not_saved">Souvenir could not be saved.</string>
+    <string name="error_message_add_no_photo_app">No photo app available.</string>
+    <string name="take_photo_add">Tap here to take a photo!</string>
+    <string name="btn_add_save_souvenir">Save souvenir</string>
 
     <!-- Main fragment -->
     <string name="souvenir_list_error_message">There are no souvenirs. Go get some :)!</string>
@@ -62,5 +64,4 @@
 
     <!-- Firebase Handler -->
     <string name="error_message_firebase_result_cleared">Result cleared.</string>
-
 </resources>
