@@ -115,15 +115,27 @@ public class DetailFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_detail_add_photo:
+                if (!NetUtils.getIsConnected(getContext())) {
+                    showErrorToast();
+                    return true;
+                }
                 takePhoto();
                 return true;
             case R.id.action_detail_delete_souvenir:
-                mViewModel.deleteSouvenir();
-                ((MainActivity)getActivity()).handleSouvenirDeleted();
+                if (!NetUtils.getIsConnected(getContext())) {
+                    showErrorToast();
+                    return true;
+                }
+                DeleteConfirmationDialogFragment.newInstance().show(getChildFragmentManager(), "delete_dialog");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public void onDeleteSouvenir() {
+        mViewModel.deleteSouvenir();
+        ((MainActivity)getActivity()).handleSouvenirDeleted();
     }
 
     private void takePhoto() {
