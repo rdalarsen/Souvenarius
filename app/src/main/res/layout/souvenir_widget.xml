@@ -8,13 +8,16 @@
         android:id="@+id/widget_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:padding="2dp"
+        android:layout_weight="1"
+        android:background="@drawable/widget_photo_background">
 
         <ImageView
             android:id="@+id/iv_widget_souvenir_photo"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:contentDescription="@string/content_desc_widget_souvenir_photo"
+            android:scaleType="centerCrop"
             android:src="@drawable/ic_launcher_background" />
 
         <TextView
@@ -29,10 +32,12 @@
 
     <ImageButton
         android:id="@+id/btn_widget_add_souvenir"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/content_desc_widget_add_souvenir"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="2dp"
         android:layout_gravity="center_horizontal"
+        android:contentDescription="@string/content_desc_widget_add_souvenir"
+        android:theme="@style/WidgetColoredButtonTheme"
         android:src="@drawable/ic_add_a_photo" />
 
 </LinearLayout>
