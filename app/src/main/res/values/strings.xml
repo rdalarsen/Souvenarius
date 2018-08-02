@@ -27,7 +27,7 @@
     <string name="menu_detail_add_a_photo">Add a photo</string>
     <string name="menu_detail_delete_souvenir">Delete this souvenir</string>
     <string name="error_message_detail_no_connection">No internet connection. No changes possible.</string>
-    <string name="num_photos_detail">Number of photos: %s</string>
+    <string name="num_photos_detail">Photos: %s</string>
 
     <!-- Sign in fragment -->
     <string name="sign_in_notice_no_internet">You need to sign in to use the app. Please also make sure you\'re connected to the internet.</string>

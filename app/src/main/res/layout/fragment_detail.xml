@@ -77,7 +77,7 @@
                 app:layout_constraintTop_toTopOf="@+id/tv_detail_title"
                 app:layout_constraintEnd_toEndOf="@+id/tv_detail_title"
                 android:tint="@color/colorAccent"
-                android:alpha="0.75"
+                android:alpha="@fraction/edit_icon_alpha_level"
                 android:src="@drawable/ic_edit"
                 tools:ignore="ContentDescription" />
 
@@ -96,7 +96,6 @@
                 android:ellipsize="end"
                 tools:text="@tools:sample/lorem" />
 
-
             <ImageView
                 android:id="@+id/iv_detail_edit_place"
                 android:layout_width="0dp"
@@ -106,7 +105,7 @@
                 app:layout_constraintBottom_toBottomOf="@+id/tv_detail_place"
                 app:layout_constraintDimensionRatio="w,1:1"
                 android:tint="@color/colorAccent"
-                android:alpha="0.75"
+                android:alpha="@fraction/edit_icon_alpha_level"
                 android:src="@drawable/ic_edit"
                 tools:ignore="ContentDescription" />
 
@@ -133,7 +132,7 @@
                 app:layout_constraintEnd_toEndOf="@+id/tv_detail_story"
                 app:layout_constraintDimensionRatio="w,1:1"
                 android:tint="@color/colorAccent"
-                android:alpha="0.75"
+                android:alpha="@fraction/edit_icon_alpha_level"
                 android:src="@drawable/ic_edit"
                 tools:ignore="ContentDescription" />
 
