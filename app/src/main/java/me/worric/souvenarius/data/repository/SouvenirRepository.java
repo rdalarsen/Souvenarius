@@ -1,7 +1,6 @@
 package me.worric.souvenarius.data.repository;
 
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Transformations;
 import android.arch.persistence.db.SimpleSQLiteQuery;
@@ -73,61 +72,25 @@ public class SouvenirRepository {
         mPrefs = prefs;
         mPrefsChangeListener = initPrefListener(prefs);
         setupQueryParameters();
-        //mSouvenirs = initSouvenirs(prefs);
         subscribeToRemoteDatabaseUpdates();
         initConnectionStateDetection(context);
         initAuthStateDetection(context);
         refreshSouvenirsFromRemote();
     }
 
+    private SharedPreferences.OnSharedPreferenceChangeListener initPrefListener(SharedPreferences prefs) {
+        SharedPreferences.OnSharedPreferenceChangeListener listener = (sharedPreferences, key) -> {
+            SortStyle sortStyle = getSortStyleFromPrefs(sharedPreferences, key);
+            Timber.i("SortStyle is now set to: %s", sortStyle.toString());
+            //setSouvenirSource(sortStyle, mSouvenirs);
+            mQueryParameters.setValue(new QueryParameters(mAuth.getUid(), sortStyle));
+        };
+        prefs.registerOnSharedPreferenceChangeListener(listener);
+        return listener;
+    }
+
     private void setupQueryParameters() {
         mQueryParameters.setValue(new QueryParameters(mAuth.getUid(), getSortStyleFromPrefs(mPrefs, PREFS_KEY_SORT_STYLE)));
-    }
-
-    private void initAuthStateDetection(Context context) {
-        IntentFilter filter = new IntentFilter(MainActivity.ACTION_AUTH_SIGNED_OUT);
-        filter.addAction(MainActivity.ACTION_AUTH_SIGNED_IN);
-        LocalBroadcastManager.getInstance(context).registerReceiver(mAuthStateChangedReceiver, filter);
-    }
-
-    private void initConnectionStateDetection(Context context) {
-        mIsConnected = NetUtils.getIsConnected(context);
-        IntentFilter filter = new IntentFilter(MainActivity.ACTION_CONNECTIVITY_CHANGED);
-        LocalBroadcastManager.getInstance(context).registerReceiver(mConnectionStateReceiver, filter);
-    }
-
-    private BroadcastReceiver mConnectionStateReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            boolean isConnected = intent.getBooleanExtra(MainActivity.KEY_IS_CONNECTED, false);
-            Timber.i("Received connection broadcast. we are connected=%s", isConnected);
-            boolean needsUpdate = !(mIsConnected == isConnected);
-            if (needsUpdate) {
-                mIsConnected = isConnected;
-                Timber.i("new connected status triggered");
-            }
-        }
-    };
-
-    private BroadcastReceiver mAuthStateChangedReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Timber.i("auth state changed received! action was: %s", intent.getAction());
-            if (intent.getAction().equals(MainActivity.ACTION_AUTH_SIGNED_IN)) {
-                refreshSouvenirsFromRemote();
-            } else if (intent.getAction().equals(MainActivity.ACTION_AUTH_SIGNED_OUT)) {
-                mFirebaseHandler.clearResults();
-            }
-            setQueryParameters(mAuth.getUid());
-        }
-    };
-
-    private void setQueryParameters(String uid) {
-        QueryParameters parameters = mQueryParameters.getValue();
-        if (parameters != null) {
-            parameters.setUid(uid);
-            mQueryParameters.setValue(parameters);
-        }
     }
 
     private void subscribeToRemoteDatabaseUpdates() {
@@ -140,43 +103,20 @@ public class SouvenirRepository {
         });
     }
 
+    private void initConnectionStateDetection(Context context) {
+        mIsConnected = NetUtils.getIsConnected(context);
+        IntentFilter filter = new IntentFilter(MainActivity.ACTION_CONNECTIVITY_CHANGED);
+        LocalBroadcastManager.getInstance(context).registerReceiver(mConnectionStateReceiver, filter);
+    }
+
+    private void initAuthStateDetection(Context context) {
+        IntentFilter filter = new IntentFilter(MainActivity.ACTION_AUTH_SIGNED_OUT);
+        filter.addAction(MainActivity.ACTION_AUTH_SIGNED_IN);
+        LocalBroadcastManager.getInstance(context).registerReceiver(mAuthStateChangedReceiver, filter);
+    }
+
     public void refreshSouvenirsFromRemote() {
         mFirebaseHandler.fetchSouvenirsForCurrentUser();
-    }
-
-    private MediatorLiveData<Result<List<SouvenirDb>>> initSouvenirs(SharedPreferences prefs) {
-        MediatorLiveData<Result<List<SouvenirDb>>> result = new MediatorLiveData<>();
-        SortStyle initialSortStyle = getSortStyleFromPrefs(prefs, PREFS_KEY_SORT_STYLE);
-        setSouvenirSource(initialSortStyle, result);
-        return result;
-    }
-
-    private void setSouvenirSource(SortStyle sortStyle, MediatorLiveData<Result<List<SouvenirDb>>> result) {
-        /*switch (sortStyle) {
-            case DESC:
-                result.removeSource(mSouvenirsOrderByTimeAsc);
-                result.addSource(mSouvenirsOrderByTimeDesc, souvenirDbs ->
-                        result.setValue(Result.success(souvenirDbs)));
-                break;
-            case ASC:
-                result.removeSource(mSouvenirsOrderByTimeDesc);
-                result.addSource(mSouvenirsOrderByTimeAsc, souvenirDbs ->
-                        result.setValue(Result.success(souvenirDbs)));
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown SortStyle: " + sortStyle.toString());
-        }*/
-    }
-
-    private SharedPreferences.OnSharedPreferenceChangeListener initPrefListener(SharedPreferences prefs) {
-        SharedPreferences.OnSharedPreferenceChangeListener listener = (sharedPreferences, key) -> {
-            SortStyle sortStyle = getSortStyleFromPrefs(sharedPreferences, key);
-            Timber.i("SortStyle is now set to: %s", sortStyle.toString());
-            //setSouvenirSource(sortStyle, mSouvenirs);
-            mQueryParameters.setValue(new QueryParameters(mAuth.getUid(), sortStyle));
-        };
-        prefs.registerOnSharedPreferenceChangeListener(listener);
-        return listener;
     }
 
     public LiveData<Result<List<SouvenirDb>>> getSortedSouvenirs() {
@@ -224,10 +164,6 @@ public class SouvenirRepository {
         return mAppDatabase.souvenirDao().findOneById(souvenirId);
     }
 
-    public SouvenirDb findMostRecentSouvenir(String uid) {
-        return mAppDatabase.souvenirDao().findMostRecentSync(uid);
-    }
-
     public void updateSouvenir(SouvenirDb souvenir, File photo) {
         DatabaseReference.CompletionListener completionListener = (databaseError, databaseReference) -> {
             if (databaseError != null) {
@@ -252,14 +188,6 @@ public class SouvenirRepository {
         new SouvenirUpdateTask(mAppDatabase.souvenirDao(), callback).execute(souvenir);
     }
 
-    public void deleteFileFromStorage(String photoName) {
-        mStorageHandler.removeImage(photoName);
-    }
-
-    public void nukeDb() {
-        new NukeDbTask(mAppDatabase.souvenirDao()).execute();
-    }
-
     public void deleteSouvenir(SouvenirDb souvenir) {
         DataDeletedCallback callback = numRowsAffected -> {
             if (numRowsAffected > 0) {
@@ -268,6 +196,52 @@ public class SouvenirRepository {
             }
         };
         new SouvenirDeleteTask(mAppDatabase.souvenirDao(), callback).execute(souvenir);
+    }
+
+    public SouvenirDb findMostRecentSouvenir(String uid) {
+        return mAppDatabase.souvenirDao().findMostRecentSync(uid);
+    }
+
+    public void deleteFileFromStorage(String photoName) {
+        mStorageHandler.removeImage(photoName);
+    }
+
+    public void nukeDb() {
+        new NukeDbTask(mAppDatabase.souvenirDao()).execute();
+    }
+
+    private BroadcastReceiver mConnectionStateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            boolean isConnected = intent.getBooleanExtra(MainActivity.KEY_IS_CONNECTED, false);
+            Timber.i("Received connection broadcast. we are connected=%s", isConnected);
+            boolean needsUpdate = !(mIsConnected == isConnected);
+            if (needsUpdate) {
+                mIsConnected = isConnected;
+                Timber.i("new connected status triggered");
+            }
+        }
+    };
+
+    private BroadcastReceiver mAuthStateChangedReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Timber.i("auth state changed received! action was: %s", intent.getAction());
+            if (intent.getAction().equals(MainActivity.ACTION_AUTH_SIGNED_IN)) {
+                refreshSouvenirsFromRemote();
+            } else if (intent.getAction().equals(MainActivity.ACTION_AUTH_SIGNED_OUT)) {
+                mFirebaseHandler.clearResults();
+            }
+            setQueryParameters(mAuth.getUid());
+        }
+    };
+
+    private void setQueryParameters(String uid) {
+        QueryParameters parameters = mQueryParameters.getValue();
+        if (parameters != null) {
+            parameters.setUid(uid);
+            mQueryParameters.setValue(parameters);
+        }
     }
 
     public interface DataInsertCallback {
