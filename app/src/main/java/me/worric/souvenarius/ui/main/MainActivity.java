@@ -165,6 +165,14 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mIsConnected != null) {
+            outState.putBoolean(KEY_IS_CONNECTED, mIsConnected);
+        }
+    }
+
+    @Override
     public void onBackPressed() {
         super.onBackPressed();
         mBinding.appbarLayout.setExpanded(true);
@@ -196,7 +204,7 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
             if (resultCode == RESULT_OK) {
                 Timber.i("login result ok - should add new fragment\nwe should also update appwidgets to reflect this.");
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, MainFragment.newInstance(), "main")
+                        .replace(R.id.fragment_container, MainFragment.newInstance())
                         .commit();
                 UpdateWidgetService.startWidgetUpdate(this);
                 mBroadcastManager.sendBroadcast(new Intent(ACTION_AUTH_SIGNED_IN));
@@ -206,16 +214,10 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         }
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean(KEY_IS_CONNECTED, mIsConnected);
-    }
-
     public void handleSouvenirClicked(SouvenirDb souvenir) {
         String souvenirId = souvenir.getId();
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, DetailFragment.newInstance(souvenirId), "detail")
+                .replace(R.id.fragment_container, DetailFragment.newInstance(souvenirId))
                 .addToBackStack(null)
                 .commit();
         mBinding.appbarLayout.setExpanded(true);
@@ -223,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
 
     public void handleAddFabClicked(View view) {
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, AddFragment.newInstance(), "add")
+                .replace(R.id.fragment_container, AddFragment.newInstance())
                 .addToBackStack(null)
                 .commit();
         mBinding.appbarLayout.setExpanded(true);
