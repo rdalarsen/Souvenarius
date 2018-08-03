@@ -133,7 +133,7 @@ public class MainFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_main_sync:
+            case R.id.action_main_refresh_data:
                 UpdateSouvenirsService.startSouvenirsUpdate(getContext());
                 return true;
             case R.id.action_main_sign_out:

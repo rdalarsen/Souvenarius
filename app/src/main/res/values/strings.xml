@@ -24,6 +24,7 @@
     <!-- Main fragment -->
     <string name="souvenir_list_error_message">There are no souvenirs. Go get some :)!</string>
     <string name="menu_main_sign_out">Sign out</string>
+    <string name="menu_main_refresh_data">Refresh data</string>
     <string name="menu_main_sort_by_date_asc_desc">Sort by date asc/desc</string>
     <string name="main_toast_sort_asc">Sort by date ascending</string>
     <string name="main_toast_sort_desc">Sort by date descending</string>
