@@ -144,25 +144,26 @@ public class MainFragment extends Fragment {
                         PREFS_KEY_SORT_STYLE);
                 Timber.i("SortStyle is: %s", sortStyle.toString());
                 mShouldRestoreLayoutManagerState = false;
-                commitToggledSortStyleToPrefs(sortStyle);
-                mViewModel.updateSortStyle(sortStyle);
+                toggleAndPropagateSortStyle(sortStyle);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    private void commitToggledSortStyleToPrefs(SortStyle sortStyle) {
+    private void toggleAndPropagateSortStyle(SortStyle sortStyle) {
         if (sortStyle.equals(SortStyle.DESC)) {
             Toast.makeText(getContext(), R.string.main_toast_sort_asc, Toast.LENGTH_SHORT).show();
             mSharedPreferences.edit()
                     .putString(PREFS_KEY_SORT_STYLE, SortStyle.ASC.toString())
                     .apply();
+            mViewModel.updateSortStyle(SortStyle.ASC);
         } else {
             Toast.makeText(getContext(), R.string.main_toast_sort_desc, Toast.LENGTH_SHORT).show();
             mSharedPreferences.edit()
                     .putString(PREFS_KEY_SORT_STYLE, SortStyle.DESC.toString())
                     .apply();
+            mViewModel.updateSortStyle(SortStyle.DESC);
         }
     }
 
