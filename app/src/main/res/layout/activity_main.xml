@@ -11,6 +11,9 @@
         <variable
             name="fabState"
             type="me.worric.souvenarius.ui.main.FabState" />
+        <variable
+            name="isConnected"
+            type="Boolean" />
     </data>
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
@@ -52,6 +55,23 @@
             android:focusableInTouchMode="true"
             android:src="@drawable/ic_add_a_photo"
             android:onClick="handleAddFabClicked" />
+
+        <TextView
+            android:id="@+id/tv_connection_warning"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:padding="2dp"
+            android:text="@string/main_connection_warning"
+            android:background="@drawable/connectivity_warning_background"
+            android:fontFamily="sans-serif-medium"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark"
+            app:layout_anchor="@+id/fragment_container"
+            app:layout_anchorGravity="bottom|start"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="@{isConnected ? View.GONE : View.VISIBLE}"
+            android:onClick="handleShowConnectionWarningToast" />
 
     </android.support.design.widget.CoordinatorLayout>
 </layout>

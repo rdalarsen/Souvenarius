@@ -233,6 +233,10 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         mBinding.appbarLayout.setExpanded(true);
     }
 
+    public void handleShowConnectionWarningToast(View view) {
+        Toast.makeText(this, R.string.error_message_offline_mode, Toast.LENGTH_SHORT).show();
+    }
+
     public void handleSouvenirDeleted() {
         getSupportFragmentManager().popBackStack();
     }
@@ -274,6 +278,7 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
             if (manager == null) return;
             NetworkInfo info = manager.getActiveNetworkInfo();
             boolean isConnected = info != null && info.isConnected();
+            mBinding.setIsConnected(isConnected);
             if (mIsConnected == null) {
                 mIsConnected = isConnected;
                 Timber.i("new connected status triggered (from null!)");
@@ -299,5 +304,4 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     public AndroidInjector<Fragment> supportFragmentInjector() {
         return mInjector;
     }
-
 }
