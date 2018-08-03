@@ -3,7 +3,7 @@ package me.worric.souvenarius.data.db.tasks;
 import android.os.AsyncTask;
 
 import me.worric.souvenarius.data.db.dao.SouvenirDao;
-import me.worric.souvenarius.data.db.model.SouvenirDb;
+import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.data.repository.SouvenirRepository;
 import timber.log.Timber;
 

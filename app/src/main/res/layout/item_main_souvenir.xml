@@ -4,7 +4,7 @@
     <data>
         <variable
             name="souvenir"
-            type="me.worric.souvenarius.data.db.model.SouvenirDb" />
+            type="me.worric.souvenarius.data.model.SouvenirDb" />
         <variable
             name="itemClickListener"
             type="me.worric.souvenarius.ui.main.MainFragment.ItemClickListener" />

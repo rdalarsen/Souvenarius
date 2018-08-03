@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import me.worric.souvenarius.R;
-import me.worric.souvenarius.data.db.model.SouvenirDb;
+import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.databinding.ItemDetailPhotoBinding;
 
 public class SouvenirPhotoAdapter extends RecyclerView.Adapter<SouvenirPhotoAdapter.SouvenirPhotoViewholder> {

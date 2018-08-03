@@ -23,7 +23,7 @@ import javax.inject.Inject;
 import dagger.android.support.AndroidSupportInjection;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.Result;
-import me.worric.souvenarius.data.db.model.SouvenirDb;
+import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.data.repository.UpdateSouvenirsService;
 import me.worric.souvenarius.databinding.FragmentMainBinding;
 import me.worric.souvenarius.ui.common.PrefsUtils;

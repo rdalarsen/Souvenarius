@@ -33,7 +33,7 @@ import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
 import me.worric.souvenarius.R;
-import me.worric.souvenarius.data.db.model.SouvenirDb;
+import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.data.repository.UpdateSouvenirsService;
 import me.worric.souvenarius.databinding.ActivityMainBinding;
 import me.worric.souvenarius.ui.add.AddFragment;

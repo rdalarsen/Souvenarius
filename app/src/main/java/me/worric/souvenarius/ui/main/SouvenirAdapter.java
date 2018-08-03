@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import me.worric.souvenarius.R;
-import me.worric.souvenarius.data.db.model.SouvenirDb;
+import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.databinding.ItemMainSouvenirBinding;
 
 public class SouvenirAdapter extends RecyclerView.Adapter<SouvenirAdapter.SouvenirViewholder> {

@@ -11,7 +11,7 @@ import android.arch.persistence.room.Update;
 
 import java.util.List;
 
-import me.worric.souvenarius.data.db.model.SouvenirDb;
+import me.worric.souvenarius.data.model.SouvenirDb;
 
 @Dao
 public interface SouvenirDao {

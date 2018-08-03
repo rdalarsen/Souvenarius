@@ -18,7 +18,7 @@ import dagger.android.AndroidInjection;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.db.AppDatabase;
-import me.worric.souvenarius.data.db.model.SouvenirDb;
+import me.worric.souvenarius.data.model.SouvenirDb;
 import timber.log.Timber;
 
 /**

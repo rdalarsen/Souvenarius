@@ -17,7 +17,7 @@ import java.io.File;
 
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.Result;
-import me.worric.souvenarius.data.db.model.SouvenirDb;
+import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.ui.GlideApp;
 import me.worric.souvenarius.ui.common.FileUtils;
 import me.worric.souvenarius.ui.common.NetUtils;

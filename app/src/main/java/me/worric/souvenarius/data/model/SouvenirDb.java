@@ -1,4 +1,4 @@
-package me.worric.souvenarius.data.db.model;
+package me.worric.souvenarius.data.model;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;

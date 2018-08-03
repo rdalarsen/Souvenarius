@@ -8,7 +8,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import me.worric.souvenarius.data.Result;
-import me.worric.souvenarius.data.db.model.SouvenirDb;
+import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.data.repository.SouvenirRepository;
 
 public class MainViewModel extends ViewModel {

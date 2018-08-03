@@ -20,7 +20,7 @@ import javax.inject.Singleton;
 
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.Result;
-import me.worric.souvenarius.data.db.model.SouvenirDb;
+import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.di.FirebaseErrorMsgs;
 import timber.log.Timber;
 

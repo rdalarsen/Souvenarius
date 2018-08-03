@@ -5,7 +5,7 @@ import android.arch.persistence.room.RoomDatabase;
 import android.arch.persistence.room.TypeConverters;
 
 import me.worric.souvenarius.data.db.dao.SouvenirDao;
-import me.worric.souvenarius.data.db.model.SouvenirDb;
+import me.worric.souvenarius.data.model.SouvenirDb;
 
 @Database(entities = {SouvenirDb.class}, version = 1, exportSchema = false)
 @TypeConverters(Converters.class)

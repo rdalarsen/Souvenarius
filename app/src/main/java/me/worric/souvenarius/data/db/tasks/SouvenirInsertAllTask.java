@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 import me.worric.souvenarius.data.db.AppDatabase;
 import me.worric.souvenarius.data.db.dao.SouvenirDao;
-import me.worric.souvenarius.data.db.model.SouvenirDb;
+import me.worric.souvenarius.data.model.SouvenirDb;
 import timber.log.Timber;
 
 
