@@ -20,6 +20,13 @@ import timber.log.Timber;
 
 public class BindingAdapters {
 
+    @BindingAdapter("dialogText")
+    public static void dialogText(EditText editText, String dialogText) {
+        if (TextUtils.isEmpty(editText.getText().toString())) {
+            editText.setText(dialogText);
+        }
+    }
+
     @BindingAdapter("photoFile")
     public static void photoFile(ImageView view, File photoFile) {
         if (photoFile == null) {

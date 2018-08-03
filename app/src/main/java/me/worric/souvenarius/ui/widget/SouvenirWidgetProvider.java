@@ -22,7 +22,6 @@ import me.worric.souvenarius.ui.GlideApp;
 import me.worric.souvenarius.ui.common.FileUtils;
 import me.worric.souvenarius.ui.common.NetUtils;
 import me.worric.souvenarius.ui.main.MainActivity;
-import timber.log.Timber;
 
 /**
  * For loading images through Glide in AppWidgets,
