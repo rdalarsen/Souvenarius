@@ -119,7 +119,7 @@ public class MainFragment extends Fragment {
         super.onSaveInstanceState(outState);
         if (mLayoutManagerState != null) {
             outState.putParcelable(KEY_LAYOUT_MANAGER_STATE, mLayoutManagerState);
-        } else {
+        } else if (mBinding != null) {
             outState.putParcelable(KEY_LAYOUT_MANAGER_STATE, mBinding.rvSouvenirList.getLayoutManager()
                     .onSaveInstanceState());
         }
