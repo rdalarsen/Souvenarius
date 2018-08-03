@@ -138,4 +138,21 @@ public class SouvenirDb {
         }
     }
 
+    @Exclude
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SouvenirDb that = (SouvenirDb) o;
+
+        return mId.equals(that.mId);
+    }
+
+    @Exclude
+    @Override
+    public int hashCode() {
+        return mId.hashCode();
+    }
+
 }
