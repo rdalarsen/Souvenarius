@@ -67,6 +67,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/cv_add_container"
                 app:layout_constraintWidth_percent="@fraction/edit_text_width_percent_add"
+                android:textAlignment="viewStart"
                 android:inputType="text"
                 android:maxLines="1"
                 android:ems="10"
@@ -81,6 +82,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintWidth_percent="@fraction/edit_text_width_percent_add"
+                android:textAlignment="viewStart"
                 android:inputType="text"
                 android:maxLines="1"
                 android:ems="10"
@@ -96,6 +98,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/et_place"
                 app:layout_constraintWidth_percent="@fraction/edit_text_width_percent_add"
+                android:textAlignment="viewStart"
                 android:inputType="textMultiLine"
                 android:hint="@string/hint_story_add"
                 android:ems="10" />
