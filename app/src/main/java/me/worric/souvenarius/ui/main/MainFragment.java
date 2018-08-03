@@ -133,9 +133,6 @@ public class MainFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_main_nuke_db:
-                mViewModel.nukeDb();
-                return true;
             case R.id.action_main_sync:
                 UpdateSouvenirsService.startSouvenirsUpdate(getContext());
                 return true;

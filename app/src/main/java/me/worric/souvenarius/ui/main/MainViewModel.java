@@ -24,10 +24,6 @@ public class MainViewModel extends ViewModel {
         return mSouvenirRepository.getSouvenirs();
     }
 
-    public void nukeDb() {
-        mSouvenirRepository.nukeDb();
-    }
-
     public void updateUserId(String uid) {
         mSouvenirRepository.setQueryParameters(uid);
     }

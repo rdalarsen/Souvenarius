@@ -25,11 +25,10 @@ import javax.inject.Singleton;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.db.AppDatabase;
-import me.worric.souvenarius.data.model.SouvenirDb;
-import me.worric.souvenarius.data.db.tasks.NukeDbTask;
 import me.worric.souvenarius.data.db.tasks.SouvenirDeleteTask;
 import me.worric.souvenarius.data.db.tasks.SouvenirInsertTask;
 import me.worric.souvenarius.data.db.tasks.SouvenirUpdateTask;
+import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.di.AppContext;
 import me.worric.souvenarius.di.SouvenirErrorMsgs;
 import me.worric.souvenarius.ui.main.SortStyle;
@@ -179,10 +178,6 @@ public class SouvenirRepository {
             parameters.setSortStyle(sortStyle);
             mQueryParameters.setValue(parameters);
         }
-    }
-
-    public void nukeDb() {
-        new NukeDbTask(mAppDatabase.souvenirDao()).execute();
     }
 
     public interface DataInsertCallback {
