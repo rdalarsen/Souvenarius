@@ -43,17 +43,17 @@ public class SouvenirDb {
     private List<String> mPhotos;
 
     @ColumnInfo(name = "uid")
-    private String mUID;
+    private String mUid;
 
     public SouvenirDb() {
     }
 
-    public String getUID() {
-        return mUID;
+    public String getUid() {
+        return mUid;
     }
 
-    public void setUID(String UID) {
-        mUID = UID;
+    public void setUid(String uid) {
+        mUid = uid;
     }
 
     public String getId() {

@@ -24,6 +24,7 @@ import dagger.android.support.AndroidSupportInjection;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.db.model.SouvenirDb;
+import me.worric.souvenarius.data.repository.UpdateSouvenirsService;
 import me.worric.souvenarius.databinding.FragmentMainBinding;
 import me.worric.souvenarius.ui.common.PrefsUtils;
 import timber.log.Timber;
@@ -136,7 +137,7 @@ public class MainFragment extends Fragment {
                 mViewModel.nukeDb();
                 return true;
             case R.id.action_main_sync:
-                mViewModel.sync();
+                UpdateSouvenirsService.startSouvenirsUpdate(getContext());
                 return true;
             case R.id.action_main_sign_out:
                 ((MainActivity)getActivity()).handleSignOut();
@@ -147,6 +148,7 @@ public class MainFragment extends Fragment {
                 Timber.i("SortStyle is: %s", sortStyle.toString());
                 mShouldRestoreLayoutManagerState = false;
                 commitToggledSortStyleToPrefs(sortStyle);
+                mViewModel.updateSortStyle(sortStyle);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

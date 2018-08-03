@@ -34,6 +34,7 @@ import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.db.model.SouvenirDb;
+import me.worric.souvenarius.data.repository.UpdateSouvenirsService;
 import me.worric.souvenarius.databinding.ActivityMainBinding;
 import me.worric.souvenarius.ui.add.AddFragment;
 import me.worric.souvenarius.ui.detail.DetailFragment;
@@ -206,7 +207,8 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, MainFragment.newInstance())
                         .commit();
-                UpdateWidgetService.startWidgetUpdate(this);
+                mMainViewModel.updateUserId(mAuth.getUid());
+                UpdateSouvenirsService.startSouvenirsUpdate(this);
                 mBroadcastManager.sendBroadcast(new Intent(ACTION_AUTH_SIGNED_IN));
             } else {
                 Timber.w("login unsuccessful - should keep login fragment");
@@ -260,6 +262,7 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, SignInFragment.newInstance())
                 .commit();
+        mMainViewModel.updateUserId(null);
         UpdateWidgetService.startWidgetUpdate(this);
         mBroadcastManager.sendBroadcast(new Intent(ACTION_AUTH_SIGNED_OUT));
     }

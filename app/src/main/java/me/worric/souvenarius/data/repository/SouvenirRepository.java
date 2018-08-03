@@ -5,14 +5,8 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Transformations;
 import android.arch.persistence.db.SimpleSQLiteQuery;
 import android.arch.persistence.db.SupportSQLiteQuery;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,13 +28,10 @@ import me.worric.souvenarius.data.db.AppDatabase;
 import me.worric.souvenarius.data.db.model.SouvenirDb;
 import me.worric.souvenarius.data.db.tasks.NukeDbTask;
 import me.worric.souvenarius.data.db.tasks.SouvenirDeleteTask;
-import me.worric.souvenarius.data.db.tasks.SouvenirInsertAllTask;
 import me.worric.souvenarius.data.db.tasks.SouvenirInsertTask;
 import me.worric.souvenarius.data.db.tasks.SouvenirUpdateTask;
 import me.worric.souvenarius.di.AppContext;
 import me.worric.souvenarius.di.SouvenirErrorMsgs;
-import me.worric.souvenarius.ui.common.NetUtils;
-import me.worric.souvenarius.ui.main.MainActivity;
 import me.worric.souvenarius.ui.main.SortStyle;
 import timber.log.Timber;
 
@@ -58,9 +49,8 @@ public class SouvenirRepository {
     private final AppDatabase mAppDatabase;
     private final MutableLiveData<QueryParameters> mQueryParameters = new MutableLiveData<>();
     /* see: https://stackoverflow.com/questions/2542938/sharedpreferences-onsharedpreferencechangelistener-not-being-called-consistently */
-    private final SharedPreferences.OnSharedPreferenceChangeListener mPrefsChangeListener;
+    //private final SharedPreferences.OnSharedPreferenceChangeListener mPrefsChangeListener;
     private final SharedPreferences mPrefs;
-    private Boolean mIsConnected;
 
     @Inject
     public SouvenirRepository(FirebaseHandler firebaseHandler,
@@ -75,12 +65,9 @@ public class SouvenirRepository {
         mAuth = FirebaseAuth.getInstance();
         mAppDatabase = appDatabase;
         mPrefs = prefs;
-        mPrefsChangeListener = initPrefListener(prefs);
-        setupQueryParameters();
-        subscribeToRemoteDatabaseUpdates();
-        initConnectionStateDetection(context);
-        initAuthStateDetection(context);
-        refreshSouvenirsFromRemote();
+        //mPrefsChangeListener = initPrefListener(prefs);
+        initQueryParameters();
+        UpdateSouvenirsService.startSouvenirsUpdate(context);
     }
 
     private SharedPreferences.OnSharedPreferenceChangeListener initPrefListener(SharedPreferences prefs) {
@@ -93,37 +80,11 @@ public class SouvenirRepository {
         return listener;
     }
 
-    private void setupQueryParameters() {
+    private void initQueryParameters() {
         mQueryParameters.setValue(new QueryParameters(mAuth.getUid(), getSortStyleFromPrefs(mPrefs, PREFS_KEY_SORT_STYLE)));
     }
 
-    private void subscribeToRemoteDatabaseUpdates() {
-        mFirebaseHandler.getResults().observeForever(result -> {
-            Timber.d("Firebase database update triggered");
-            if (result.status.equals(Result.Status.SUCCESS)) {
-                SouvenirDb[] converted = result.response.toArray(new SouvenirDb[]{});
-                new SouvenirInsertAllTask(mAppDatabase).execute(converted);
-            }
-        });
-    }
-
-    private void initConnectionStateDetection(Context context) {
-        mIsConnected = NetUtils.getIsConnected(context);
-        IntentFilter filter = new IntentFilter(MainActivity.ACTION_CONNECTIVITY_CHANGED);
-        LocalBroadcastManager.getInstance(context).registerReceiver(mConnectionStateReceiver, filter);
-    }
-
-    private void initAuthStateDetection(Context context) {
-        IntentFilter filter = new IntentFilter(MainActivity.ACTION_AUTH_SIGNED_OUT);
-        filter.addAction(MainActivity.ACTION_AUTH_SIGNED_IN);
-        LocalBroadcastManager.getInstance(context).registerReceiver(mAuthStateChangedReceiver, filter);
-    }
-
-    public void refreshSouvenirsFromRemote() {
-        mFirebaseHandler.fetchSouvenirsForCurrentUser();
-    }
-
-    public LiveData<Result<List<SouvenirDb>>> getSortedSouvenirs() {
+    public LiveData<Result<List<SouvenirDb>>> getSouvenirs() {
         return Transformations.switchMap(mQueryParameters, parameters -> {
             if (TextUtils.isEmpty(parameters.getUid())) {
                 MutableLiveData<Result<List<SouvenirDb>>> errorLiveData = new MutableLiveData<>();
@@ -139,7 +100,6 @@ public class SouvenirRepository {
     }
 
     public void addNewSouvenir(SouvenirDb db, File photo) {
-        //TODO: make other DB interactions use appropriate completionlisteners
         DatabaseReference.CompletionListener completionListener = (databaseError, databaseReference) -> {
             if (databaseError != null) {
                 Timber.e(databaseError.toException(), "There was a problem uploading the data to the database; not uploading photo to FirebaseStorage");
@@ -154,14 +114,13 @@ public class SouvenirRepository {
 
         DataInsertCallback callback = souvenirDb -> {
             if (souvenirDb != null) {
-                Timber.i("souvenir is NOT null! The ID is: %s", souvenirDb.getId());
                 mFirebaseHandler.storeSouvenir(souvenirDb, completionListener);
             }
         };
 
         db.setTimestamp(Instant.now().toEpochMilli());
         db.setId(UUID.randomUUID().toString());
-        db.setUID(mAuth.getUid());
+        db.setUid(mAuth.getUid());
         new SouvenirInsertTask(mAppDatabase.souvenirDao(), callback).execute(db);
     }
 
@@ -185,7 +144,6 @@ public class SouvenirRepository {
 
         DataUpdateCallback callback = numRowsAffected -> {
             if (numRowsAffected > 0) {
-                Timber.i("data was updated just fine!");
                 mFirebaseHandler.storeSouvenir(souvenir, completionListener);
             }
         };
@@ -203,50 +161,28 @@ public class SouvenirRepository {
         new SouvenirDeleteTask(mAppDatabase.souvenirDao(), callback).execute(souvenir);
     }
 
-    public SouvenirDb findMostRecentSouvenir(String uid) {
-        return mAppDatabase.souvenirDao().findMostRecentSync(uid);
-    }
-
     public void deleteFileFromStorage(String photoName) {
         mStorageHandler.removeImage(photoName);
     }
 
-    public void nukeDb() {
-        new NukeDbTask(mAppDatabase.souvenirDao()).execute();
-    }
-
-    private BroadcastReceiver mConnectionStateReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            boolean isConnected = intent.getBooleanExtra(MainActivity.KEY_IS_CONNECTED, false);
-            Timber.i("Received connection broadcast. we are connected=%s", isConnected);
-            boolean needsUpdate = !(mIsConnected == isConnected);
-            if (needsUpdate) {
-                mIsConnected = isConnected;
-                Timber.i("new connected status triggered");
-            }
-        }
-    };
-
-    private BroadcastReceiver mAuthStateChangedReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Timber.i("auth state changed received! action was: %s", intent.getAction());
-            if (intent.getAction().equals(MainActivity.ACTION_AUTH_SIGNED_IN)) {
-                refreshSouvenirsFromRemote();
-            } else if (intent.getAction().equals(MainActivity.ACTION_AUTH_SIGNED_OUT)) {
-                mFirebaseHandler.clearResults();
-            }
-            setQueryParameters(mAuth.getUid());
-        }
-    };
-
-    private void setQueryParameters(String uid) {
+    public void setQueryParameters(String uid) {
         QueryParameters parameters = mQueryParameters.getValue();
         if (parameters != null) {
             parameters.setUid(uid);
             mQueryParameters.setValue(parameters);
         }
+    }
+
+    public void setQueryParameters(SortStyle sortStyle) {
+        QueryParameters parameters = mQueryParameters.getValue();
+        if (parameters != null) {
+            parameters.setSortStyle(sortStyle);
+            mQueryParameters.setValue(parameters);
+        }
+    }
+
+    public void nukeDb() {
+        new NukeDbTask(mAppDatabase.souvenirDao()).execute();
     }
 
     public interface DataInsertCallback {
@@ -259,34 +195,6 @@ public class SouvenirRepository {
 
     public interface DataDeletedCallback {
         void onDataDeleted(int numRowsAffected);
-    }
-
-    static class QueryParameters {
-
-        private String uid;
-        private SortStyle sortStyle;
-
-        QueryParameters(@Nullable String uid, @NonNull SortStyle sortStyle) {
-            this.uid = uid;
-            this.sortStyle = sortStyle;
-        }
-
-        String getUid() {
-            return uid;
-        }
-
-        void setUid(String uid) {
-            this.uid = uid;
-        }
-
-        SortStyle getSortStyle() {
-            return sortStyle;
-        }
-
-        public void setSortStyle(SortStyle sortStyle) {
-            this.sortStyle = sortStyle;
-        }
-
     }
 
 }

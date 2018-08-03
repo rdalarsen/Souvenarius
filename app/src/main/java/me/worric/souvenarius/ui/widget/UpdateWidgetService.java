@@ -21,6 +21,12 @@ import me.worric.souvenarius.data.db.AppDatabase;
 import me.worric.souvenarius.data.db.model.SouvenirDb;
 import timber.log.Timber;
 
+/**
+ * JobIntentService is a compatibility class inheriting from IntentService, that enables correct
+ * background processing on pre and post Oreo devices.
+ *
+ * See <a href="https://developer.android.com/reference/android/support/v4/app/JobIntentService"></a>
+ */
 public class UpdateWidgetService extends JobIntentService {
 
     private static final String ACTION_UPDATE_WIDGET = "action_update_widget";

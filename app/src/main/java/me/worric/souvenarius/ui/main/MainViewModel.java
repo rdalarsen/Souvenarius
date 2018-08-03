@@ -21,15 +21,19 @@ public class MainViewModel extends ViewModel {
     }
 
     public LiveData<Result<List<SouvenirDb>>> getSouvenirs() {
-        return mSouvenirRepository.getSortedSouvenirs();
+        return mSouvenirRepository.getSouvenirs();
     }
 
     public void nukeDb() {
         mSouvenirRepository.nukeDb();
     }
 
-    public void sync() {
-        mSouvenirRepository.refreshSouvenirsFromRemote();
+    public void updateUserId(String uid) {
+        mSouvenirRepository.setQueryParameters(uid);
+    }
+
+    public void updateSortStyle(SortStyle sortStyle) {
+        mSouvenirRepository.setQueryParameters(sortStyle);
     }
 
 }

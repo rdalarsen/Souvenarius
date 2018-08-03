@@ -64,5 +64,6 @@
     <string name="error_message_souvenir_repo_not_logged_in">Not signed in.</string>
 
     <!-- Firebase Handler -->
-    <string name="error_message_firebase_result_cleared">Result cleared.</string>
+    <string name="error_message_firebase_not_signed_in">Not signed in.</string>
+    <string name="error_message_firebase_already_executing">Already executing request.</string>
 </resources>

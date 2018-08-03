@@ -23,6 +23,7 @@ import dagger.android.ContributesAndroidInjector;
 import dagger.android.support.AndroidSupportInjectionModule;
 import dagger.multibindings.IntoMap;
 import me.worric.souvenarius.data.db.AppDatabase;
+import me.worric.souvenarius.data.repository.UpdateSouvenirsService;
 import me.worric.souvenarius.di.AppContext;
 import me.worric.souvenarius.di.FirebaseErrorMsgs;
 import me.worric.souvenarius.di.KeyForViewModel;
@@ -50,6 +51,9 @@ public abstract class SouvenirAppModule {
 
     @ContributesAndroidInjector
     abstract UpdateWidgetService contributeUpdateWidgetService();
+
+    @ContributesAndroidInjector
+    abstract UpdateSouvenirsService contributeUpdateSoivenirsService();
 
     @Binds
     abstract ViewModelProvider.Factory bindViewModelFactory(AppViewModelFactory appViewModelFactory);
@@ -112,8 +116,10 @@ public abstract class SouvenirAppModule {
     @FirebaseErrorMsgs
     static Map<Integer,String> provideFirebaseErrMsgs(@AppContext Context context) {
         Map<Integer,String> firebaseErrMsgs = new HashMap<>();
-        firebaseErrMsgs.put(R.string.error_message_firebase_result_cleared,
-                context.getString(R.string.error_message_firebase_result_cleared));
+        firebaseErrMsgs.put(R.string.error_message_firebase_not_signed_in,
+                context.getString(R.string.error_message_firebase_not_signed_in));
+        firebaseErrMsgs.put(R.string.error_message_firebase_already_executing,
+                context.getString(R.string.error_message_firebase_already_executing));
         return firebaseErrMsgs;
     }
 

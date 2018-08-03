@@ -31,6 +31,9 @@ public interface SouvenirDao {
     @Query("DELETE FROM souvenirs")
     int removeDatabaseContents();
 
+    @Query("DELETE FROM souvenirs WHERE uid = :uid")
+    int removeUserSouvenirs(String uid);
+
     @Query("DELETE FROM souvenirs WHERE id = :id")
     int deleteSouvenir(String id);
 

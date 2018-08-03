@@ -19,6 +19,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity android:name=".ui.main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -49,6 +50,10 @@
 
         <service android:name=".ui.widget.UpdateWidgetService"
             android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <service android:name=".data.repository.UpdateSouvenirsService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
     </application>
 
 </manifest>

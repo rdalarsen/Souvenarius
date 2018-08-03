@@ -1,7 +1,5 @@
 package me.worric.souvenarius.data.repository;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
@@ -18,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.Result;
@@ -25,44 +24,53 @@ import me.worric.souvenarius.data.db.model.SouvenirDb;
 import me.worric.souvenarius.di.FirebaseErrorMsgs;
 import timber.log.Timber;
 
+@Singleton
 public class FirebaseHandler {
 
     private static final String SOUVENIRS_REFERENCE = "souvenirs";
-    private final FirebaseDatabase mDatabase;
     private final FirebaseAuth mAuth;
     private final DatabaseReference mRef;
     private final Map<Integer,String> mErrorMessages;
-    private MutableLiveData<Result<List<SouvenirDb>>> mResult;
+    private ValueEventListener mValueEventListener = null;
 
     @Inject
     public FirebaseHandler(@FirebaseErrorMsgs Map<Integer,String> errorMessages) {
         mAuth = FirebaseAuth.getInstance();
-        mDatabase = FirebaseDatabase.getInstance();
-        mRef = mDatabase.getReference(SOUVENIRS_REFERENCE);
+        mRef = FirebaseDatabase.getInstance().getReference(SOUVENIRS_REFERENCE);
         mErrorMessages = errorMessages;
     }
 
-    public void fetchSouvenirsForCurrentUser() {
+    public void fetchSouvenirsForCurrentUser(@NonNull OnResultListener listener) {
         Timber.d("Fetching souvenirs from Firebase...");
         if (TextUtils.isEmpty(mAuth.getUid())) {
             Timber.w("current user is null, not retrieving souvenirs...");
+            listener.onResult(Result.failure(mErrorMessages
+                    .get(R.string.error_message_firebase_not_signed_in)));
+            return;
+        } else if (mValueEventListener != null) {
+            Timber.w("Already executing request; returning...");
+            listener.onResult(Result.failure(mErrorMessages
+                    .get(R.string.error_message_firebase_already_executing)));
             return;
         }
 
-        mRef.child(mAuth.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+        mValueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 List<SouvenirDb> resultList = parseResponseToList(dataSnapshot);
-                Result<List<SouvenirDb>> result = Result.success(resultList);
-                mResult.setValue(result);
+                listener.onResult(Result.success(resultList));
+                mValueEventListener = null;
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Timber.e(databaseError.toException(), "There was a database error");
-                mResult.setValue(Result.failure(databaseError.toException().getMessage()));
+                listener.onResult(Result.failure(databaseError.getMessage()));
+                mValueEventListener = null;
             }
-        });
+        };
+
+        mRef.child(mAuth.getUid()).addListenerForSingleValueEvent(mValueEventListener);
     }
 
     private List<SouvenirDb> parseResponseToList(DataSnapshot dataSnapshot) {
@@ -83,19 +91,12 @@ public class FirebaseHandler {
         return resultList;
     }
 
-    public LiveData<Result<List<SouvenirDb>>> getResults() {
-        if (mResult == null) {
-            mResult = new MutableLiveData<>();
-        }
-        return mResult;
-    }
-
     public void storeSouvenir(SouvenirDb souvenir, DatabaseReference.CompletionListener completionListener) {
         if (checkAuthState() == null) {
             Timber.w("User is null, not storing souvenir");
             return;
         }
-        mRef.child(souvenir.getUID()).child(souvenir.getId()).setValue(souvenir, completionListener);
+        mRef.child(souvenir.getUid()).child(souvenir.getId()).setValue(souvenir, completionListener);
     }
 
     public void deleteSouvenir(SouvenirDb souvenir) {
@@ -103,19 +104,18 @@ public class FirebaseHandler {
             Timber.w("User is null, not deleting souvenir");
             return;
         }
-        mRef.child(souvenir.getUID()).child(souvenir.getId()).removeValue((databaseError, databaseReference) -> {
+        mRef.child(souvenir.getUid()).child(souvenir.getId()).removeValue((databaseError, databaseReference) -> {
             Timber.i("The databaseReference is: %s", databaseReference.toString());
             if (databaseError != null) Timber.e(databaseError.toException(), "DatabaseError: %s", databaseError.getMessage());
         });
     }
 
-    public void clearResults() {
-        mResult.setValue(Result.failure(mErrorMessages
-                .get(R.string.error_message_firebase_result_cleared)));
-    }
-
     private FirebaseUser checkAuthState() {
         return mAuth.getCurrentUser();
+    }
+
+    public interface OnResultListener {
+        void onResult(Result<List<SouvenirDb>> souvenirs);
     }
 
 }
