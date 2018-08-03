@@ -38,14 +38,10 @@ public class SouvenirWidgetProvider extends AppWidgetProvider {
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId, Result<SouvenirDb> souvenirDb) {
-        Timber.i("updateAppWidget called");
 
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.souvenir_widget);
 
-        Timber.w("The message of the result is: %s", souvenirDb.message);
-
         if (souvenirDb.status.equals(Result.Status.SUCCESS)) {
-
             String photoFileName = null;
             File localPhotoFile = null;
             if (!TextUtils.isEmpty(souvenirDb.response.getFirstPhoto())) {
@@ -65,7 +61,7 @@ public class SouvenirWidgetProvider extends AppWidgetProvider {
                         .centerCrop()
                         .into(appWidgetTarget);
             } else if (!TextUtils.isEmpty(photoFileName)){
-                // Load image hosted on Firebase image via Glide
+                // Load image hosted on Firebase storage via Glide
                 GlideApp.with(context.getApplicationContext())
                         .asBitmap()
                         .load(FirebaseStorage.getInstance().getReference(NetUtils.STORAGE_PATH)
@@ -109,7 +105,6 @@ public class SouvenirWidgetProvider extends AppWidgetProvider {
 
     static void updateAppWidgets(Context context, AppWidgetManager manager, int[] widgetIds,
                                  Result<SouvenirDb> souvenirResult) {
-        Timber.i("updateAppWidgets called");
         for (int appWidgetId : widgetIds) {
             updateAppWidget(context, manager, appWidgetId, souvenirResult);
         }
@@ -117,7 +112,6 @@ public class SouvenirWidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        Timber.i("onUpdate called");
         UpdateWidgetService.startWidgetUpdate(context);
     }
 
