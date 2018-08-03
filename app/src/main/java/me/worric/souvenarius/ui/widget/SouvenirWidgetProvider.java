@@ -55,8 +55,6 @@ public class SouvenirWidgetProvider extends AppWidgetProvider {
                 GlideApp.with(context.getApplicationContext())
                         .asBitmap()
                         .load(uriForLocalFile)
-                        .placeholder(R.drawable.ic_photo)
-                        .error(R.drawable.ic_broken_image)
                         .centerCrop()
                         .into(appWidgetTarget);
             } else if (!TextUtils.isEmpty(photoFileName)){
@@ -65,8 +63,6 @@ public class SouvenirWidgetProvider extends AppWidgetProvider {
                         .asBitmap()
                         .load(FirebaseStorage.getInstance().getReference(NetUtils.STORAGE_PATH)
                                 .child(photoFileName))
-                        .placeholder(R.drawable.ic_photo)
-                        .error(R.drawable.ic_broken_image)
                         .centerCrop()
                         .into(appWidgetTarget);
             }

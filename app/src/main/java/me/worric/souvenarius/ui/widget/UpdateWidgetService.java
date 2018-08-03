@@ -80,7 +80,6 @@ public class UpdateWidgetService extends JobIntentService {
             resultSouvenir = Result.failure(getString(R.string.error_message_widget_not_signed_in));
         }
 
-
         AppWidgetManager manager = AppWidgetManager.getInstance(this);
         int[] widgetIds = manager.getAppWidgetIds(new ComponentName(this, SouvenirWidgetProvider.class));
 
