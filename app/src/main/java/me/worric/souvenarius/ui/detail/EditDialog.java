@@ -54,14 +54,18 @@ public class EditDialog extends DialogFragment {
         mBinding.setTextType(mTextType);
         mBinding.setViewmodel(mViewModel);
         mBinding.setLifecycleOwner(this);
-        mBinding.setClickHandler(mTextClickHandler);
+        mBinding.setClickListener(mClickListener);
         getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
     }
 
-    private EditTextClickHandler mTextClickHandler = new EditTextClickHandler() {
+    private void showErrorToast() {
+        Toast.makeText(getContext(), "No internet connection. Cannot edit.", Toast.LENGTH_SHORT).show();
+    }
+
+    private ClickListener mClickListener = new ClickListener() {
         @Override
-        public void onTextEdited(View view) {
-            if (!NetUtils.getIsConnected(getContext())) {
+        public void onSaveClicked(View view) {
+            if (!NetUtils.isConnected(getContext())) {
                 showErrorToast();
             } else {
                 mViewModel.updateSouvenirText(mBinding.etEditDetail.getText(), mTextType);
@@ -70,18 +74,14 @@ public class EditDialog extends DialogFragment {
         }
 
         @Override
-        public void onCancelled(View view) {
+        public void onCancelClicked(View view) {
             getDialog().dismiss();
         }
     };
 
-    public interface EditTextClickHandler {
-        void onTextEdited(View view);
-        void onCancelled(View view);
-    }
-
-    private void showErrorToast() {
-        Toast.makeText(getContext(), "No internet connection. Cannot edit.", Toast.LENGTH_SHORT).show();
+    public interface ClickListener {
+        void onSaveClicked(View view);
+        void onCancelClicked(View view);
     }
 
     public static EditDialog newInstance(DetailFragment.TextType textType) {

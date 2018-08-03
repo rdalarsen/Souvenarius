@@ -46,7 +46,7 @@ public class SignInFragment extends Fragment {
 
     private boolean initIsConnected(@Nullable Bundle savedInstanceState) {
         if (savedInstanceState == null) {
-            return NetUtils.getIsConnected(getContext());
+            return NetUtils.isConnected(getContext());
         } else if (savedInstanceState.containsKey(MainActivity.KEY_IS_CONNECTED)) {
             return savedInstanceState.getBoolean(KEY_IS_CONNECTED, false);
         }

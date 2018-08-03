@@ -14,10 +14,10 @@ import me.worric.souvenarius.databinding.ItemMainSouvenirBinding;
 
 public class SouvenirAdapter extends RecyclerView.Adapter<SouvenirAdapter.SouvenirViewholder> {
 
-    private final MainFragment.ItemClickListener mListener;
+    private final MainFragment.ClickListener mListener;
     private List<SouvenirDb> mSouvenirs;
 
-    SouvenirAdapter(MainFragment.ItemClickListener listener) {
+    SouvenirAdapter(MainFragment.ClickListener listener) {
         mListener = listener;
     }
 
@@ -31,7 +31,7 @@ public class SouvenirAdapter extends RecyclerView.Adapter<SouvenirAdapter.Souven
     public SouvenirViewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         ItemMainSouvenirBinding binding = DataBindingUtil.inflate(inflater, R.layout.item_main_souvenir, parent, false);
-        binding.setItemClickListener(mListener);
+        binding.setClickListener(mListener);
         return new SouvenirViewholder(binding);
     }
 

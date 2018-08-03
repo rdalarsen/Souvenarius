@@ -12,7 +12,7 @@
     <string name="hint_story_add">Your story here…</string>
     <string name="hint_location_add">Location…</string>
     <string name="format_location_add">%s, %s</string>
-    <string name="error_message_add_temp_file">Could allocate temporary file.</string>
+    <string name="error_message_add_temp_file">Could not allocate temporary file.</string>
     <string name="error_message_add_missing_values">There are missing values. Please input them.</string>
     <string name="success_message_add_souvenir_saved">Souvenir successfully saved.</string>
     <string name="error_message_souvenir_not_saved">Souvenir could not be saved.</string>
@@ -47,6 +47,10 @@
     <string name="label_edit_dialog">Edit the %s</string>
     <string name="btn_edit_dialog_save">Save</string>
     <string name="btn_edit_dialog_cancel">Cancel</string>
+    <string name="success_message_detail_photo_added">Photo successfully added.</string>
+    <string name="error_message_detail_photo_not_added">Photo could not be added.</string>
+    <string name="error_message_detail_photo_cancelled">Cancelled taking photo.</string>
+    <string name="error_message_detail_fail_temp_file_allocation">Could not allocate temporary file.</string>
 
     <!-- Sign in fragment -->
     <string name="sign_in_notice_no_internet">You need to sign in to use the app. Please also make sure you\'re connected to the internet.</string>

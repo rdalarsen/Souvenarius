@@ -64,11 +64,10 @@ public class DetailViewModel extends ViewModel {
     }
 
     public boolean deletePhoto(File photoFile) {
-        Timber.i("Delete photo triggered! Photo name was: %s", photoFile != null ? photoFile.getName() : "(PHOTO IS NULL)");
         SouvenirDb souvenir = mCurrentSouvenir.getValue();
         if (souvenir != null) {
-            boolean deleteResult = souvenir.getPhotos().remove(photoFile.getName());
-            if (deleteResult) {
+            boolean isRemoved = souvenir.getPhotos().remove(photoFile.getName());
+            if (isRemoved) {
                 mRepository.updateSouvenir(souvenir, null);
                 mRepository.deleteFileFromStorage(photoFile.getName());
                 if (photoFile.exists()) {
@@ -78,36 +77,35 @@ public class DetailViewModel extends ViewModel {
                     Timber.e("PhotoFile did NOT exist; skip delete");
                 }
             }
-            return deleteResult;
+            return isRemoved;
         }
         return false;
     }
 
-    public boolean clearPhoto() {
+    public void clearPhoto() {
         File photoFile = mPhotoFile.getValue();
         if (photoFile != null) {
-            setCurrentPhotoFile(null);
+            setPhotoFile(null);
             if (photoFile.exists()) {
-                return photoFile.delete();
+                photoFile.delete();
             }
         }
-        return false;
     }
 
     public boolean addPhoto() {
-        File currentFile = mPhotoFile.getValue();
+        File photoFile = mPhotoFile.getValue();
         SouvenirDb souvenir = mCurrentSouvenir.getValue();
-        if (currentFile != null && souvenir != null) {
-            boolean addResult = souvenir.getPhotos().add(currentFile.getName());
-            if (addResult) {
-                mRepository.updateSouvenir(souvenir, currentFile);
+        if (photoFile != null && souvenir != null) {
+            boolean isAdded = souvenir.getPhotos().add(photoFile.getName());
+            if (isAdded) {
+                mRepository.updateSouvenir(souvenir, photoFile);
             }
-            return addResult;
+            return isAdded;
         }
         return false;
     }
 
-    public void setCurrentPhotoFile(File photoFile) {
+    public void setPhotoFile(File photoFile) {
         mPhotoFile.setValue(photoFile);
     }
 

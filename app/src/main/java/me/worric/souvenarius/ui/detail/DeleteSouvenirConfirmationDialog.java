@@ -17,7 +17,7 @@ public class DeleteSouvenirConfirmationDialog extends DialogFragment {
                 .setTitle(R.string.dialog_souvenir_deletion_title_detail)
                 .setMessage(R.string.dialog_souvenir_deletion_message_detail)
                 .setPositiveButton(R.string.dialog_positive_label_detail, (dialog, which) -> {
-                    ((DetailFragment)getParentFragment()).onDeleteSouvenir();
+                    ((DetailFragment) getParentFragment()).onDeleteSouvenirConfirmed();
                     dialog.dismiss();
                 })
                 .setNegativeButton(R.string.dialog_negative_label_detail, (dialog, which) ->

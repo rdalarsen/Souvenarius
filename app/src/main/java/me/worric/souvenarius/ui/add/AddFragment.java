@@ -61,13 +61,13 @@ public class AddFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProviders.of(this, mFactory).get(AddViewModel.class);
-        restoreFile(savedInstanceState);
+        restorePhotoFile(savedInstanceState);
         mBinding.setViewmodel(mViewModel);
         mBinding.setLifecycleOwner(this);
-        mBinding.setClickHandler(mClickHandler);
+        mBinding.setClickListener(mClickListener);
     }
 
-    private void restoreFile(Bundle savedInstanceState) {
+    private void restorePhotoFile(Bundle savedInstanceState) {
         if (savedInstanceState != null && savedInstanceState.containsKey(KEY_FILE_PATH)) {
             mViewModel.setPhotoFile(savedInstanceState.getString(KEY_FILE_PATH));
         }
@@ -105,6 +105,10 @@ public class AddFragment extends Fragment {
         }
     }
 
+    private void showErrorToast() {
+        Toast.makeText(getContext(), R.string.error_message_add_no_connection, Toast.LENGTH_SHORT).show();
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == TAKE_PHOTO_REQUEST_CODE) {
@@ -117,15 +121,20 @@ public class AddFragment extends Fragment {
         }
     }
 
-    private final ClickHandler mClickHandler = new ClickHandler() {
+    private final ClickListener mClickListener = new ClickListener() {
         @Override
         public void onAddPhotoClicked(View view) {
+            if (!NetUtils.isConnected(getContext())) {
+                showErrorToast();
+                return;
+            }
+
             takePhoto();
         }
 
         @Override
         public void onSaveSouvenirClicked(View view) {
-            if (!NetUtils.getIsConnected(getContext())) {
+            if (!NetUtils.isConnected(getContext())) {
                 showErrorToast();
                 return;
             }
@@ -147,11 +156,7 @@ public class AddFragment extends Fragment {
         }
     };
 
-    private void showErrorToast() {
-        Toast.makeText(getContext(), R.string.error_message_add_no_connection, Toast.LENGTH_SHORT).show();
-    }
-
-    public interface ClickHandler {
+    public interface ClickListener {
         void onAddPhotoClicked(View view);
         void onSaveSouvenirClicked(View view);
     }

@@ -11,7 +11,7 @@
             name="placeInArray"
             type="Integer" />
         <variable
-            name="deletePhotoClickListener"
+            name="clickListener"
             type="me.worric.souvenarius.ui.detail.DetailFragment.DeletePhotoClickListener" />
     </data>
     <android.support.constraint.ConstraintLayout
@@ -50,7 +50,7 @@
                 android:tint="@color/colorAccent"
                 android:alpha="0.75"
                 android:visibility="@{placeInArray > 0 ? View.VISIBLE : View.GONE}"
-                android:onClick="@{() -> deletePhotoClickListener.onDeletePhoto(photoName)}" />
+                android:onClick="@{() -> clickListener.onDeletePhotoClicked(photoName)}" />
 
         </android.support.v7.widget.CardView>
     </android.support.constraint.ConstraintLayout>

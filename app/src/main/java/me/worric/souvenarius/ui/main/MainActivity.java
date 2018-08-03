@@ -182,12 +182,6 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == RC_PERMISSION_RESULTS) {
-            Timber.i("grantResults length: %d.", grantResults.length);
-            Timber.i("Permission: %s was %s. Permission %s was %s",
-                    permissions[0],
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED ? "GRANTED" : "REJECTED",
-                    permissions[1],
-                    grantResults[1] == PackageManager.PERMISSION_GRANTED ? "GRANTED" : "REJECTED");
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED
                     && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                 Timber.i("success called");
@@ -304,4 +298,5 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     public AndroidInjector<Fragment> supportFragmentInjector() {
         return mInjector;
     }
+
 }

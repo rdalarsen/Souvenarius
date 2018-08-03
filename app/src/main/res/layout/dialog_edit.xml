@@ -7,8 +7,8 @@
             name="viewmodel"
             type="me.worric.souvenarius.ui.detail.DetailViewModel" />
         <variable
-            name="clickHandler"
-            type="me.worric.souvenarius.ui.detail.EditDialog.EditTextClickHandler" />
+            name="clickListener"
+            type="me.worric.souvenarius.ui.detail.EditDialog.ClickListener" />
         <variable
             name="textType"
             type="me.worric.souvenarius.ui.detail.DetailFragment.TextType" />
@@ -34,7 +34,7 @@
                 app:layout_constraintHorizontal_chainStyle="packed"
                 app:chainUseRtl="true"
                 style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                android:onClick="@{clickHandler::onCancelled}"
+                android:onClick="@{clickListener::onCancelClicked}"
                 android:text="@string/btn_edit_dialog_cancel" />
 
             <Button
@@ -45,7 +45,7 @@
                 app:layout_constraintStart_toEndOf="@+id/btn_edit_cancel"
                 app:layout_constraintEnd_toEndOf="parent"
                 style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                android:onClick="@{clickHandler::onTextEdited}"
+                android:onClick="@{clickListener::onSaveClicked}"
                 android:text="@string/btn_edit_dialog_save" />
 
             <TextView

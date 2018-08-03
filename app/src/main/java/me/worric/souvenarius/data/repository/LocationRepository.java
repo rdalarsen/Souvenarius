@@ -51,8 +51,8 @@ public class LocationRepository {
     private void fetchLocation() {
         try {
             mClient.getLastLocation().addOnSuccessListener(location -> {
-                LocationCallback callback = result -> mResult.setValue(result);
-                new LocationAsyncTask(callback, mGeocoder, mErrorMessages).execute(location);
+                LocationResultListener listener = result -> mResult.setValue(result);
+                new LocationAsyncTask(listener, mGeocoder, mErrorMessages).execute(location);
             }).addOnFailureListener(e -> {
                 Result<Address> result = Result.failure(mErrorMessages
                         .get(R.string.error_message_location_repo_no_device_location));
@@ -71,12 +71,12 @@ public class LocationRepository {
 
     private static class LocationAsyncTask extends AsyncTask<Location, Void, Result<Address>> {
 
-        private final LocationCallback mCallback;
+        private final LocationResultListener mListener;
         private final Geocoder mGeocoder;
         private final Map<Integer,String> mErrorMessages;
 
-        LocationAsyncTask(LocationCallback callback, Geocoder geocoder, Map<Integer,String> errorMessages) {
-            mCallback = callback;
+        LocationAsyncTask(LocationResultListener listener, Geocoder geocoder, Map<Integer,String> errorMessages) {
+            mListener = listener;
             mGeocoder = geocoder;
             mErrorMessages = errorMessages;
         }
@@ -112,12 +112,12 @@ public class LocationRepository {
 
         @Override
         protected void onPostExecute(Result<Address> addressResult) {
-            mCallback.onFetchFinished(addressResult);
+            mListener.onLocationResult(addressResult);
         }
     }
 
-    public interface LocationCallback {
-        void onFetchFinished(Result<Address> result);
+    public interface LocationResultListener {
+        void onLocationResult(Result<Address> result);
     }
 
 }

@@ -49,7 +49,6 @@ public class AddViewModel extends ViewModel {
 
     public void setPhotoFile(@NonNull String path) {
         File currentPhotoFile = mPhotoFile.getValue();
-        Timber.i("currentFile: path=%s", currentPhotoFile != null ? currentPhotoFile.getAbsoluteFile() : "(WAS NULL)");
         if (currentPhotoFile == null) {
             Timber.i("Restoring file...");
             File restoredFile = new File(path);

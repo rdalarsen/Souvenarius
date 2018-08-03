@@ -20,7 +20,7 @@ public class DeletePhotoConfirmationDialog extends DialogFragment {
                 .setTitle(R.string.dialog_photo_deletion_title_detail)
                 .setMessage(R.string.dialog_photo_deletion_message_detail)
                 .setPositiveButton(R.string.dialog_positive_label_detail, (dialog, which) -> {
-                    ((DetailFragment) getParentFragment()).onDeletePhoto(photoName);
+                    ((DetailFragment) getParentFragment()).onDeletePhotoConfirmed(photoName);
                     dialog.dismiss();
                 })
                 .setNegativeButton(R.string.dialog_negative_label_detail, (dialog, which) ->

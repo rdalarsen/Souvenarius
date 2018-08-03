@@ -91,7 +91,7 @@ public class MainFragment extends Fragment {
     }
 
     private void setupRecyclerView() {
-        mAdapter = new SouvenirAdapter(mItemClickListener);
+        mAdapter = new SouvenirAdapter(mClickListener);
         mBinding.rvSouvenirList.setAdapter(mAdapter);
         mBinding.rvSouvenirList.setHasFixedSize(true);
     }
@@ -99,7 +99,7 @@ public class MainFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity)getActivity()).setFabState(FabState.ADD);
+        ((MainActivity) getActivity()).setFabState(FabState.ADD);
     }
 
     @Override
@@ -137,7 +137,7 @@ public class MainFragment extends Fragment {
                 UpdateSouvenirsService.startSouvenirsUpdate(getContext());
                 return true;
             case R.id.action_main_sign_out:
-                ((MainActivity)getActivity()).handleSignOut();
+                ((MainActivity) getActivity()).handleSignOut();
                 return true;
             case R.id.action_main_toggle_sort:
                 SortStyle sortStyle = PrefsUtils.getSortStyleFromPrefs(mSharedPreferences,
@@ -167,11 +167,11 @@ public class MainFragment extends Fragment {
         }
     }
 
-    private final ItemClickListener mItemClickListener = souvenir ->
-            ((MainActivity)getActivity()).handleSouvenirClicked(souvenir);
+    private final ClickListener mClickListener = souvenir ->
+            ((MainActivity) getActivity()).handleSouvenirClicked(souvenir);
 
-    public interface ItemClickListener {
-        void onItemClicked(SouvenirDb souvenir);
+    public interface ClickListener {
+        void onSouvenirClicked(SouvenirDb souvenir);
     }
 
     public static MainFragment newInstance() {

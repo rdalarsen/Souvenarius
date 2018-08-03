@@ -64,19 +64,8 @@ public class SouvenirRepository {
         mAuth = FirebaseAuth.getInstance();
         mAppDatabase = appDatabase;
         mPrefs = prefs;
-        //mPrefsChangeListener = initPrefListener(prefs);
         initQueryParameters();
         UpdateSouvenirsService.startSouvenirsUpdate(context);
-    }
-
-    private SharedPreferences.OnSharedPreferenceChangeListener initPrefListener(SharedPreferences prefs) {
-        SharedPreferences.OnSharedPreferenceChangeListener listener = (sharedPreferences, key) -> {
-            SortStyle sortStyle = getSortStyleFromPrefs(sharedPreferences, key);
-            Timber.i("SortStyle is now set to: %s", sortStyle.toString());
-            mQueryParameters.setValue(new QueryParameters(mAuth.getUid(), sortStyle));
-        };
-        prefs.registerOnSharedPreferenceChangeListener(listener);
-        return listener;
     }
 
     private void initQueryParameters() {

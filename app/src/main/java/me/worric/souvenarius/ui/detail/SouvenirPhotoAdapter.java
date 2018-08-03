@@ -29,7 +29,7 @@ public class SouvenirPhotoAdapter extends RecyclerView.Adapter<SouvenirPhotoAdap
     public SouvenirPhotoViewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         ItemDetailPhotoBinding binding = DataBindingUtil.inflate(inflater, R.layout.item_detail_photo, parent, false);
-        binding.setDeletePhotoClickListener(mListener);
+        binding.setClickListener(mListener);
         return new SouvenirPhotoViewholder(binding);
     }
 

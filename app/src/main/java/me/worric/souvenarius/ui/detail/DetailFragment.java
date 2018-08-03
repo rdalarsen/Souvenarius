@@ -112,7 +112,7 @@ public class DetailFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity)getActivity()).setFabState(FabState.HIDDEN);
+        ((MainActivity) getActivity()).setFabState(FabState.HIDDEN);
     }
 
     @Override
@@ -144,19 +144,17 @@ public class DetailFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_detail_add_photo:
-                if (!NetUtils.getIsConnected(getContext())) {
+                if (!NetUtils.isConnected(getContext())) {
                     showErrorToast();
                     return true;
                 }
-
                 takePhoto();
                 return true;
             case R.id.action_detail_delete_souvenir:
-                if (!NetUtils.getIsConnected(getContext())) {
+                if (!NetUtils.isConnected(getContext())) {
                     showErrorToast();
                     return true;
                 }
-
                 DeleteSouvenirConfirmationDialog.newInstance()
                         .show(getChildFragmentManager(), TAG_DELETE_SOUVENIR);
                 return true;
@@ -165,22 +163,31 @@ public class DetailFragment extends Fragment {
         }
     }
 
-    public void onDeleteSouvenir() {
+    public void onDeleteSouvenirConfirmed() {
         mViewModel.deleteSouvenir();
-        ((MainActivity)getActivity()).handleSouvenirDeleted();
+        ((MainActivity) getActivity()).handleSouvenirDeleted();
+    }
+
+    public void onDeletePhotoConfirmed(String photoName) {
+        File photoFile = FileUtils.getLocalFileForPhotoName(photoName, getContext());
+        if (mViewModel.deletePhoto(photoFile)) {
+            Timber.i("Successfully deleted");
+        } else {
+            Timber.i("Did not get deleted successfully!");
+        }
     }
 
     private void takePhoto() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if ((intent.resolveActivity(getContext().getPackageManager())) != null) {
             File photo = FileUtils.createTempImageFile(getContext());
-            mViewModel.setCurrentPhotoFile(photo);
+            mViewModel.setPhotoFile(photo);
             if (photo != null) {
                 Uri photoUri = FileUtils.getUriForFile(photo, getContext());
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                 startActivityForResult(intent, TAKE_PHOTO_REQUEST_CODE);
             } else {
-                Toast.makeText(getContext(), "Could not allocate temporary file", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.error_message_detail_fail_temp_file_allocation, Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -190,22 +197,26 @@ public class DetailFragment extends Fragment {
         if (requestCode == TAKE_PHOTO_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 if (mViewModel.addPhoto()) {
-                    Toast.makeText(getContext(), "Photo successfully added!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.success_message_detail_photo_added, Toast.LENGTH_SHORT).show();
                 } else {
                     mViewModel.clearPhoto();
-                    Toast.makeText(getContext(), "Photo wasn't added for some reason!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.error_message_detail_photo_not_added, Toast.LENGTH_SHORT).show();
                 }
             } else if (resultCode == RESULT_CANCELED) {
-                mViewModel.setCurrentPhotoFile(null);
-                Toast.makeText(getContext(), "Cancelled taking a photo", Toast.LENGTH_SHORT).show();
+                mViewModel.clearPhoto();
+                Toast.makeText(getContext(), R.string.error_message_detail_photo_cancelled, Toast.LENGTH_SHORT).show();
             } else {
                 throw new IllegalArgumentException("Unknown result code: " + resultCode);
             }
         }
     }
 
+    private void showErrorToast() {
+        Toast.makeText(getContext(), R.string.error_message_detail_no_connection, Toast.LENGTH_SHORT).show();
+    }
+
     private DeletePhotoClickListener mDeletePhotoClickListener = photoName -> {
-        if (!NetUtils.getIsConnected(getContext())) {
+        if (!NetUtils.isConnected(getContext())) {
             showErrorToast();
             return;
         }
@@ -215,20 +226,11 @@ public class DetailFragment extends Fragment {
     };
 
     public interface DeletePhotoClickListener {
-        void onDeletePhoto(String photoName);
-    }
-
-    public void onDeletePhoto(String photoName) {
-        File thePhoto = FileUtils.getLocalFileForPhotoName(photoName, getContext());
-        if (mViewModel.deletePhoto(thePhoto)) {
-            Timber.i("Successfully deleted");
-        } else {
-            Timber.i("Did not get deleted successfully!");
-        }
+        void onDeletePhotoClicked(String photoName);
     }
 
     private EditClickListener mEditClickListener = view -> {
-        if (!NetUtils.getIsConnected(getContext())) {
+        if (!NetUtils.isConnected(getContext())) {
             showErrorToast();
             return;
         }
@@ -251,10 +253,6 @@ public class DetailFragment extends Fragment {
 
     public interface EditClickListener {
         void onEditClicked(View view);
-    }
-
-    private void showErrorToast() {
-        Toast.makeText(getContext(), R.string.error_message_detail_no_connection, Toast.LENGTH_SHORT).show();
     }
 
     public static DetailFragment newInstance(String souvenirId) {
