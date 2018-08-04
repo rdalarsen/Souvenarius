@@ -1,6 +1,8 @@
 package me.worric.souvenarius.ui.common;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -23,7 +25,8 @@ public final class FileUtils {
     private static final String FILE_NAME_SEPARATOR = "_";
     private static final String FILE_NAME_SUFFIX = ".jpg";
 
-    private FileUtils() {}
+    private FileUtils() {
+    }
 
     public static File getLocalFileForPhotoName(@NonNull String photoName, @NonNull Context context) {
         if (TextUtils.isEmpty(photoName)) {
@@ -49,6 +52,44 @@ public final class FileUtils {
         return FileProvider.getUriForFile(context,
                 FILE_PROVIDER_AUTHORITY,
                 file);
+    }
+
+    public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        Timber.i("height=%d, width=%d", height, width);
+
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) >= reqHeight
+                    && (halfWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+        return inSampleSize;
+    }
+
+    public static Bitmap decodeSampledBitmapFromFile(File photoFile, int reqWidth, int reqHeight) {
+        // First decode with inJustDecodeBounds=true to check dimensions
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(photoFile.getAbsolutePath(), options);
+
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeFile(photoFile.getAbsolutePath(), options);
     }
 
 }

@@ -21,14 +21,12 @@ public class StorageHandler {
 
     private static final String STORAGE_REFERENCE = "images";
     private final FirebaseAuth mAuth;
-    private final FirebaseStorage mFirebaseStorage;
     private final StorageReference mRef;
 
     @Inject
     public StorageHandler() {
         mAuth = FirebaseAuth.getInstance();
-        mFirebaseStorage = FirebaseStorage.getInstance();
-        mRef = mFirebaseStorage.getReference(STORAGE_REFERENCE);
+        mRef = FirebaseStorage.getInstance().getReference(STORAGE_REFERENCE);
     }
 
     public void uploadImage(@NonNull File imageFile) {

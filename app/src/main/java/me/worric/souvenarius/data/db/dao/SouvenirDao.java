@@ -22,14 +22,8 @@ public interface SouvenirDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(SouvenirDb... souvenirDbs);
 
-    @Query("SELECT * FROM souvenirs ORDER BY timestamp ASC")
-    List<SouvenirDb> findAllOrderByTimeAscSync();
-
     @Query("SELECT * FROM souvenirs WHERE uid = :uid ORDER BY timestamp DESC LIMIT 1")
     SouvenirDb findMostRecentSync(String uid);
-
-    @Query("DELETE FROM souvenirs")
-    int removeDatabaseContents();
 
     @Query("DELETE FROM souvenirs WHERE uid = :uid")
     int removeUserSouvenirs(String uid);

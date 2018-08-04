@@ -47,8 +47,6 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
 
     public static final String KEY_IS_CONNECTED = "key_is_connected";
     public static final String ACTION_CONNECTIVITY_CHANGED = "action_connectivity_changed";
-    public static final String ACTION_AUTH_SIGNED_IN = "action_auth_signed_in";
-    public static final String ACTION_AUTH_SIGNED_OUT = "action_auth_signed_out";
     private static final int RC_PERMISSION_RESULTS = 404;
     private static final int RC_SIGN_IN_ACTIVITY = 909;
     private Boolean mIsConnected;
@@ -203,7 +201,6 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
                         .commit();
                 mMainViewModel.updateUserId(mAuth.getUid());
                 UpdateSouvenirsService.startSouvenirsUpdate(this);
-                mBroadcastManager.sendBroadcast(new Intent(ACTION_AUTH_SIGNED_IN));
             } else {
                 Timber.w("login unsuccessful - should keep login fragment");
             }
@@ -262,7 +259,6 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
                 .commit();
         mMainViewModel.updateUserId(null);
         UpdateWidgetService.startWidgetUpdate(this);
-        mBroadcastManager.sendBroadcast(new Intent(ACTION_AUTH_SIGNED_OUT));
     }
 
     private BroadcastReceiver mConnectionStateReceiver = new BroadcastReceiver() {

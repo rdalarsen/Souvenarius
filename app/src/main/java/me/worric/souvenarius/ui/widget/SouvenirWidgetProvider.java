@@ -22,6 +22,7 @@ import me.worric.souvenarius.ui.GlideApp;
 import me.worric.souvenarius.ui.common.FileUtils;
 import me.worric.souvenarius.ui.common.NetUtils;
 import me.worric.souvenarius.ui.main.MainActivity;
+import timber.log.Timber;
 
 /**
  * For loading images through Glide in AppWidgets,
@@ -32,8 +33,8 @@ public class SouvenirWidgetProvider extends AppWidgetProvider {
     public static final String ACTION_WIDGET_LAUNCH_ADD_SOUVENIR = "action_widget_launch_add_souvenir";
     public static final String ACTION_WIDGET_LAUNCH_SOUVENIR_DETAILS = "action_widget_launch_souvenir_details";
     public static final String EXTRA_SOUVENIR_ID = "extra_souvenir_id";
-    public static final int RC_LAUNCH_ADD_SOUVENIR = 0;
-    public static final int RC_LAUNCH_SOUVENIR_DETAILS = 1;
+    private static final int RC_LAUNCH_ADD_SOUVENIR = 0;
+    private static final int RC_LAUNCH_SOUVENIR_DETAILS = 1;
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId, Result<SouvenirDb> souvenirDb) {
@@ -48,7 +49,8 @@ public class SouvenirWidgetProvider extends AppWidgetProvider {
                 localPhotoFile = FileUtils.getLocalFileForPhotoName(photoFileName, context);
             }
 
-            AppWidgetTarget appWidgetTarget = new AppWidgetTarget(context, R.id.iv_widget_souvenir_photo, views, appWidgetId);
+            AppWidgetTarget appWidgetTarget = new AppWidgetTarget(context, R.id.iv_widget_souvenir_photo,
+                    views, appWidgetId);
             if (localPhotoFile != null && localPhotoFile.exists()) {
                 // Load local file via Glide
                 Uri uriForLocalFile = FileUtils.getUriForFile(localPhotoFile, context);
@@ -70,6 +72,7 @@ public class SouvenirWidgetProvider extends AppWidgetProvider {
             views.setOnClickPendingIntent(R.id.iv_widget_souvenir_photo,
                     createSouvenirDetailsPendingIntent(context, souvenirDb));
         } else {
+            Timber.i("executing the FAILURE block");
             views.setViewVisibility(R.id.iv_widget_souvenir_photo, View.GONE);
             views.setViewVisibility(R.id.tv_widget_error_text, View.VISIBLE);
             views.setTextViewText(R.id.tv_widget_error_text, souvenirDb.message);
@@ -81,14 +84,6 @@ public class SouvenirWidgetProvider extends AppWidgetProvider {
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 
-    private static PendingIntent createAddSouvenirPendingIntent(Context context) {
-        Intent addSouvenirIntent = new Intent(context, MainActivity.class);
-        addSouvenirIntent.setAction(ACTION_WIDGET_LAUNCH_ADD_SOUVENIR);
-        addSouvenirIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        return PendingIntent.getActivity(context, RC_LAUNCH_ADD_SOUVENIR, addSouvenirIntent,
-                PendingIntent.FLAG_CANCEL_CURRENT);
-    }
-
     private static PendingIntent createSouvenirDetailsPendingIntent(Context context, Result<SouvenirDb> souvenirDb) {
         Intent souvenirDetailsIntent = new Intent(context, MainActivity.class);
         souvenirDetailsIntent.setAction(ACTION_WIDGET_LAUNCH_SOUVENIR_DETAILS);
@@ -96,6 +91,14 @@ public class SouvenirWidgetProvider extends AppWidgetProvider {
         souvenirDetailsIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         return PendingIntent.getActivity(context, RC_LAUNCH_SOUVENIR_DETAILS,
                 souvenirDetailsIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+    }
+
+    private static PendingIntent createAddSouvenirPendingIntent(Context context) {
+        Intent addSouvenirIntent = new Intent(context, MainActivity.class);
+        addSouvenirIntent.setAction(ACTION_WIDGET_LAUNCH_ADD_SOUVENIR);
+        addSouvenirIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        return PendingIntent.getActivity(context, RC_LAUNCH_ADD_SOUVENIR, addSouvenirIntent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
     static void updateAppWidgets(Context context, AppWidgetManager manager, int[] widgetIds,
@@ -108,6 +111,8 @@ public class SouvenirWidgetProvider extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         UpdateWidgetService.startWidgetUpdate(context);
+        /*int[] ids = appWidgetManager.getAppWidgetIds(new ComponentName(context, SouvenirWidgetProvider.class));
+        updateAppWidgets(context, appWidgetManager, ids, Result.failure("this is badass"));*/
     }
 
     @Override

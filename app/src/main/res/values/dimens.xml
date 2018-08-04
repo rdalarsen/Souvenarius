@@ -4,4 +4,5 @@
     <dimen name="card_corner_radius">2dp</dimen>
     <dimen name="card_elevation">1dp</dimen>
     <dimen name="icon_dimension_small">40dp</dimen>
+    <dimen name="btn_size_widget">56dp</dimen>
 </resources>
