@@ -69,6 +69,7 @@ public class MainFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProviders.of(getActivity(), mFactory).get(MainViewModel.class);
         mViewModel.getSouvenirs().observe(this, souvenirResult -> {
+            mBinding.setResultSouvenirs(souvenirResult);
             if (souvenirResult.status.equals(Result.Status.SUCCESS)) {
                 mAdapter.swapLists(souvenirResult.response);
                 restoreLayoutManagerState(savedInstanceState);

@@ -3,11 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
     <data>
+        <import type="java.util.List" />
         <import type="android.view.View" />
         <import type="me.worric.souvenarius.data.Result.Status" />
+        <import type="me.worric.souvenarius.data.model.SouvenirDb" />
         <variable
             name="viewmodel"
             type="me.worric.souvenarius.ui.main.MainViewModel" />
+        <variable
+            name="resultSouvenirs"
+            type="me.worric.souvenarius.data.Result&lt;List&lt;SouvenirDb&gt;&gt;" />
     </data>
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
@@ -36,14 +41,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:text="@string/souvenir_list_error_message" />
-
-        <android.support.constraint.Group
-            android:id="@+id/grp_error_messages"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="@{(viewmodel.souvenirs == null || viewmodel.souvenirs.response.size() > 0) ? View.GONE : View.VISIBLE}"
-            app:constraint_referenced_ids="tv_souvenir_list_error_text" />
+            android:visibility="@{resultSouvenirs.response.size() > 0 ? View.GONE : View.VISIBLE}"
+            android:text="@{resultSouvenirs.status == Status.SUCCESS ? @string/souvenir_list_error_message : viewmodel.souvenirs.message}" />
 
     </android.support.constraint.ConstraintLayout>
 </layout>
