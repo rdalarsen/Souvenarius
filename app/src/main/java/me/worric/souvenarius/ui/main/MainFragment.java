@@ -26,6 +26,7 @@ import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.data.repository.UpdateSouvenirsService;
 import me.worric.souvenarius.databinding.FragmentMainBinding;
+import me.worric.souvenarius.ui.common.NetUtils;
 import me.worric.souvenarius.ui.common.PrefsUtils;
 import timber.log.Timber;
 
@@ -134,6 +135,9 @@ public class MainFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_main_refresh_data:
+                if (!NetUtils.isConnected(getContext())) {
+                    showErrorToast();
+                }
                 UpdateSouvenirsService.startSouvenirsUpdate(getContext());
                 return true;
             case R.id.action_main_sign_out:
@@ -149,6 +153,10 @@ public class MainFragment extends Fragment {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void showErrorToast() {
+        Toast.makeText(getContext(), R.string.error_message_main_no_connection, Toast.LENGTH_SHORT).show();
     }
 
     private void toggleAndPropagateSortStyle(SortStyle sortStyle) {

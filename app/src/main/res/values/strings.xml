@@ -29,6 +29,7 @@
     <string name="main_toast_sort_asc">Sort by date ascending</string>
     <string name="main_toast_sort_desc">Sort by date descending</string>
     <string name="content_desc_main_item_souvenir_photo">Souvenir photo</string>
+    <string name="error_message_main_no_connection">No internet connection. Cannot refresh data.</string>
 
     <!-- Detail fragment -->
     <string name="content_desc_photo">Souvenir photo</string>
