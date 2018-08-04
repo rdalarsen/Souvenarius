@@ -11,6 +11,7 @@
     <string name="hint_title_add">Title…</string>
     <string name="hint_story_add">Your story here…</string>
     <string name="hint_location_add">Location…</string>
+    <string name="hint_location_error_add">Location (could not autodetect)…</string>
     <string name="format_location_add">%s, %s</string>
     <string name="error_message_add_temp_file">Could not allocate temporary file.</string>
     <string name="error_message_add_missing_values">There are missing values. Please input them.</string>

@@ -6,7 +6,6 @@ import android.location.Address;
 import android.text.TextUtils;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.bumptech.glide.RequestBuilder;
 import com.google.firebase.storage.StorageReference;
@@ -60,11 +59,8 @@ public class BindingAdapters {
             }
         } else {
             Timber.w("Result unsuccessful. Message=%s", locationResult.message);
-            Toast.makeText(editText.getContext(), "Could not autofill location. Please do it manually", Toast.LENGTH_SHORT).show();
+            editText.setHint(R.string.hint_location_error_add);
         }
-
-        Timber.i("editText text: %s", editText.getText().toString());
-
     }
 
     @BindingAdapter({"imageName"})
