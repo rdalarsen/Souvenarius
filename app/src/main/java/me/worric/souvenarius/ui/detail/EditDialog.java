@@ -11,7 +11,6 @@ import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Toast;
 
 import javax.inject.Inject;
@@ -27,9 +26,11 @@ import me.worric.souvenarius.ui.common.NetUtils;
 public class EditDialog extends DialogFragment {
 
     private static final String KEY_TEXT_TYPE = "key_text_type";
+    private static final String KEY_SCROLL_POSITION = "key_scroll_position";
     private DetailViewModel mViewModel;
     private DetailFragment.TextType mTextType;
     private DialogEditBinding mBinding;
+    private int[] mScrollViewPosition;
     @Inject
     protected ViewModelProvider.Factory mFactory;
 
@@ -51,15 +52,42 @@ public class EditDialog extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
         mTextType = (DetailFragment.TextType) getArguments().getSerializable(KEY_TEXT_TYPE);
         mViewModel = ViewModelProviders.of(getParentFragment(), mFactory).get(DetailViewModel.class);
+        mViewModel.getCurrentSouvenir().observe(this, souvenirDb -> {
+            mBinding.setCurrentSouvenir(souvenirDb);
+            restoreScrollPosition(savedInstanceState);
+        });
         mBinding.setTextType(mTextType);
         mBinding.setViewmodel(mViewModel);
         mBinding.setLifecycleOwner(this);
         mBinding.setClickListener(mClickListener);
-        getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+//        getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+    }
+
+    private void restoreScrollPosition(Bundle savedInstanceState) {
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_SCROLL_POSITION)) {
+            int[] scrollPosition = savedInstanceState.getIntArray(KEY_SCROLL_POSITION);
+            mBinding.svDetailEditDialogRoot.post(() ->
+                    mBinding.svDetailEditDialogRoot.scrollTo(scrollPosition[0],scrollPosition[1]));
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mScrollViewPosition = new int[]{mBinding.svDetailEditDialogRoot.getScrollX(),
+                mBinding.svDetailEditDialogRoot.getScrollY()};
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mScrollViewPosition != null) {
+            outState.putIntArray(KEY_SCROLL_POSITION, mScrollViewPosition);
+        }
     }
 
     private void showErrorToast() {
-        Toast.makeText(getContext(), "No internet connection. Cannot edit.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), R.string.error_message_detail_edit_dialog_no_connection, Toast.LENGTH_SHORT).show();
     }
 
     private ClickListener mClickListener = new ClickListener() {

@@ -42,6 +42,7 @@ import static android.app.Activity.RESULT_OK;
 public class DetailFragment extends Fragment {
 
     private static final String KEY_LAYOUT_MANAGER_STATE = "key_layout_manager_state";
+    private static final String KEY_SCROLL_POSITION = "key_scroll_position";
     private static final String KEY_SOUVENIR_ID = "key_souvenir_id";
     private static final String TAG_EDIT_DETAIL = "edit_detail";
     private static final String TAG_DELETE_PHOTO = "delete_photo";
@@ -51,6 +52,7 @@ public class DetailFragment extends Fragment {
     private FragmentDetailBinding mBinding;
     private SouvenirPhotoAdapter mAdapter;
     private Parcelable mLayoutManagerState;
+    private int[] mScrollViewPosition;
     @Inject
     protected ViewModelProvider.Factory mFactory;
 
@@ -83,6 +85,7 @@ public class DetailFragment extends Fragment {
             mAdapter.swapPhotos(souvenir);
             mBinding.setCurrentSouvenir(souvenir);
             restoreLayoutManagerState(savedInstanceState);
+            restoreScrollViewState(savedInstanceState);
         });
         mBinding.setLifecycleOwner(this);
         mBinding.setViewmodel(mViewModel);
@@ -96,6 +99,14 @@ public class DetailFragment extends Fragment {
                     .getParcelable(KEY_LAYOUT_MANAGER_STATE);
             mBinding.rvSouvenirPhotoList.getLayoutManager()
                     .onRestoreInstanceState(savedLayoutManagerState);
+        }
+    }
+
+    private void restoreScrollViewState(Bundle savedInstanceState) {
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_SCROLL_POSITION)) {
+            int[] scrollPosition = savedInstanceState.getIntArray(KEY_SCROLL_POSITION);
+            mBinding.svDetailRoot.post(() ->
+                    mBinding.svDetailRoot.scrollTo(scrollPosition[0],scrollPosition[1]));
         }
     }
 
@@ -119,6 +130,8 @@ public class DetailFragment extends Fragment {
     public void onPause() {
         super.onPause();
         mLayoutManagerState = mBinding.rvSouvenirPhotoList.getLayoutManager().onSaveInstanceState();
+        mScrollViewPosition = new int[]{mBinding.svDetailRoot.getScrollX(),
+                mBinding.svDetailRoot.getScrollY()};
     }
 
     @Override
@@ -132,6 +145,9 @@ public class DetailFragment extends Fragment {
         super.onSaveInstanceState(outState);
         if (mLayoutManagerState != null) {
             outState.putParcelable(KEY_LAYOUT_MANAGER_STATE, mLayoutManagerState);
+        }
+        if (mScrollViewPosition != null) {
+            outState.putIntArray(KEY_SCROLL_POSITION, mScrollViewPosition);
         }
     }
 

@@ -14,7 +14,7 @@
             type="me.worric.souvenarius.data.model.SouvenirDb" />
     </data>
     <ScrollView
-        android:id="@+id/sv_detail"
+        android:id="@+id/sv_detail_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:nestedScrollingEnabled="true"
@@ -36,6 +36,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 android:nestedScrollingEnabled="false"
+                android:focusableInTouchMode="false"
                 tools:listitem="@layout/item_detail_photo" />
 
             <TextView

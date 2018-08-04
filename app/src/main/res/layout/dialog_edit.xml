@@ -7,6 +7,9 @@
             name="viewmodel"
             type="me.worric.souvenarius.ui.detail.DetailViewModel" />
         <variable
+            name="currentSouvenir"
+            type="me.worric.souvenarius.data.model.SouvenirDb" />
+        <variable
             name="clickListener"
             type="me.worric.souvenarius.ui.detail.EditDialog.ClickListener" />
         <variable
@@ -14,7 +17,7 @@
             type="me.worric.souvenarius.ui.detail.DetailFragment.TextType" />
     </data>
     <ScrollView
-        android:id="@+id/sv_detail_edit"
+        android:id="@+id/sv_detail_edit_dialog_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -68,7 +71,7 @@
                 android:textAlignment="viewStart"
                 android:imeOptions="actionDone"
                 android:inputType="textMultiLine"
-                app:dialogText="@{viewmodel.currentSouvenir.getValueFromTextType(textType)}" />
+                app:dialogText="@{currentSouvenir.getValueFromTextType(textType)}" />
 
         </android.support.constraint.ConstraintLayout>
     </ScrollView>
