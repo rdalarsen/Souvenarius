@@ -59,7 +59,7 @@ public class SignInFragment extends Fragment {
         IntentFilter filter = new IntentFilter(MainActivity.ACTION_CONNECTIVITY_CHANGED);
         LocalBroadcastManager.getInstance(getContext())
                 .registerReceiver(mReceiver, filter);
-        ((MainActivity)getActivity()).setFabState(FabState.HIDDEN);
+        ((MainActivity) getActivity()).setFabState(FabState.HIDDEN);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class SignInFragment extends Fragment {
     };
 
     private SignInButtonClickedListener mListener = isConnected ->
-            ((MainActivity)getActivity()).handleSignIn(isConnected);
+            ((MainActivity) getActivity()).handleSignIn(isConnected);
 
     public interface SignInButtonClickedListener {
         void onSignInButtonClicked(boolean hasInternetAccess);

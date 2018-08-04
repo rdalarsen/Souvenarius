@@ -76,7 +76,7 @@ public class AddFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity)getActivity()).setFabState(FabState.HIDDEN);
+        ((MainActivity) getActivity()).setFabState(FabState.HIDDEN);
     }
 
     @Override
