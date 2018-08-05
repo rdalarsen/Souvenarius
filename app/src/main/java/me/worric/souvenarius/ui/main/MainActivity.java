@@ -232,6 +232,10 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         getSupportFragmentManager().popBackStack();
     }
 
+    public void handleSouvenirSaved() {
+        getSupportFragmentManager().popBackStack();
+    }
+
     public void setFabState(FabState fabState) {
         mBinding.setFabState(fabState);
     }

@@ -152,6 +152,7 @@ public class AddFragment extends Fragment {
             } else {
                 if (mViewModel.addSouvenir(info)) {
                     Toast.makeText(getContext(), R.string.success_message_add_souvenir_saved, Toast.LENGTH_SHORT).show();
+                    ((MainActivity) getActivity()).handleSouvenirSaved();
                 } else {
                     Toast.makeText(getContext(), R.string.error_message_souvenir_not_saved, Toast.LENGTH_SHORT).show();
                 }
