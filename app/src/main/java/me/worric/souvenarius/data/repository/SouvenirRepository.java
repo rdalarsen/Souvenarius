@@ -87,7 +87,7 @@ public class SouvenirRepository {
         });
     }
 
-    public void addNewSouvenir(SouvenirDb db, File photo) {
+    public void addSouvenir(SouvenirDb db, File photo) {
         DatabaseReference.CompletionListener completionListener = (databaseError, databaseReference) -> {
             if (databaseError != null) {
                 Timber.e(databaseError.toException(), "There was a problem uploading the data to the database; not uploading photo to FirebaseStorage");
@@ -100,7 +100,7 @@ public class SouvenirRepository {
             }
         };
 
-        DataInsertCallback callback = souvenirDb -> {
+        SouvenirInsertTask.OnDataInsertListener callback = souvenirDb -> {
             if (souvenirDb != null) {
                 mFirebaseHandler.storeSouvenir(souvenirDb, completionListener);
             }
@@ -109,11 +109,8 @@ public class SouvenirRepository {
         db.setTimestamp(Instant.now().toEpochMilli());
         db.setId(UUID.randomUUID().toString());
         db.setUid(mAuth.getUid());
-        new SouvenirInsertTask(mAppDatabase.souvenirDao(), callback).execute(db);
-    }
 
-    public LiveData<SouvenirDb> findOneById(String souvenirId) {
-        return mAppDatabase.souvenirDao().findOneById(souvenirId);
+        new SouvenirInsertTask(mAppDatabase.souvenirDao(), callback).execute(db);
     }
 
     public void updateSouvenir(SouvenirDb souvenir, File photo) {
@@ -130,7 +127,7 @@ public class SouvenirRepository {
             }
         };
 
-        DataUpdateCallback callback = numRowsAffected -> {
+        SouvenirUpdateTask.OnDataUpdateListener callback = numRowsAffected -> {
             if (numRowsAffected > 0) {
                 mFirebaseHandler.storeSouvenir(souvenir, completionListener);
             }
@@ -140,13 +137,18 @@ public class SouvenirRepository {
     }
 
     public void deleteSouvenir(SouvenirDb souvenir) {
-        DataDeletedCallback callback = numRowsAffected -> {
+        SouvenirDeleteTask.OnDataDeleteListener callback = numRowsAffected -> {
             if (numRowsAffected > 0) {
                 mFirebaseHandler.deleteSouvenir(souvenir);
                 mStorageHandler.removeImages(souvenir.getPhotos());
             }
         };
+
         new SouvenirDeleteTask(mAppDatabase.souvenirDao(), callback).execute(souvenir);
+    }
+
+    public LiveData<SouvenirDb> findOneById(String souvenirId) {
+        return mAppDatabase.souvenirDao().findOneById(souvenirId);
     }
 
     public void deleteFileFromStorage(String photoName) {
@@ -167,18 +169,6 @@ public class SouvenirRepository {
             parameters.setSortStyle(sortStyle);
             mQueryParameters.setValue(parameters);
         }
-    }
-
-    public interface DataInsertCallback {
-        void onDataInserted(SouvenirDb souvenirDb);
-    }
-
-    public interface DataUpdateCallback {
-        void onDataUpdated(int numRowsAffected);
-    }
-
-    public interface DataDeletedCallback {
-        void onDataDeleted(int numRowsAffected);
     }
 
 }

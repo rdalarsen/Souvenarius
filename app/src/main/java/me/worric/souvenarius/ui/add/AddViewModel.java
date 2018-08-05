@@ -37,7 +37,7 @@ public class AddViewModel extends ViewModel {
             db.setStory(info.getStory());
             db.setPlace(info.getPlace());
             db.getPhotos().add(photo.getName());
-            mSouvenirRepository.addNewSouvenir(db, photo);
+            mSouvenirRepository.addSouvenir(db, photo);
             return true;
         }
         return false;

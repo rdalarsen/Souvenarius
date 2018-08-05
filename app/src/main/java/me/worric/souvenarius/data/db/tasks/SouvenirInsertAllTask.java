@@ -15,9 +15,9 @@ public final class SouvenirInsertAllTask extends AsyncTask<SouvenirDb[],Void,Voi
     private AppDatabase mAppDatabase;
     private SouvenirDao mDao;
     private String mUid;
-    private OnDataInsertedListener mListener;
+    private OnDataInsertAllListener mListener;
 
-    public SouvenirInsertAllTask(AppDatabase appDatabase, String uid, OnDataInsertedListener listener) {
+    public SouvenirInsertAllTask(AppDatabase appDatabase, String uid, OnDataInsertAllListener listener) {
         mAppDatabase = appDatabase;
         mDao = appDatabase.souvenirDao();
         mUid = uid;
@@ -26,7 +26,6 @@ public final class SouvenirInsertAllTask extends AsyncTask<SouvenirDb[],Void,Voi
 
     @Override
     protected Void doInBackground(SouvenirDb[]... souvenirs) {
-        Timber.i("Attempting to DELETE entries with uid=%s from db and INSERT all elements in array with length: %d", mUid, souvenirs[0].length);
         try {
             mAppDatabase.beginTransaction();
             int numDeletedSouvenirs = mDao.removeUserSouvenirs(mUid);
@@ -46,7 +45,7 @@ public final class SouvenirInsertAllTask extends AsyncTask<SouvenirDb[],Void,Voi
         }
     }
 
-    public interface OnDataInsertedListener {
+    public interface OnDataInsertAllListener {
         void onDataInserted();
     }
 

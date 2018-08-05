@@ -20,9 +20,10 @@ import timber.log.Timber;
 
 /**
  * JobIntentService is a compatibility class inheriting from IntentService, that enables correct
- * background processing on pre and post Oreo devices.
+ * background processing on pre and post Oreo devices. That is, use JobScheduler on Oreo and later,
+ * and start IntentService normally on pre Oreo
  *
- * See <a href="https://developer.android.com/reference/android/support/v4/app/JobIntentService"></a>
+ * See <a href="https://developer.android.com/reference/android/support/v4/app/JobIntentService"></a>.
  */
 public class UpdateSouvenirsService extends JobIntentService {
 
@@ -79,7 +80,7 @@ public class UpdateSouvenirsService extends JobIntentService {
         });
     }
 
-    private SouvenirInsertAllTask.OnDataInsertedListener mListener = () -> {
+    private SouvenirInsertAllTask.OnDataInsertAllListener mListener = () -> {
         /* Update widget so as to make sure we display the most current data */
         UpdateWidgetService.startWidgetUpdate(this);
     };

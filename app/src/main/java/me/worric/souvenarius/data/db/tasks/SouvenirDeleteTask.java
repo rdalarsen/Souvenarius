@@ -4,17 +4,16 @@ import android.os.AsyncTask;
 
 import me.worric.souvenarius.data.db.dao.SouvenirDao;
 import me.worric.souvenarius.data.model.SouvenirDb;
-import me.worric.souvenarius.data.repository.SouvenirRepository;
 import timber.log.Timber;
 
 public final class SouvenirDeleteTask extends AsyncTask<SouvenirDb, Void, Integer> {
 
     private SouvenirDao mDao;
-    private SouvenirRepository.DataDeletedCallback mCallback;
+    private OnDataDeleteListener mListener;
 
-    public SouvenirDeleteTask(SouvenirDao dao, SouvenirRepository.DataDeletedCallback callback) {
+    public SouvenirDeleteTask(SouvenirDao dao, OnDataDeleteListener listener) {
         mDao = dao;
-        mCallback = callback;
+        mListener = listener;
     }
 
     @Override
@@ -27,7 +26,13 @@ public final class SouvenirDeleteTask extends AsyncTask<SouvenirDb, Void, Intege
 
     @Override
     protected void onPostExecute(Integer numRowsAffected) {
-        mCallback.onDataDeleted(numRowsAffected);
+        if (mListener != null) {
+            mListener.onDataDeleted(numRowsAffected);
+        }
+    }
+
+    public interface OnDataDeleteListener {
+        void onDataDeleted(int numRowsAffected);
     }
 
 }

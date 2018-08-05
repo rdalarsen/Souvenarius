@@ -5,7 +5,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v4.app.JobIntentService;
 import android.text.TextUtils;
@@ -22,24 +21,25 @@ import me.worric.souvenarius.data.model.SouvenirDb;
 
 /**
  * JobIntentService is a compatibility class inheriting from IntentService, that enables correct
- * background processing on pre and post Oreo devices.
+ * background processing on pre and post Oreo devices. That is, use JobScheduler on Oreo and later,
+ * and start IntentService normally on pre Oreo
  *
- * See <a href="https://developer.android.com/reference/android/support/v4/app/JobIntentService"></a>
+ * See <a href="https://developer.android.com/reference/android/support/v4/app/JobIntentService"></a>.
  */
 public class UpdateWidgetService extends JobIntentService {
 
     private static final String ACTION_UPDATE_WIDGET = "action_update_widget";
     private static final int JOB_ID = 345;
-    private Handler mHandler;
     private FirebaseAuth mAuth;
     @Inject
     protected AppDatabase mAppDatabase;
+    @Inject
+    protected Handler mMainThreadHandler;
 
     @Override
     public void onCreate() {
         AndroidInjection.inject(this);
         super.onCreate();
-        mHandler = new Handler(Looper.getMainLooper());
         mAuth = FirebaseAuth.getInstance();
     }
 
@@ -79,10 +79,11 @@ public class UpdateWidgetService extends JobIntentService {
         }
 
         AppWidgetManager manager = AppWidgetManager.getInstance(this);
-        int[] widgetIds = manager.getAppWidgetIds(new ComponentName(getApplicationContext(), SouvenirWidgetProvider.class));
+        int[] widgetIds = manager.getAppWidgetIds(new ComponentName(getApplicationContext(),
+                SouvenirWidgetProvider.class));
 
         /* The actual update must run on the main thread, else Glide won't work */
-        mHandler.post(() ->
+        mMainThreadHandler.post(() ->
                 SouvenirWidgetProvider.updateAppWidgets(this, manager, widgetIds, resultSouvenir));
     }
 

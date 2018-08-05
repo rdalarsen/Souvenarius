@@ -4,15 +4,14 @@ import android.os.AsyncTask;
 
 import me.worric.souvenarius.data.db.dao.SouvenirDao;
 import me.worric.souvenarius.data.model.SouvenirDb;
-import me.worric.souvenarius.data.repository.SouvenirRepository;
 import timber.log.Timber;
 
 public final class SouvenirUpdateTask extends AsyncTask<SouvenirDb, Void, Integer> {
 
     private SouvenirDao mDao;
-    private SouvenirRepository.DataUpdateCallback mListener;
+    private OnDataUpdateListener mListener;
 
-    public SouvenirUpdateTask(SouvenirDao dao, SouvenirRepository.DataUpdateCallback listener) {
+    public SouvenirUpdateTask(SouvenirDao dao, OnDataUpdateListener listener) {
         mDao = dao;
         mListener = listener;
     }
@@ -31,7 +30,13 @@ public final class SouvenirUpdateTask extends AsyncTask<SouvenirDb, Void, Intege
 
     @Override
     protected void onPostExecute(Integer numRowsAffected) {
-        mListener.onDataUpdated(numRowsAffected);
+        if (mListener != null) {
+            mListener.onDataUpdated(numRowsAffected);
+        }
+    }
+
+    public interface OnDataUpdateListener {
+        void onDataUpdated(int numRowsAffected);
     }
 
 }

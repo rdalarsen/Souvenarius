@@ -7,6 +7,8 @@ import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Geocoder;
+import android.os.Handler;
+import android.os.Looper;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 
@@ -131,6 +133,11 @@ public abstract class SouvenirAppModule {
     @Provides
     static FusedLocationProviderClient provideFusedLocationProvider(@AppContext Context context) {
         return new FusedLocationProviderClient(context);
+    }
+
+    @Provides
+    static Handler provideMainLooperHandler() {
+        return new Handler(Looper.getMainLooper());
     }
 
 }
