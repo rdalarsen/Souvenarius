@@ -3,7 +3,6 @@ package me.worric.souvenarius.data.repository;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -15,17 +14,16 @@ import javax.inject.Singleton;
 
 import timber.log.Timber;
 
+import static me.worric.souvenarius.ui.common.NetUtils.STORAGE_PATH;
+
 @Singleton
 public class StorageHandler {
 
-    private static final String STORAGE_REFERENCE = "images";
-    private final FirebaseAuth mAuth;
     private final StorageReference mRef;
 
     @Inject
     public StorageHandler() {
-        mAuth = FirebaseAuth.getInstance();
-        mRef = FirebaseStorage.getInstance().getReference(STORAGE_REFERENCE);
+        mRef = FirebaseStorage.getInstance().getReference(STORAGE_PATH);
     }
 
     public void uploadPhoto(@NonNull File imageFile) {

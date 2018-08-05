@@ -207,6 +207,8 @@ public class DetailFragment extends Fragment {
             } else {
                 Toast.makeText(getContext(), R.string.error_message_detail_fail_temp_file_allocation, Toast.LENGTH_SHORT).show();
             }
+        } else {
+            Toast.makeText(getContext(), R.string.error_message_add_no_photo_app, Toast.LENGTH_SHORT).show();
         }
     }
 

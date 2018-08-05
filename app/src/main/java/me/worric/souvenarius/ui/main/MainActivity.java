@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
 
             switch (action) {
                 case SouvenirWidgetProvider.ACTION_WIDGET_LAUNCH_ADD_SOUVENIR:
-                    // handle widget action of launcing add souvenir
+                    // handle widget action of launching add souvenir
                     getSupportFragmentManager().beginTransaction()
                             .add(R.id.fragment_container, MainFragment.newInstance())
                             .setReorderingAllowed(true)

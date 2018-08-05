@@ -29,6 +29,6 @@ public abstract class MainActivityModule {
     abstract DetailFragment contributeDetailFragment();
 
     @ContributesAndroidInjector
-    abstract EditDialog contributeEditDiablogFragment();
+    abstract EditDialog contributeEditDialogFragment();
 
 }

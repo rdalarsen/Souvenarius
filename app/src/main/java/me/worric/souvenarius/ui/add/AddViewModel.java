@@ -14,7 +14,6 @@ import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.data.repository.LocationRepository;
 import me.worric.souvenarius.data.repository.SouvenirRepository;
-import timber.log.Timber;
 
 public class AddViewModel extends ViewModel {
 

@@ -55,7 +55,7 @@ public abstract class SouvenirAppModule {
     abstract UpdateWidgetService contributeUpdateWidgetService();
 
     @ContributesAndroidInjector
-    abstract UpdateSouvenirsService contributeUpdateSoivenirsService();
+    abstract UpdateSouvenirsService contributeUpdateSouvenirsService();
 
     @Binds
     abstract ViewModelProvider.Factory bindViewModelFactory(AppViewModelFactory appViewModelFactory);
@@ -87,6 +87,10 @@ public abstract class SouvenirAppModule {
         return context.getSharedPreferences(PrefsUtils.PREFS_NAME, Context.MODE_PRIVATE);
     }
 
+    /**
+     * As we cannot access context in the location repo, error messages from string resources are
+     * generated on beforehand and injected into the repo.
+     */
     @Provides
     @Singleton
     @LocationErrorMsgs
@@ -103,6 +107,10 @@ public abstract class SouvenirAppModule {
         return locationRepoErrMsgs;
     }
 
+    /**
+     * As we cannot access context in the souvenir repo, error messages from string resources are
+     * generated on beforehand and injected into the repo.
+     */
     @Provides
     @Singleton
     @SouvenirErrorMsgs
@@ -113,6 +121,10 @@ public abstract class SouvenirAppModule {
         return souvenirRepoErrMsgs;
     }
 
+    /**
+     * As we cannot access context in the firebase handler, error messages from string resources are
+     * generated on beforehand and injected into the handler.
+     */
     @Provides
     @Singleton
     @FirebaseErrorMsgs

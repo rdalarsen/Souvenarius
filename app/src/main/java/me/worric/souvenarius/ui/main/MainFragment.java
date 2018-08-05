@@ -147,7 +147,6 @@ public class MainFragment extends Fragment {
             case R.id.action_main_toggle_sort:
                 SortStyle sortStyle = PrefsUtils.getSortStyleFromPrefs(mSharedPreferences,
                         PREFS_KEY_SORT_STYLE);
-                Timber.i("SortStyle is: %s", sortStyle.toString());
                 mShouldRestoreLayoutManagerState = false;
                 toggleAndPropagateSortStyle(sortStyle);
                 return true;

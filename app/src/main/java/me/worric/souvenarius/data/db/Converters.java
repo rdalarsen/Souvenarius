@@ -33,7 +33,7 @@ public class Converters {
         if (Collections.addAll(photoNames, strings)) {
             return photoNames;
         }
-        throw new RuntimeException("Couldn't convert photoname strings to ArrayList");
+        throw new RuntimeException("Could not convert photo name strings in the db to List");
     }
 
 }
