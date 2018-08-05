@@ -5,7 +5,6 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -18,9 +17,6 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 import javax.inject.Inject;
 
@@ -118,22 +114,9 @@ public class AddFragment extends Fragment {
         if (requestCode == TAKE_PHOTO_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Timber.i("Photo was taken OK");
+
                 File photoFile = mViewModel.getPhotoFile().getValue();
-
-                if (photoFile != null) {
-                    Bitmap adjustedBitmap = FileUtils.decodeSampledBitmapFromFile(photoFile, 800, 800);
-
-                    Boolean isSuccess = null;
-                    try (FileOutputStream fos = new FileOutputStream(photoFile)) {
-                        isSuccess = adjustedBitmap.compress(Bitmap.CompressFormat.JPEG, 70, fos);
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    Timber.i("success=%s", isSuccess);
-                }
+                FileUtils.persistOptimizedBitmapToDisk(photoFile, 500, 500);
             } else {
                 boolean wasSuccessfullyDeleted = mViewModel.deleteTempImage();
                 Timber.w("Could not take photo. The temp file was %s deleted", (wasSuccessfullyDeleted ? "successfully" : "not"));

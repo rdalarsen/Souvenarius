@@ -13,6 +13,8 @@ import org.threeten.bp.ZonedDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import timber.log.Timber;
@@ -24,6 +26,7 @@ public final class FileUtils {
     private static final String FILE_NAME_PREFIX = "JPEG_";
     private static final String FILE_NAME_SEPARATOR = "_";
     private static final String FILE_NAME_SUFFIX = ".jpg";
+    private static final int JPEG_QUALITY = 50;
 
     private FileUtils() {
     }
@@ -54,42 +57,59 @@ public final class FileUtils {
                 file);
     }
 
-    public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
-        // Raw height and width of image
-        final int height = options.outHeight;
-        final int width = options.outWidth;
-        Timber.i("height=%d, width=%d", height, width);
+    /**
+     * The code in this method is based on
+     * <a href="https://developer.android.com/topic/performance/graphics/load-bitmap">Google's guide</a>.
+     */
+    public static void persistOptimizedBitmapToDisk(File photoFile, int width, int height) {
+        if (photoFile == null) {
+            return;
+        }
 
-        int inSampleSize = 1;
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
 
-        if (height > reqHeight || width > reqWidth) {
+        BitmapFactory.decodeFile(photoFile.getAbsolutePath(), options);
 
-            final int halfHeight = height / 2;
-            final int halfWidth = width / 2;
+        options.inSampleSize = getOptimalSampleSize(options, width, height);
+        options.inJustDecodeBounds = false;
+
+        Bitmap adjuestedBitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath(), options);
+
+        writeBitmapFileToDisk(photoFile, adjuestedBitmap);
+    }
+
+    /**
+     * The code in this method is heavily based on
+     * <a href="https://developer.android.com/topic/performance/graphics/load-bitmap">Google's guide</a>.
+     */
+    private static int getOptimalSampleSize(BitmapFactory.Options options, int width, int height) {
+        int outHeight = options.outHeight;
+        int outWidth = options.outWidth;
+
+        int optimalSampleSize = 1;
+        if (outHeight > height || outWidth > width) {
+            int halfOfHeight = outHeight / 3;
+            int halfOfWidth = outWidth / 3;
 
             // Calculate the largest inSampleSize value that is a power of 2 and keeps both
             // height and width larger than the requested height and width.
-            while ((halfHeight / inSampleSize) >= reqHeight
-                    && (halfWidth / inSampleSize) >= reqWidth) {
-                inSampleSize *= 2;
+            while ((halfOfHeight / optimalSampleSize) >= height && (halfOfWidth / optimalSampleSize) >= width) {
+                optimalSampleSize *= 2;
             }
         }
 
-        return inSampleSize;
+        return optimalSampleSize;
     }
 
-    public static Bitmap decodeSampledBitmapFromFile(File photoFile, int reqWidth, int reqHeight) {
-        // First decode with inJustDecodeBounds=true to check dimensions
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(photoFile.getAbsolutePath(), options);
-
-        // Calculate inSampleSize
-        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
-
-        // Decode bitmap with inSampleSize set
-        options.inJustDecodeBounds = false;
-        return BitmapFactory.decodeFile(photoFile.getAbsolutePath(), options);
+    private static void writeBitmapFileToDisk(File photoFile, Bitmap adjustedBitmap) {
+        try (FileOutputStream fos = new FileOutputStream(photoFile)) {
+            adjustedBitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, fos);
+        } catch (FileNotFoundException e) {
+            Timber.e(e,"File not found");
+        } catch (IOException e) {
+            Timber.e(e, "There was an error");
+        }
     }
 
 }
