@@ -69,17 +69,19 @@ public class UpdateSouvenirsService extends JobIntentService {
     private void handleUpdateSouvenirs() {
         mFirebaseHandler.fetchSouvenirsForCurrentUser(result -> {
             if (result.status.equals(Result.Status.SUCCESS)) {
-                /* This is a workaround to make sure we can update the db off the main thread */
                 SouvenirDb[] converted = result.response.toArray(new SouvenirDb[]{});
-                new SouvenirInsertAllTask(mAppDatabase, mAuth.getUid()).execute(converted);
+                /* This is a workaround to make sure we can update the db off the main thread */
+                new SouvenirInsertAllTask(mAppDatabase, mAuth.getUid(), mListener).execute(converted);
             } else {
                 Timber.w("The fetching failed. Message is: %s", result.message);
             }
             Timber.i("update of souvenirs done");
         });
-
-        // Update widget so as to make sure we display the most current data
-        UpdateWidgetService.startWidgetUpdate(this);
     }
+
+    private SouvenirInsertAllTask.OnDataInsertedListener mListener = () -> {
+        /* Update widget so as to make sure we display the most current data */
+        UpdateWidgetService.startWidgetUpdate(this);
+    };
 
 }

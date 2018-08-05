@@ -15,11 +15,13 @@ public final class SouvenirInsertAllTask extends AsyncTask<SouvenirDb[],Void,Voi
     private AppDatabase mAppDatabase;
     private SouvenirDao mDao;
     private String mUid;
+    private OnDataInsertedListener mListener;
 
-    public SouvenirInsertAllTask(AppDatabase appDatabase, String uid) {
+    public SouvenirInsertAllTask(AppDatabase appDatabase, String uid, OnDataInsertedListener listener) {
         mAppDatabase = appDatabase;
         mDao = appDatabase.souvenirDao();
         mUid = uid;
+        mListener = listener;
     }
 
     @Override
@@ -35,6 +37,17 @@ public final class SouvenirInsertAllTask extends AsyncTask<SouvenirDb[],Void,Voi
             mAppDatabase.endTransaction();
         }
         return null;
+    }
+
+    @Override
+    protected void onPostExecute(Void aVoid) {
+        if (mListener != null) {
+            mListener.onDataInserted();
+        }
+    }
+
+    public interface OnDataInsertedListener {
+        void onDataInserted();
     }
 
 }

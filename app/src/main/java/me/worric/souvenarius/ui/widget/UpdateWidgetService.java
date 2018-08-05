@@ -19,7 +19,6 @@ import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.db.AppDatabase;
 import me.worric.souvenarius.data.model.SouvenirDb;
-import timber.log.Timber;
 
 /**
  * JobIntentService is a compatibility class inheriting from IntentService, that enables correct
@@ -64,7 +63,6 @@ public class UpdateWidgetService extends JobIntentService {
     }
 
     private void handleUpdateWidget() {
-        Timber.i("handleUpdateWidget triggered");
         Result<SouvenirDb> resultSouvenir;
         String uid = mAuth.getUid();
 
@@ -81,7 +79,7 @@ public class UpdateWidgetService extends JobIntentService {
         }
 
         AppWidgetManager manager = AppWidgetManager.getInstance(this);
-        int[] widgetIds = manager.getAppWidgetIds(new ComponentName(this, SouvenirWidgetProvider.class));
+        int[] widgetIds = manager.getAppWidgetIds(new ComponentName(getApplicationContext(), SouvenirWidgetProvider.class));
 
         /* The actual update must run on the main thread, else Glide won't work */
         mHandler.post(() ->

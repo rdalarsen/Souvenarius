@@ -89,10 +89,10 @@ public class SignInFragment extends Fragment {
         }
     };
 
-    private SignInButtonClickedListener mListener = isConnected ->
+    private SignInButtonClickListener mListener = isConnected ->
             ((MainActivity) getActivity()).handleSignIn(isConnected);
 
-    public interface SignInButtonClickedListener {
+    public interface SignInButtonClickListener {
         void onSignInButtonClicked(boolean hasInternetAccess);
     }
 
