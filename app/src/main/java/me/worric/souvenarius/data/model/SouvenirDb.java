@@ -108,10 +108,6 @@ public class SouvenirDb {
         mPhotos = photos;
     }
 
-    public void addPhoto(String image) {
-        getPhotos().add(image);
-    }
-
     @Exclude
     public String getFormattedTimestamp() {
         return ZonedDateTime

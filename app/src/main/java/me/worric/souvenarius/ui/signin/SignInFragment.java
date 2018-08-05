@@ -19,7 +19,6 @@ import me.worric.souvenarius.databinding.FragmentSigninBinding;
 import me.worric.souvenarius.ui.common.NetUtils;
 import me.worric.souvenarius.ui.main.FabState;
 import me.worric.souvenarius.ui.main.MainActivity;
-import timber.log.Timber;
 
 
 public class SignInFragment extends Fragment {
@@ -79,11 +78,9 @@ public class SignInFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             boolean isConnected = intent.getBooleanExtra(MainActivity.KEY_IS_CONNECTED, false);
-            Timber.i("Received connection broadcast. we are connected=%s", isConnected);
             boolean needsUpdate = !(mIsConnected == isConnected);
             if (needsUpdate) {
                 mIsConnected = isConnected;
-                Timber.i("connection status changed, setting new value...");
                 mBinding.setIsConnected(mIsConnected);
             }
         }

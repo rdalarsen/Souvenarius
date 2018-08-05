@@ -50,7 +50,6 @@ public class AddViewModel extends ViewModel {
     public void setPhotoFile(@NonNull String path) {
         File currentPhotoFile = mPhotoFile.getValue();
         if (currentPhotoFile == null) {
-            Timber.i("Restoring file...");
             File restoredFile = new File(path);
             mPhotoFile.setValue(restoredFile);
         }
@@ -60,7 +59,7 @@ public class AddViewModel extends ViewModel {
         return mPhotoFile;
     }
 
-    public boolean deleteTempImage() {
+    public boolean deleteTempPhoto() {
         File currentFile = mPhotoFile.getValue();
         if (currentFile != null) {
             mPhotoFile.setValue(null);
@@ -70,13 +69,11 @@ public class AddViewModel extends ViewModel {
     }
 
     public LiveData<Result<Address>> getLocationInfo() {
-        Timber.i("getLocationInfo called");
         return mLocationRepository.getLocation();
     }
 
     @Override
     protected void onCleared() {
-        Timber.i("Clearing result data...");
         mLocationRepository.clearResult();
     }
 

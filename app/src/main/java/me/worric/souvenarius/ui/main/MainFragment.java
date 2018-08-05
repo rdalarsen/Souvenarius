@@ -30,7 +30,7 @@ import me.worric.souvenarius.ui.common.NetUtils;
 import me.worric.souvenarius.ui.common.PrefsUtils;
 import timber.log.Timber;
 
-import static me.worric.souvenarius.data.repository.SouvenirRepository.PREFS_KEY_SORT_STYLE;
+import static me.worric.souvenarius.ui.common.PrefsUtils.PREFS_KEY_SORT_STYLE;
 
 public class MainFragment extends Fragment {
 

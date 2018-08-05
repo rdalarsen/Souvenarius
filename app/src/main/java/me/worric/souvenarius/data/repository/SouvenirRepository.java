@@ -34,12 +34,12 @@ import me.worric.souvenarius.di.SouvenirErrorMsgs;
 import me.worric.souvenarius.ui.main.SortStyle;
 import timber.log.Timber;
 
+import static me.worric.souvenarius.ui.common.PrefsUtils.PREFS_KEY_SORT_STYLE;
 import static me.worric.souvenarius.ui.common.PrefsUtils.getSortStyleFromPrefs;
 
 @Singleton
 public class SouvenirRepository {
 
-    public static final String PREFS_KEY_SORT_STYLE = "sortStyle";
     private static final String QUERY_STRING = "SELECT * FROM souvenirs WHERE uid = ? ORDER BY timestamp %s";
     private final FirebaseHandler mFirebaseHandler;
     private final StorageHandler mStorageHandler;
@@ -47,8 +47,6 @@ public class SouvenirRepository {
     private final FirebaseAuth mAuth;
     private final AppDatabase mAppDatabase;
     private final MutableLiveData<QueryParameters> mQueryParameters = new MutableLiveData<>();
-    /* see: https://stackoverflow.com/questions/2542938/sharedpreferences-onsharedpreferencechangelistener-not-being-called-consistently */
-    //private final SharedPreferences.OnSharedPreferenceChangeListener mPrefsChangeListener;
     private final SharedPreferences mPrefs;
 
     @Inject
@@ -87,20 +85,25 @@ public class SouvenirRepository {
         });
     }
 
+    public LiveData<SouvenirDb> findSouvenirById(String souvenirId) {
+        return mAppDatabase.souvenirDao().findOneById(souvenirId);
+    }
+
     public void addSouvenir(SouvenirDb db, File photo) {
         DatabaseReference.CompletionListener completionListener = (databaseError, databaseReference) -> {
             if (databaseError != null) {
-                Timber.e(databaseError.toException(), "There was a problem uploading the data to the database; not uploading photo to FirebaseStorage");
+                Timber.e(databaseError.toException(), "There was a problem adding the souvenir to the database.");
                 return;
             }
+
             if (photo != null && photo.exists()) {
-                mStorageHandler.uploadImage(photo);
+                mStorageHandler.uploadPhoto(photo);
             } else {
                 Timber.e("The photo was null or did not exist; not uploading...");
             }
         };
 
-        SouvenirInsertTask.OnDataInsertListener callback = souvenirDb -> {
+        SouvenirInsertTask.OnDataInsertListener listener = souvenirDb -> {
             if (souvenirDb != null) {
                 mFirebaseHandler.storeSouvenir(souvenirDb, completionListener);
             }
@@ -110,49 +113,58 @@ public class SouvenirRepository {
         db.setId(UUID.randomUUID().toString());
         db.setUid(mAuth.getUid());
 
-        new SouvenirInsertTask(mAppDatabase.souvenirDao(), callback).execute(db);
+        new SouvenirInsertTask(mAppDatabase.souvenirDao(), listener).execute(db);
     }
 
     public void updateSouvenir(SouvenirDb souvenir, File photo) {
         DatabaseReference.CompletionListener completionListener = (databaseError, databaseReference) -> {
             if (databaseError != null) {
-                Timber.e(databaseError.toException(), "There was a problem uploading the data to the database");
+                Timber.e(databaseError.toException(), "There was a problem updating the souvenir in the database.");
                 return;
             }
+
             if (photo != null && photo.exists()) {
-                Timber.i("attempting to upload the photo...");
-                mStorageHandler.uploadImage(photo);
+                mStorageHandler.uploadPhoto(photo);
             } else {
                 Timber.e("The photo was null or did not exist; not uploading...");
             }
         };
 
-        SouvenirUpdateTask.OnDataUpdateListener callback = numRowsAffected -> {
+        SouvenirUpdateTask.OnDataUpdateListener listener = numRowsAffected -> {
             if (numRowsAffected > 0) {
                 mFirebaseHandler.storeSouvenir(souvenir, completionListener);
             }
         };
 
-        new SouvenirUpdateTask(mAppDatabase.souvenirDao(), callback).execute(souvenir);
+        new SouvenirUpdateTask(mAppDatabase.souvenirDao(), listener).execute(souvenir);
     }
 
     public void deleteSouvenir(SouvenirDb souvenir) {
-        SouvenirDeleteTask.OnDataDeleteListener callback = numRowsAffected -> {
-            if (numRowsAffected > 0) {
-                mFirebaseHandler.deleteSouvenir(souvenir);
-                mStorageHandler.removeImages(souvenir.getPhotos());
+        DatabaseReference.CompletionListener completionListener = (databaseError, databaseReference) -> {
+            if (databaseError != null) {
+                Timber.e(databaseError.toException(), "There was a problem deleting the souvenir from the database.");
+                return;
+            }
+
+            List<String> photos = souvenir.getPhotos();
+            if (!photos.isEmpty()) {
+                mStorageHandler.removePhotos(photos);
+            } else {
+                Timber.e("The list of photos was empty; not deleting from storage.");
             }
         };
 
-        new SouvenirDeleteTask(mAppDatabase.souvenirDao(), callback).execute(souvenir);
+        SouvenirDeleteTask.OnDataDeleteListener listener = numRowsAffected -> {
+            if (numRowsAffected > 0) {
+                mFirebaseHandler.deleteSouvenir(souvenir, completionListener);
+            }
+        };
+
+        new SouvenirDeleteTask(mAppDatabase.souvenirDao(), listener).execute(souvenir);
     }
 
-    public LiveData<SouvenirDb> findOneById(String souvenirId) {
-        return mAppDatabase.souvenirDao().findOneById(souvenirId);
-    }
-
-    public void deleteFileFromStorage(String photoName) {
-        mStorageHandler.removeImage(photoName);
+    public void deletePhotoFromStorage(String photoName) {
+        mStorageHandler.removePhoto(photoName);
     }
 
     public void setQueryParameters(String uid) {

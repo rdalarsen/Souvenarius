@@ -182,9 +182,9 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         if (requestCode == RC_PERMISSION_RESULTS) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED
                     && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                Timber.i("success called");
+                Timber.i("All permissions granted");
             } else {
-                Timber.i("failed called");
+                Timber.i("Permissions not granted");
             }
         }
     }
@@ -195,14 +195,13 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
 
         if (requestCode == RC_SIGN_IN_ACTIVITY) {
             if (resultCode == RESULT_OK) {
-                Timber.i("login result ok - should add new fragment\nwe should also update appwidgets to reflect this.");
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, MainFragment.newInstance())
                         .commit();
                 mMainViewModel.updateUserId(mAuth.getUid());
                 UpdateSouvenirsService.startSouvenirsUpdate(this);
             } else {
-                Timber.w("login unsuccessful - should keep login fragment");
+                Timber.w("login unsuccessful");
             }
         }
     }
@@ -236,10 +235,6 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         getSupportFragmentManager().popBackStack();
     }
 
-    public void setFabState(FabState fabState) {
-        mBinding.setFabState(fabState);
-    }
-
     public void handleSignIn(boolean isConnected) {
         if (isConnected) {
             launchSignInActivity();
@@ -265,6 +260,10 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         UpdateWidgetService.startWidgetUpdate(this);
     }
 
+    public void setFabState(FabState fabState) {
+        mBinding.setFabState(fabState);
+    }
+
     private BroadcastReceiver mConnectionStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -275,13 +274,11 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
             mBinding.setIsConnected(isConnected);
             if (mIsConnected == null) {
                 mIsConnected = isConnected;
-                Timber.i("new connected status triggered (from null!)");
                 sendLocalConnectivityBroadcast();
             } else {
                 boolean needsUpdate = !(mIsConnected == isConnected);
                 if (needsUpdate) {
                     mIsConnected = isConnected;
-                    Timber.i("new connected status triggered");
                     sendLocalConnectivityBroadcast();
                 }
             }

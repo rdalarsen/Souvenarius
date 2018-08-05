@@ -40,7 +40,6 @@ public class LocationRepository {
     }
 
     public LiveData<Result<Address>> getLocation() {
-        Timber.i("Getting Location...");
         if (mResult == null) {
             mResult = new MutableLiveData<>();
             fetchLocation();

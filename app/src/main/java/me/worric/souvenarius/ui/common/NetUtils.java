@@ -9,8 +9,6 @@ import android.text.TextUtils;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import timber.log.Timber;
-
 public final class NetUtils {
 
     public static final String STORAGE_PATH = "images";
@@ -27,7 +25,6 @@ public final class NetUtils {
     }
 
     public static StorageReference getStorageReferenceForAllUsers(String imageName) {
-        Timber.i("getStorageReferenceForAllUsers called; imageName=%s", imageName);
         if (TextUtils.isEmpty(imageName)) {
             return null;
         }

@@ -4,7 +4,6 @@ import android.os.AsyncTask;
 
 import me.worric.souvenarius.data.db.dao.SouvenirDao;
 import me.worric.souvenarius.data.model.SouvenirDb;
-import timber.log.Timber;
 
 public final class SouvenirInsertTask extends AsyncTask<SouvenirDb, Void, SouvenirDb> {
 
@@ -18,7 +17,6 @@ public final class SouvenirInsertTask extends AsyncTask<SouvenirDb, Void, Souven
 
     @Override
     protected SouvenirDb doInBackground(SouvenirDb... souvenirDbs) {
-        Timber.i("The length of the arguments is: %d\nAttemting to INSERT data into the database...", souvenirDbs.length);
         SouvenirDb souvenirDb = souvenirDbs[0];
         mDao.insert(souvenirDb);
         return souvenirDb;

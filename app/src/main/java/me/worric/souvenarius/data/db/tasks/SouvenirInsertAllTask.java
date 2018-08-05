@@ -2,8 +2,6 @@ package me.worric.souvenarius.data.db.tasks;
 
 import android.os.AsyncTask;
 
-import java.util.Arrays;
-
 import me.worric.souvenarius.data.db.AppDatabase;
 import me.worric.souvenarius.data.db.dao.SouvenirDao;
 import me.worric.souvenarius.data.model.SouvenirDb;
@@ -31,7 +29,8 @@ public final class SouvenirInsertAllTask extends AsyncTask<SouvenirDb[],Void,Voi
             int numDeletedSouvenirs = mDao.removeUserSouvenirs(mUid);
             mDao.insertAll(souvenirs[0]);
             mAppDatabase.setTransactionSuccessful();
-            Timber.i("DELETED %d souvenirs --- INSERTED items: Ids of inserted items are: %s", numDeletedSouvenirs, Arrays.toString(souvenirs[0]));
+            Timber.i("Deleted %d souvenirs from db before inserting %d new",
+                    numDeletedSouvenirs, souvenirs[0].length);
         } finally {
             mAppDatabase.endTransaction();
         }

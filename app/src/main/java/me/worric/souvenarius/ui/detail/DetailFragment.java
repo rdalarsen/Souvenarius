@@ -38,6 +38,8 @@ import timber.log.Timber;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static me.worric.souvenarius.ui.common.FileUtils.PHOTO_HEIGHT;
+import static me.worric.souvenarius.ui.common.FileUtils.PHOTO_WIDTH;
 
 public class DetailFragment extends Fragment {
 
@@ -212,6 +214,8 @@ public class DetailFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == TAKE_PHOTO_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
+                File photoFile = mViewModel.getPhotoFile().getValue();
+                FileUtils.persistOptimizedBitmapToDisk(photoFile, PHOTO_WIDTH, PHOTO_HEIGHT);
                 if (mViewModel.addPhoto()) {
                     Toast.makeText(getContext(), R.string.success_message_detail_photo_added, Toast.LENGTH_SHORT).show();
                 } else {

@@ -28,17 +28,22 @@ public class DetailViewModel extends ViewModel {
         mSouvenirId = new MutableLiveData<>();
         mPhotoFile = new MutableLiveData<>();
         mCurrentSouvenir = new MediatorLiveData<>();
-        LiveData<SouvenirDb> findOne = Transformations.switchMap(mSouvenirId, mRepository::findOneById);
-        mCurrentSouvenir.addSource(findOne, souvenirDb -> {
-            Timber.i("observer triggered!");
-            mCurrentSouvenir.setValue(souvenirDb);
-        });
+        LiveData<SouvenirDb> findOne = Transformations.switchMap(mSouvenirId, mRepository::findSouvenirById);
+        mCurrentSouvenir.addSource(findOne, mCurrentSouvenir::setValue);
     }
 
     public void setSouvenirId(String souvenirId) {
         if (mSouvenirId.getValue() == null) {
             mSouvenirId.setValue(souvenirId);
         }
+    }
+
+    public void setPhotoFile(File photoFile) {
+        mPhotoFile.setValue(photoFile);
+    }
+
+    public LiveData<File> getPhotoFile() {
+        return mPhotoFile;
     }
 
     public LiveData<SouvenirDb> getCurrentSouvenir() {
@@ -69,9 +74,9 @@ public class DetailViewModel extends ViewModel {
             boolean isRemoved = souvenir.getPhotos().remove(photoFile.getName());
             if (isRemoved) {
                 mRepository.updateSouvenir(souvenir, null);
-                mRepository.deleteFileFromStorage(photoFile.getName());
+                mRepository.deletePhotoFromStorage(photoFile.getName());
                 if (photoFile.exists()) {
-                    Timber.d("photofile exists, deleting...");
+                    Timber.d("photoFile exists, deleting...");
                     photoFile.delete();
                 } else {
                     Timber.e("PhotoFile did NOT exist; skip delete");
@@ -103,10 +108,6 @@ public class DetailViewModel extends ViewModel {
             return isAdded;
         }
         return false;
-    }
-
-    public void setPhotoFile(File photoFile) {
-        mPhotoFile.setValue(photoFile);
     }
 
     public void deleteSouvenir() {

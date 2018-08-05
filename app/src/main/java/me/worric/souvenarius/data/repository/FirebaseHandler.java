@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -41,9 +40,8 @@ public class FirebaseHandler {
     }
 
     public void fetchSouvenirsForCurrentUser(@NonNull OnResultListener listener) {
-        Timber.d("Fetching souvenirs from Firebase...");
         if (TextUtils.isEmpty(mAuth.getUid())) {
-            Timber.w("current user is null, not retrieving souvenirs...");
+            Timber.w("Current user is null; not retrieving souvenirs...");
             listener.onResult(Result.failure(mErrorMessages
                     .get(R.string.error_message_firebase_not_signed_in)));
             return;
@@ -92,26 +90,11 @@ public class FirebaseHandler {
     }
 
     public void storeSouvenir(SouvenirDb souvenir, DatabaseReference.CompletionListener completionListener) {
-        if (checkAuthState() == null) {
-            Timber.w("User is null, not storing souvenir");
-            return;
-        }
         mRef.child(souvenir.getUid()).child(souvenir.getId()).setValue(souvenir, completionListener);
     }
 
-    public void deleteSouvenir(SouvenirDb souvenir) {
-        if (checkAuthState() == null) {
-            Timber.w("User is null, not deleting souvenir");
-            return;
-        }
-        mRef.child(souvenir.getUid()).child(souvenir.getId()).removeValue((databaseError, databaseReference) -> {
-            Timber.i("The databaseReference is: %s", databaseReference.toString());
-            if (databaseError != null) Timber.e(databaseError.toException(), "DatabaseError: %s", databaseError.getMessage());
-        });
-    }
-
-    private FirebaseUser checkAuthState() {
-        return mAuth.getCurrentUser();
+    public void deleteSouvenir(SouvenirDb souvenir, DatabaseReference.CompletionListener completionListener) {
+        mRef.child(souvenir.getUid()).child(souvenir.getId()).removeValue(completionListener);
     }
 
     public interface OnResultListener {

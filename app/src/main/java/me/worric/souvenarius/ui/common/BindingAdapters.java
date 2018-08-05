@@ -48,9 +48,6 @@ public class BindingAdapters {
         }
 
         if (locationResult.status.equals(Result.Status.SUCCESS)) {
-            Timber.i("result of location is successful. Location is: %s,%s",
-                    locationResult.response.getLocality(),
-                    locationResult.response.getCountryName());
             if (TextUtils.isEmpty(editText.getText())) {
                 String locationString = editText.getContext().getString(R.string.format_location_add,
                         locationResult.response.getLocality(),
@@ -58,22 +55,18 @@ public class BindingAdapters {
                 editText.setText(locationString);
             }
         } else {
-            Timber.w("Result unsuccessful. Message=%s", locationResult.message);
             editText.setHint(R.string.hint_location_error_add);
         }
     }
 
     @BindingAdapter({"imageName"})
     public static void loadImageFromName(ImageView view, String imageName) {
-        Timber.d("imageName is: %s", imageName);
         File localPhoto = FileUtils.getLocalFileForPhotoName(imageName, view.getContext());
         RequestBuilder<Drawable> requestBuilder;
 
         if (localPhoto != null && localPhoto.exists()) {
-            Timber.d("local photo existed, loading it...");
             requestBuilder = GlideApp.with(view.getContext()).load(localPhoto);
         } else {
-            Timber.d("local photo DID NOT exist, trying to load FirebaseStorage photo...");
             StorageReference reference = NetUtils.getStorageReferenceForAllUsers(imageName);
             requestBuilder = GlideApp.with(view.getContext()).load(reference);
         }

@@ -20,7 +20,7 @@ public interface SouvenirDao {
     void insertAll(SouvenirDb[] souvenirs);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(SouvenirDb... souvenirDbs);
+    void insert(SouvenirDb souvenirDbs);
 
     @Query("SELECT * FROM souvenirs WHERE uid = :uid ORDER BY timestamp DESC LIMIT 1")
     SouvenirDb findMostRecentSync(String uid);

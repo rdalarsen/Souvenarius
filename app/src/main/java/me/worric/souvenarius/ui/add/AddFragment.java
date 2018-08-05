@@ -30,11 +30,9 @@ import me.worric.souvenarius.ui.main.MainActivity;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
+import static me.worric.souvenarius.ui.common.FileUtils.PHOTO_HEIGHT;
+import static me.worric.souvenarius.ui.common.FileUtils.PHOTO_WIDTH;
 
-/**
- * The camera functionality code in this class is heavily inspired by
- * <a href="https://developer.android.com/training/camera/photobasics">this guide</a> from Google.
- */
 public class AddFragment extends Fragment {
 
     private static final int TAKE_PHOTO_REQUEST_CODE = 909;
@@ -88,6 +86,10 @@ public class AddFragment extends Fragment {
         }
     }
 
+    /**
+     * The camera functionality code in this method is heavily inspired by
+     * <a href="https://developer.android.com/training/camera/photobasics">this guide</a> from Google.
+     */
     private void takePhoto() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if ((intent.resolveActivity(getContext().getPackageManager())) != null) {
@@ -113,13 +115,12 @@ public class AddFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == TAKE_PHOTO_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                Timber.i("Photo was taken OK");
-
                 File photoFile = mViewModel.getPhotoFile().getValue();
-                FileUtils.persistOptimizedBitmapToDisk(photoFile, 500, 500);
+                FileUtils.persistOptimizedBitmapToDisk(photoFile, PHOTO_WIDTH, PHOTO_HEIGHT);
             } else {
-                boolean wasSuccessfullyDeleted = mViewModel.deleteTempImage();
-                Timber.w("Could not take photo. The temp file was %s deleted", (wasSuccessfullyDeleted ? "successfully" : "not"));
+                if (mViewModel.deleteTempPhoto()) {
+                    Timber.w("Could not take photo. The temp file was successfully deleted");
+                }
             }
         }
     }

@@ -22,6 +22,8 @@ import timber.log.Timber;
 public final class FileUtils {
 
     public static final String FILE_PROVIDER_AUTHORITY = "me.worric.souvenarius.fileprovider";
+    public static final int PHOTO_WIDTH = 500;
+    public static final int PHOTO_HEIGHT = 500;
     private static final String DATE_PATTERN = "yyyyMMdd_HHmmss";
     private static final String FILE_NAME_PREFIX = "JPEG_";
     private static final String FILE_NAME_SEPARATOR = "_";
@@ -74,14 +76,15 @@ public final class FileUtils {
         options.inSampleSize = getOptimalSampleSize(options, width, height);
         options.inJustDecodeBounds = false;
 
-        Bitmap adjuestedBitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath(), options);
+        Bitmap optimizedBitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath(), options);
 
-        writeBitmapFileToDisk(photoFile, adjuestedBitmap);
+        writeBitmapFileToDisk(photoFile, optimizedBitmap);
     }
 
     /**
      * The code in this method is heavily based on
-     * <a href="https://developer.android.com/topic/performance/graphics/load-bitmap">Google's guide</a>.
+     * <a href="https://developer.android.com/topic/performance/graphics/load-bitmap">Google's guide</a>,
+     * but customized for own requirements and code style.
      */
     private static int getOptimalSampleSize(BitmapFactory.Options options, int width, int height) {
         int outHeight = options.outHeight;
@@ -89,12 +92,10 @@ public final class FileUtils {
 
         int optimalSampleSize = 1;
         if (outHeight > height || outWidth > width) {
-            int halfOfHeight = outHeight / 3;
-            int halfOfWidth = outWidth / 3;
+            int thirdOfHeight = outHeight / 3;
+            int thirdOfWidth = outWidth / 3;
 
-            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
-            // height and width larger than the requested height and width.
-            while ((halfOfHeight / optimalSampleSize) >= height && (halfOfWidth / optimalSampleSize) >= width) {
+            while ((thirdOfHeight / optimalSampleSize) >= height && (thirdOfWidth / optimalSampleSize) >= width) {
                 optimalSampleSize *= 2;
             }
         }
@@ -102,13 +103,13 @@ public final class FileUtils {
         return optimalSampleSize;
     }
 
-    private static void writeBitmapFileToDisk(File photoFile, Bitmap adjustedBitmap) {
+    private static void writeBitmapFileToDisk(File photoFile, Bitmap bitmap) {
         try (FileOutputStream fos = new FileOutputStream(photoFile)) {
-            adjustedBitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, fos);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, fos);
         } catch (FileNotFoundException e) {
             Timber.e(e,"File not found");
         } catch (IOException e) {
-            Timber.e(e, "There was an error");
+            Timber.e(e, "There was an IO error");
         }
     }
 

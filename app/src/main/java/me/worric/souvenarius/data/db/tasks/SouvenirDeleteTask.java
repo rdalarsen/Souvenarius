@@ -4,7 +4,6 @@ import android.os.AsyncTask;
 
 import me.worric.souvenarius.data.db.dao.SouvenirDao;
 import me.worric.souvenarius.data.model.SouvenirDb;
-import timber.log.Timber;
 
 public final class SouvenirDeleteTask extends AsyncTask<SouvenirDb, Void, Integer> {
 
@@ -18,9 +17,7 @@ public final class SouvenirDeleteTask extends AsyncTask<SouvenirDb, Void, Intege
 
     @Override
     protected Integer doInBackground(SouvenirDb... souvenirDbs) {
-        Timber.i("Attemting to delete the souvenir...");
         SouvenirDb souvenir = souvenirDbs[0];
-
         return mDao.deleteSouvenir(souvenir.getId());
     }
 

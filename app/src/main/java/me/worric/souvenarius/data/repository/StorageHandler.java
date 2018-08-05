@@ -2,7 +2,6 @@ package me.worric.souvenarius.data.repository;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.FirebaseStorage;
@@ -29,43 +28,22 @@ public class StorageHandler {
         mRef = FirebaseStorage.getInstance().getReference(STORAGE_REFERENCE);
     }
 
-    public void uploadImage(@NonNull File imageFile) {
-        if (TextUtils.isEmpty(mAuth.getUid())) {
-            Timber.i("User null, not uploading photo");
-            return;
-        }
-
+    public void uploadPhoto(@NonNull File imageFile) {
         mRef.child(imageFile.getName()).putFile(Uri.fromFile(imageFile)).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                Uri uploadUri = task.getResult().getUploadSessionUri();
-                Timber.i("Upload URI: %s", uploadUri.toString());
-            } else {
-                Timber.e("DID NOT upload the file! isCanceled: %s. isComplete: %s. isSuccessful: %s",
-                        task.isCanceled(),
-                        task.isComplete(),
-                        task.isSuccessful());
-            }
+            if (!task.isSuccessful()) Timber.e(task.getException(),"Could not upload the photo.");
         });
     }
 
-    public void removeImage(@NonNull String photoName) {
+    public void removePhoto(@NonNull String photoName) {
         mRef.child(photoName).delete().addOnCompleteListener(task -> {
-            Timber.i("The DELETE task is successful? %s", task.isSuccessful());
-            if (!task.isSuccessful()) Timber.e(task.getException(), "Task DELETE didn't execute right!");
+            if (!task.isSuccessful()) Timber.e(task.getException(), "Could not delete the photo.");
         });
     }
 
-    public void removeImages(@NonNull List<String> photos) {
-        if (photos.isEmpty()) {
-            Timber.w("list of photos for the current souvenir is empty. Skipping deletion...");
-            return;
-        }
-
+    public void removePhotos(@NonNull List<String> photos) {
         for (String photoName : photos) {
-            Timber.i("attempting deletion of all photos of the souvenir");
             mRef.child(photoName).delete().addOnCompleteListener(task -> {
-                Timber.i("The DELETE task is successful? %s", task.isSuccessful());
-                if (!task.isSuccessful()) Timber.e(task.getException(), "Task DELETE didn't execute right!");
+                if (!task.isSuccessful()) Timber.e(task.getException(), "Could not delete all photos.");
             });
         }
     }
