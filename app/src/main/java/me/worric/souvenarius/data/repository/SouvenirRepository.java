@@ -89,7 +89,7 @@ public class SouvenirRepository {
         return mAppDatabase.souvenirDao().findOneById(souvenirId);
     }
 
-    public void addSouvenir(SouvenirDb db, File photo) {
+    public void addSouvenir(SouvenirDb db, File photo, OnAddSuccessListener successListener) {
         DatabaseReference.CompletionListener completionListener = (databaseError, databaseReference) -> {
             if (databaseError != null) {
                 Timber.e(databaseError.toException(), "There was a problem adding the souvenir to the database.");
@@ -106,6 +106,9 @@ public class SouvenirRepository {
         SouvenirInsertTask.OnDataInsertListener listener = souvenirDb -> {
             if (souvenirDb != null) {
                 mFirebaseHandler.storeSouvenir(souvenirDb, completionListener);
+                if (successListener != null) {
+                    successListener.onSuccessfulAdd();
+                }
             }
         };
 
@@ -139,7 +142,7 @@ public class SouvenirRepository {
         new SouvenirUpdateTask(mAppDatabase.souvenirDao(), listener).execute(souvenir);
     }
 
-    public void deleteSouvenir(SouvenirDb souvenir) {
+    public void deleteSouvenir(SouvenirDb souvenir, OnDeleteSuccessListener successListener) {
         DatabaseReference.CompletionListener completionListener = (databaseError, databaseReference) -> {
             if (databaseError != null) {
                 Timber.e(databaseError.toException(), "There was a problem deleting the souvenir from the database.");
@@ -157,6 +160,9 @@ public class SouvenirRepository {
         SouvenirDeleteTask.OnDataDeleteListener listener = numRowsAffected -> {
             if (numRowsAffected > 0) {
                 mFirebaseHandler.deleteSouvenir(souvenir, completionListener);
+                if (successListener != null) {
+                    successListener.onSuccessfulDelete();
+                }
             }
         };
 
@@ -181,6 +187,14 @@ public class SouvenirRepository {
             parameters.setSortStyle(sortStyle);
             mQueryParameters.setValue(parameters);
         }
+    }
+
+    public interface OnDeleteSuccessListener {
+        void onSuccessfulDelete();
+    }
+
+    public interface OnAddSuccessListener {
+        void onSuccessfulAdd();
     }
 
 }

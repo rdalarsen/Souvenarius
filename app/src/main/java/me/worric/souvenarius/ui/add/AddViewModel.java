@@ -3,6 +3,7 @@ package me.worric.souvenarius.ui.add;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
+import android.content.Context;
 import android.location.Address;
 import android.support.annotation.NonNull;
 
@@ -14,6 +15,7 @@ import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.data.repository.LocationRepository;
 import me.worric.souvenarius.data.repository.SouvenirRepository;
+import me.worric.souvenarius.ui.widget.UpdateWidgetService;
 
 public class AddViewModel extends ViewModel {
 
@@ -28,7 +30,7 @@ public class AddViewModel extends ViewModel {
         mPhotoFile = new MutableLiveData<>();
     }
 
-    public boolean addSouvenir(SouvenirSaveInfo info) {
+    public boolean addSouvenir(@NonNull SouvenirSaveInfo info, @NonNull Context context) {
         File photo = mPhotoFile.getValue();
         if (photo != null) {
             SouvenirDb db = new SouvenirDb();
@@ -36,7 +38,8 @@ public class AddViewModel extends ViewModel {
             db.setStory(info.getStory());
             db.setPlace(info.getPlace());
             db.getPhotos().add(photo.getName());
-            mSouvenirRepository.addSouvenir(db, photo);
+            mSouvenirRepository.addSouvenir(db, photo, () ->
+                    UpdateWidgetService.startWidgetUpdate(context));
             return true;
         }
         return false;

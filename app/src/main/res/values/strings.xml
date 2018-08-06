@@ -5,6 +5,7 @@
     <string name="main_connectivity_error_message">No internet access available. Please connect and try again.</string>
     <string name="main_connection_warning">Offline mode</string>
     <string name="error_message_offline_mode">Offline mode. You can browse offline content, but no changes possible.</string>
+    <string name="content_desc_main_add_souvenir">Add souvenir</string>
 
     <!-- Add fragment -->
     <string name="content_desc_photo_preview">Photo preview</string>

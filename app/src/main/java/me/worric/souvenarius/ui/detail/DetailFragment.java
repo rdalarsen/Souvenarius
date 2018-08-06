@@ -182,7 +182,7 @@ public class DetailFragment extends Fragment {
     }
 
     public void onDeleteSouvenirConfirmed() {
-        mViewModel.deleteSouvenir();
+        mViewModel.deleteSouvenir(getContext());
         ((MainActivity) getActivity()).handleSouvenirDeleted();
     }
 

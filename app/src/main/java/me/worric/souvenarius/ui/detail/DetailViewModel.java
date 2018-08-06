@@ -5,6 +5,8 @@ import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
+import android.content.Context;
+import android.support.annotation.NonNull;
 import android.text.Editable;
 
 import java.io.File;
@@ -13,6 +15,7 @@ import javax.inject.Inject;
 
 import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.data.repository.SouvenirRepository;
+import me.worric.souvenarius.ui.widget.UpdateWidgetService;
 import timber.log.Timber;
 
 public class DetailViewModel extends ViewModel {
@@ -110,10 +113,11 @@ public class DetailViewModel extends ViewModel {
         return false;
     }
 
-    public void deleteSouvenir() {
+    public void deleteSouvenir(@NonNull Context context) {
         SouvenirDb souvenir = mCurrentSouvenir.getValue();
         if (souvenir != null) {
-            mRepository.deleteSouvenir(souvenir);
+            mRepository.deleteSouvenir(souvenir, () ->
+                    UpdateWidgetService.startWidgetUpdate(context));
         }
     }
 

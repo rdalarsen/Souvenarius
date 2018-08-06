@@ -41,6 +41,9 @@ public class SouvenirWidgetProvider extends AppWidgetProvider {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.souvenir_widget);
 
         if (souvenirDb.status.equals(Result.Status.SUCCESS)) {
+            views.setViewVisibility(R.id.iv_widget_souvenir_photo, View.VISIBLE);
+            views.setViewVisibility(R.id.tv_widget_error_text, View.GONE);
+
             String photoFileName = null;
             File localPhotoFile = null;
             if (!TextUtils.isEmpty(souvenirDb.response.getFirstPhoto())) {
