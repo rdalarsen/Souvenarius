@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -37,6 +38,7 @@ import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.data.repository.UpdateSouvenirsService;
 import me.worric.souvenarius.databinding.ActivityMainBinding;
 import me.worric.souvenarius.ui.add.AddFragment;
+import me.worric.souvenarius.ui.common.NavigationUtils;
 import me.worric.souvenarius.ui.detail.DetailFragment;
 import me.worric.souvenarius.ui.signin.SignInFragment;
 import me.worric.souvenarius.ui.widget.SouvenirWidgetProvider;
@@ -74,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         mBroadcastManager = LocalBroadcastManager.getInstance(this);
 
         checkLocationPermissions();
-        setupNavigation(savedInstanceState);
+        setupNavigationFlow(savedInstanceState);
         restoreSavedValues(savedInstanceState);
     }
 
@@ -91,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         }
     }
 
-    private void setupNavigation(Bundle savedInstanceState) {
+    private void setupNavigationFlow(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             return;
         } else if (mAuth.getCurrentUser() == null) {
@@ -102,45 +104,43 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         }
 
         Intent launchIntent = getIntent();
-        if (launchIntent != null) {
-            String action = launchIntent.getAction();
-            if (TextUtils.isEmpty(action)) throw new IllegalArgumentException("Action cannot be null or empty");
-            Timber.i("action of launch intent is: %s", action);
+        if (launchIntent == null) return;
 
-            switch (action) {
-                case SouvenirWidgetProvider.ACTION_WIDGET_LAUNCH_ADD_SOUVENIR:
-                    // handle widget action of launching add souvenir
-                    getSupportFragmentManager().beginTransaction()
-                            .add(R.id.fragment_container, MainFragment.newInstance())
-                            .setReorderingAllowed(true)
-                            .commit();
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.fragment_container, AddFragment.newInstance())
-                            .setReorderingAllowed(true)
-                            .addToBackStack(null)
-                            .commit();
-                    break;
-                case SouvenirWidgetProvider.ACTION_WIDGET_LAUNCH_SOUVENIR_DETAILS:
-                    // handle widget action of launching souvenir details
-                    getSupportFragmentManager().beginTransaction()
-                            .add(R.id.fragment_container, MainFragment.newInstance())
-                            .setReorderingAllowed(true)
-                            .commit();
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.fragment_container, DetailFragment.newInstance(getIntent()
-                                    .getStringExtra(SouvenirWidgetProvider.EXTRA_SOUVENIR_ID)))
-                            .setReorderingAllowed(true)
-                            .addToBackStack(null)
-                            .commit();
-                    break;
-                case Intent.ACTION_MAIN:
-                    getSupportFragmentManager().beginTransaction()
-                            .add(R.id.fragment_container, MainFragment.newInstance())
-                            .commit();
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unknown action: " + action);
-            }
+        // First we handle the case that the app was closed via back button and then launched
+        // from history at a later time. In this case, we want the app to show the main screen,
+        // regardless of what action is in the Intent, e.g. if the app was launched from the
+        // widget last time.
+        // See this SO post on the matter: https://stackoverflow.com/a/41381757/8562738.
+        // Also check this article: https://medium.com/@JakobUlbrich/flag-attributes-in-android-how-to-use-them-ac4ec8aee7d1
+        int flags = launchIntent.getFlags();
+        if ((flags | NavigationUtils.LAUNCHED_FROM_HISTORY_AND_IN_NEW_TASK) == flags) {
+            Timber.i("Intent flags: detected launch from history + new task. Doing normal launch");
+            NavigationUtils.normalLaunch(getSupportFragmentManager());
+            return;
+        }
+
+        String action = launchIntent.getAction();
+        if (TextUtils.isEmpty(action)) throw new IllegalArgumentException("Action cannot be null or empty");
+        Timber.i("action of launch intent is: %s", action);
+
+        FragmentManager fm = getSupportFragmentManager();
+        switch (action) {
+            case SouvenirWidgetProvider.ACTION_WIDGET_LAUNCH_ADD_SOUVENIR:
+                // handle widget action of launching add souvenir
+                NavigationUtils.buildMainFragmentNavigation(fm);
+                NavigationUtils.buildCustomFragmentNavigation(fm, AddFragment.newInstance());
+                break;
+            case SouvenirWidgetProvider.ACTION_WIDGET_LAUNCH_SOUVENIR_DETAILS:
+                // handle widget action of launching souvenir details
+                NavigationUtils.buildMainFragmentNavigation(fm);
+                NavigationUtils.buildCustomFragmentNavigation(fm, DetailFragment.newInstance(launchIntent
+                        .getStringExtra(SouvenirWidgetProvider.EXTRA_SOUVENIR_ID)));
+                break;
+            case Intent.ACTION_MAIN:
+                NavigationUtils.normalLaunch(fm);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown action: " + action);
         }
     }
 
