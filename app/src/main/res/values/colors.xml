@@ -9,4 +9,5 @@
     <!-- Misc -->
     <color name="black_30p">#4DFFFFFF</color>
     <color name="colorAccent_40p">#66FFC107</color>
+    <color name="colorAccent_75p">#BFFFC107</color>
 </resources>

@@ -54,6 +54,9 @@
     <string name="error_message_detail_photo_cancelled">Cancelled taking photo.</string>
     <string name="error_message_detail_fail_temp_file_allocation">Could not allocate temporary file.</string>
     <string name="error_message_detail_edit_dialog_no_connection">No internet connection. Cannot edit.</string>
+    <string name="label_title_detail">Title</string>
+    <string name="label_place_detail">Place</string>
+    <string name="label_story_detail">Story</string>
 
     <!-- Sign in fragment -->
     <string name="sign_in_notice_no_internet">You need to sign in to use the app. Please also make sure you\'re connected to the internet.</string>
