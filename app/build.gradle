@@ -51,29 +51,29 @@ dependencies {
     implementation "android.arch.persistence.room:runtime:$archVersion"
     annotationProcessor "android.arch.persistence.room:compiler:$archVersion"
     // Firebase & Google services
-    implementation 'com.firebaseui:firebase-ui-auth:4.1.0'
-    implementation 'com.firebaseui:firebase-ui-storage:4.1.0'
-    implementation 'com.google.firebase:firebase-database:16.0.1'
-    implementation 'com.google.firebase:firebase-storage:16.0.1'
-    implementation 'com.google.android.gms:play-services-location:15.0.1'
+    implementation "com.firebaseui:firebase-ui-auth:$uiAuthVersion"
+    implementation "com.firebaseui:firebase-ui-storage:$uiStorageVersion"
+    implementation "com.google.firebase:firebase-database:$databaseVersion"
+    implementation "com.google.firebase:firebase-storage:$storageVersion"
+    implementation "com.google.android.gms:play-services-location:$locationVersion"
     // Dagger
-    implementation 'com.google.dagger:dagger:2.16'
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.16'
-    implementation 'com.google.dagger:dagger-android:2.16'
-    implementation 'com.google.dagger:dagger-android-support:2.16'
-    annotationProcessor 'com.google.dagger:dagger-android-processor:2.16'
+    implementation "com.google.dagger:dagger:$daggerVersion"
+    annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
+    implementation "com.google.dagger:dagger-android:$daggerVersion"
+    implementation "com.google.dagger:dagger-android-support:$daggerVersion"
+    annotationProcessor "com.google.dagger:dagger-android-processor:$daggerVersion"
     // Glide
-    implementation 'com.github.bumptech.glide:glide:4.7.1'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
+    implementation "com.github.bumptech.glide:glide:$glideVersion"
+    annotationProcessor "com.github.bumptech.glide:compiler:$glideVersion"
     // Timber
-    implementation 'com.jakewharton.timber:timber:4.7.1'
+    implementation "com.jakewharton.timber:timber:$timberVersion"
     // Threetenabp
-    implementation 'com.jakewharton.threetenabp:threetenabp:1.1.0'
+    implementation "com.jakewharton.threetenabp:threetenabp:$threetenabpVersion"
     // Testing
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test:rules:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    testImplementation "junit:junit:$junitVersion"
+    androidTestImplementation "com.android.support.test:runner:$espressoRunnerVersion"
+    androidTestImplementation "com.android.support.test:rules:$espressoRulesVersion"
+    androidTestImplementation "com.android.support.test.espresso:espresso-core:$espressoVersion"
 }
 
 apply plugin: 'com.google.gms.google-services'
