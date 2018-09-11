@@ -52,7 +52,7 @@ public class EditDialog extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
         mTextType = (DetailFragment.TextType) getArguments().getSerializable(KEY_TEXT_TYPE);
         mViewModel = ViewModelProviders.of(getParentFragment(), mFactory).get(DetailViewModel.class);
-        mViewModel.getCurrentSouvenir().observe(this, souvenirDb -> {
+        mViewModel.getCurrentSouvenir().observe(getViewLifecycleOwner(), souvenirDb -> {
             mBinding.setCurrentSouvenir(souvenirDb);
             restoreScrollPosition(savedInstanceState);
         });
