@@ -2,4 +2,5 @@
 <resources>
     <fraction name="photo_width_percent">0.6</fraction>
     <fraction name="edit_text_width_percent_add">0.8</fraction>
+    <fraction name="card_width_detail">0.8</fraction>
 </resources>
