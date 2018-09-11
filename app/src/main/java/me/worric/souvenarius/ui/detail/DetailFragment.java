@@ -253,11 +253,11 @@ public class DetailFragment extends Fragment {
 
         TextType textType;
         int viewId = view.getId();
-        if (viewId == R.id.tv_detail_label_title) {
+        if (viewId == R.id.tv_detail_edit_title) {
             textType = TextType.TITLE;
-        } else if (viewId == R.id.tv_detail_label_place) {
+        } else if (viewId == R.id.tv_detail_edit_place) {
             textType = TextType.PLACE;
-        } else if (viewId == R.id.tv_detail_label_story) {
+        } else if (viewId == R.id.tv_detail_edit_story) {
             textType = TextType.STORY;
         } else {
             throw new IllegalArgumentException("Unknown view ID: " + viewId);
