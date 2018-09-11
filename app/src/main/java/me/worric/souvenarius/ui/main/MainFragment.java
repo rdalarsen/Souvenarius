@@ -28,7 +28,6 @@ import me.worric.souvenarius.data.repository.UpdateSouvenirsService;
 import me.worric.souvenarius.databinding.FragmentMainBinding;
 import me.worric.souvenarius.ui.common.NetUtils;
 import me.worric.souvenarius.ui.common.PrefsUtils;
-import timber.log.Timber;
 
 import static me.worric.souvenarius.ui.common.PrefsUtils.PREFS_KEY_SORT_STYLE;
 
@@ -68,7 +67,7 @@ public class MainFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProviders.of(getActivity(), mFactory).get(MainViewModel.class);
-        mViewModel.getSouvenirs().observe(this, souvenirResult -> {
+        mViewModel.getSouvenirs().observe(getViewLifecycleOwner(), souvenirResult -> {
             mBinding.setResultSouvenirs(souvenirResult);
             if (souvenirResult.status.equals(Result.Status.SUCCESS)) {
                 mAdapter.swapLists(souvenirResult.response);
@@ -96,6 +95,11 @@ public class MainFragment extends Fragment {
         mAdapter = new SouvenirAdapter(mClickListener);
         mBinding.rvSouvenirList.setAdapter(mAdapter);
         mBinding.rvSouvenirList.setHasFixedSize(true);
+        mBinding.srlRefresh.setOnRefreshListener(() -> {
+            mShouldRestoreLayoutManagerState = false;
+            refreshData();
+            mBinding.srlRefresh.setRefreshing(false);
+        });
     }
 
     @Override
@@ -108,12 +112,6 @@ public class MainFragment extends Fragment {
     public void onPause() {
         super.onPause();
         mLayoutManagerState = mBinding.rvSouvenirList.getLayoutManager().onSaveInstanceState();
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        mViewModel.getSouvenirs().removeObservers(this);
     }
 
     @Override
@@ -136,10 +134,7 @@ public class MainFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_main_refresh_data:
-                if (!NetUtils.isConnected(getContext())) {
-                    showErrorToast();
-                }
-                UpdateSouvenirsService.startSouvenirsUpdate(getContext());
+                refreshData();
                 return true;
             case R.id.action_main_sign_out:
                 ((MainActivity) getActivity()).handleSignOut();
@@ -153,6 +148,13 @@ public class MainFragment extends Fragment {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void refreshData() {
+        if (!NetUtils.isConnected(getContext())) {
+            showErrorToast();
+        }
+        UpdateSouvenirsService.startSouvenirsUpdate(getContext());
     }
 
     private void showErrorToast() {
