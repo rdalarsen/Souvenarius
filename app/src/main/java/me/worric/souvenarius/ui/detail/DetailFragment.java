@@ -83,7 +83,7 @@ public class DetailFragment extends Fragment {
         String souvenirId = getArguments().getString(KEY_SOUVENIR_ID);
         mViewModel = ViewModelProviders.of(this, mFactory).get(DetailViewModel.class);
         mViewModel.setSouvenirId(souvenirId);
-        mViewModel.getCurrentSouvenir().observe(this, souvenir -> {
+        mViewModel.getCurrentSouvenir().observe(getViewLifecycleOwner(), souvenir -> {
             mAdapter.swapPhotos(souvenir);
             mBinding.setCurrentSouvenir(souvenir);
             restoreLayoutManagerState(savedInstanceState);
@@ -134,12 +134,6 @@ public class DetailFragment extends Fragment {
         mLayoutManagerState = mBinding.rvSouvenirPhotoList.getLayoutManager().onSaveInstanceState();
         mScrollViewPosition = new int[]{mBinding.svDetailRoot.getScrollX(),
                 mBinding.svDetailRoot.getScrollY()};
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        mViewModel.getCurrentSouvenir().removeObservers(this);
     }
 
     @Override
