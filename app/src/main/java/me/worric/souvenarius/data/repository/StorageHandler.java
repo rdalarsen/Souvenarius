@@ -1,49 +1,16 @@
 package me.worric.souvenarius.data.repository;
 
-import android.net.Uri;
 import android.support.annotation.NonNull;
-
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.util.List;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+public interface StorageHandler {
 
-import timber.log.Timber;
+    void uploadPhoto(@NonNull File imageFile);
 
-import static me.worric.souvenarius.ui.common.NetUtils.STORAGE_PATH;
+    void removePhoto(@NonNull String photoName);
 
-@Singleton
-public class StorageHandler {
-
-    private final StorageReference mRef;
-
-    @Inject
-    public StorageHandler() {
-        mRef = FirebaseStorage.getInstance().getReference(STORAGE_PATH);
-    }
-
-    public void uploadPhoto(@NonNull File imageFile) {
-        mRef.child(imageFile.getName()).putFile(Uri.fromFile(imageFile)).addOnCompleteListener(task -> {
-            if (!task.isSuccessful()) Timber.e(task.getException(),"Could not upload the photo.");
-        });
-    }
-
-    public void removePhoto(@NonNull String photoName) {
-        mRef.child(photoName).delete().addOnCompleteListener(task -> {
-            if (!task.isSuccessful()) Timber.e(task.getException(), "Could not delete the photo.");
-        });
-    }
-
-    public void removePhotos(@NonNull List<String> photos) {
-        for (String photoName : photos) {
-            mRef.child(photoName).delete().addOnCompleteListener(task -> {
-                if (!task.isSuccessful()) Timber.e(task.getException(), "Could not delete all photos.");
-            });
-        }
-    }
+    void removePhotos(@NonNull List<String> photos);
 
 }
