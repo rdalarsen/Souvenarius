@@ -12,6 +12,7 @@ import me.worric.souvenarius.R;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static android.support.test.espresso.matcher.ViewMatchers.*;
 
 @RunWith(AndroidJUnit4.class)
@@ -34,6 +35,17 @@ public class MainActivityTest {
         onView(withId(R.id.cv_add_container))
                 .check(matches(isDisplayed()));
         onView(withId(R.id.btn_add_save_souvenir))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void onListItemClick_detailsFragmentIsDisplayed() {
+        onView(withId(R.id.rv_souvenir_list))
+                .perform(actionOnItemAtPosition(0, click()));
+
+        onView(withId(R.id.sv_detail_root))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.rv_souvenir_photo_list))
                 .check(matches(isDisplayed()));
     }
 
