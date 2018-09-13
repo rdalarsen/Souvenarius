@@ -16,19 +16,13 @@ import static android.support.test.espresso.matcher.ViewMatchers.*;
 @RunWith(AndroidJUnit4.class)
 public class MainActivityTest {
 
-    private static final String DUMMY_TEXT = "This is the message";
-
     @Rule
     public final ActivityTestRule<MainActivity> mTestRule = new ActivityTestRule<>(MainActivity.class);
 
     @Test
-    public void onStartup_DummyTextIsDisplayed() {
-        onView(withId(R.id.tv_hello_world)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    public void onStartup_DummyTextHasCorrectValue() {
-        onView(withId(R.id.tv_hello_world)).check(matches(withText(DUMMY_TEXT)));
+    public void onStartup_SouvenirsListIsDisplayed() {
+        onView(withId(R.id.rv_souvenir_list))
+                .check(matches(isDisplayed()));
     }
 
 }
