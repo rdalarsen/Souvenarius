@@ -15,9 +15,7 @@
         android:layout_margin="4dp"
         app:cardCornerRadius="@dimen/card_corner_radius"
         app:cardElevation="@dimen/card_elevation"
-        android:onClick="@{() -> clickListener.onSouvenirClicked(souvenir)}"
-        android:clickable="true"
-        android:focusable="true">
+        android:onClick="@{() -> clickListener.onSouvenirClicked(souvenir)}">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
