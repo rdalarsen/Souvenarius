@@ -31,6 +31,8 @@ import me.worric.souvenarius.data.repository.LocationRepository;
 import me.worric.souvenarius.data.repository.LocationRepositoryImpl;
 import me.worric.souvenarius.data.repository.SouvenirRepository;
 import me.worric.souvenarius.data.repository.SouvenirRepositoryImpl;
+import me.worric.souvenarius.data.repository.StorageHandler;
+import me.worric.souvenarius.data.repository.StorageHandlerImpl;
 import me.worric.souvenarius.data.repository.UpdateSouvenirsService;
 import me.worric.souvenarius.di.AppContext;
 import me.worric.souvenarius.di.FirebaseErrorMsgs;
@@ -166,5 +168,8 @@ public abstract class SouvenirAppModule {
 
     @Binds
     abstract FirebaseHandler bindFirebaseHandler(FirebaseHandlerImpl impl);
+
+    @Binds
+    abstract StorageHandler bindStorageHandler(StorageHandlerImpl impl);
 
 }
