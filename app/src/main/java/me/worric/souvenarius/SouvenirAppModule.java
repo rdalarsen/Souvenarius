@@ -25,6 +25,8 @@ import dagger.android.ContributesAndroidInjector;
 import dagger.android.support.AndroidSupportInjectionModule;
 import dagger.multibindings.IntoMap;
 import me.worric.souvenarius.data.db.AppDatabase;
+import me.worric.souvenarius.data.repository.LocationRepository;
+import me.worric.souvenarius.data.repository.LocationRepositoryImpl;
 import me.worric.souvenarius.data.repository.UpdateSouvenirsService;
 import me.worric.souvenarius.di.AppContext;
 import me.worric.souvenarius.di.FirebaseErrorMsgs;
@@ -151,5 +153,8 @@ public abstract class SouvenirAppModule {
     static Handler provideMainLooperHandler() {
         return new Handler(Looper.getMainLooper());
     }
+
+    @Binds
+    abstract LocationRepository bindLocationRepository(LocationRepositoryImpl locationRepository);
 
 }
