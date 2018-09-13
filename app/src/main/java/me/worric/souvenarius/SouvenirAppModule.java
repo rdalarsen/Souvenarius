@@ -27,6 +27,8 @@ import dagger.multibindings.IntoMap;
 import me.worric.souvenarius.data.db.AppDatabase;
 import me.worric.souvenarius.data.repository.LocationRepository;
 import me.worric.souvenarius.data.repository.LocationRepositoryImpl;
+import me.worric.souvenarius.data.repository.SouvenirRepository;
+import me.worric.souvenarius.data.repository.SouvenirRepositoryImpl;
 import me.worric.souvenarius.data.repository.UpdateSouvenirsService;
 import me.worric.souvenarius.di.AppContext;
 import me.worric.souvenarius.di.FirebaseErrorMsgs;
@@ -155,6 +157,9 @@ public abstract class SouvenirAppModule {
     }
 
     @Binds
-    abstract LocationRepository bindLocationRepository(LocationRepositoryImpl locationRepository);
+    abstract SouvenirRepository bindSouvenirRepository(SouvenirRepositoryImpl impl);
+
+    @Binds
+    abstract LocationRepository bindLocationRepository(LocationRepositoryImpl impl);
 
 }
