@@ -74,6 +74,7 @@ dependencies {
     androidTestImplementation "com.android.support.test:runner:$espressoRunnerVersion"
     androidTestImplementation "com.android.support.test:rules:$espressoRulesVersion"
     androidTestImplementation "com.android.support.test.espresso:espresso-core:$espressoVersion"
+    androidTestImplementation "com.android.support.test.espresso:espresso-contrib:$espressoVersion"
 }
 
 apply plugin: 'com.google.gms.google-services'
