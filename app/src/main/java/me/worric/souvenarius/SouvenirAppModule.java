@@ -25,6 +25,8 @@ import dagger.android.ContributesAndroidInjector;
 import dagger.android.support.AndroidSupportInjectionModule;
 import dagger.multibindings.IntoMap;
 import me.worric.souvenarius.data.db.AppDatabase;
+import me.worric.souvenarius.data.repository.FirebaseHandler;
+import me.worric.souvenarius.data.repository.FirebaseHandlerImpl;
 import me.worric.souvenarius.data.repository.LocationRepository;
 import me.worric.souvenarius.data.repository.LocationRepositoryImpl;
 import me.worric.souvenarius.data.repository.SouvenirRepository;
@@ -161,5 +163,8 @@ public abstract class SouvenirAppModule {
 
     @Binds
     abstract LocationRepository bindLocationRepository(LocationRepositoryImpl impl);
+
+    @Binds
+    abstract FirebaseHandler bindFirebaseHandler(FirebaseHandlerImpl impl);
 
 }
