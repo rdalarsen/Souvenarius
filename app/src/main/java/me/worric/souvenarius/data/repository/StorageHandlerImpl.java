@@ -23,12 +23,21 @@ public class StorageHandlerImpl implements StorageHandler {
 
     @Inject
     public StorageHandlerImpl() {
-        mRef = FirebaseStorage.getInstance().getReference(STORAGE_PATH);
+        this(FirebaseStorage.getInstance().getReference(STORAGE_PATH));
+    }
+
+    public StorageHandlerImpl(StorageReference ref) {
+        mRef = ref;
     }
 
     @Override
     public void uploadPhoto(@NonNull File imageFile) {
-        mRef.child(imageFile.getName()).putFile(Uri.fromFile(imageFile)).addOnCompleteListener(task -> {
+        uploadPhoto(imageFile, Uri.fromFile(imageFile));
+    }
+
+    @Override
+    public void uploadPhoto(@NonNull File imageFile, @NonNull Uri fileUri) {
+        mRef.child(imageFile.getName()).putFile(fileUri).addOnCompleteListener(task -> {
             if (!task.isSuccessful()) Timber.e(task.getException(),"Could not upload the photo.");
         });
     }
