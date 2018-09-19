@@ -1,6 +1,7 @@
 package me.worric.souvenarius.data.repository;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -30,46 +31,41 @@ public class FirebaseHandlerImpl implements FirebaseHandler {
     private final FirebaseAuth mAuth;
     private final DatabaseReference mRef;
     private final Map<Integer,String> mErrorMessages;
-    private ValueEventListener mValueEventListener = null;
+    private CustomEventListener mValueEventListener = null;
 
     @Inject
     public FirebaseHandlerImpl(@FirebaseErrorMsgs Map<Integer,String> errorMessages) {
-        mAuth = FirebaseAuth.getInstance();
-        mRef = FirebaseDatabase.getInstance().getReference(SOUVENIRS_REFERENCE);
+        this(FirebaseAuth.getInstance(), FirebaseDatabase.getInstance().getReference(SOUVENIRS_REFERENCE),
+                errorMessages);
+    }
+
+    public FirebaseHandlerImpl(FirebaseAuth auth, DatabaseReference ref, Map<Integer, String> errorMessages) {
+        mAuth = auth;
+        mRef = ref;
         mErrorMessages = errorMessages;
     }
 
     @Override
     public void fetchSouvenirsForCurrentUser(@NonNull OnResultListener listener) {
-        if (TextUtils.isEmpty(mAuth.getUid())) {
-            Timber.w("Current user is null; not retrieving souvenirs...");
-            listener.onResult(Result.failure(mErrorMessages
-                    .get(R.string.error_message_firebase_not_signed_in)));
-            return;
-        } else if (mValueEventListener != null) {
-            Timber.w("Already executing request; returning...");
-            listener.onResult(Result.failure(mErrorMessages
-                    .get(R.string.error_message_firebase_already_executing)));
-            return;
-        }
+        fetchSouvenirsForCurrentUser(listener, getDefaultValueEventListener(listener));
+    }
 
-        mValueEventListener = new ValueEventListener() {
+    private CustomEventListener getDefaultValueEventListener(@NonNull OnResultListener listener) {
+        return new CustomEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                super.onDataChange(dataSnapshot);
                 List<SouvenirDb> resultList = parseResponseToList(dataSnapshot);
                 listener.onResult(Result.success(resultList));
-                mValueEventListener = null;
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+                super.onCancelled(databaseError);
                 Timber.e(databaseError.toException(), "There was a database error");
                 listener.onResult(Result.failure(databaseError.getMessage()));
-                mValueEventListener = null;
             }
         };
-
-        mRef.child(mAuth.getUid()).addListenerForSingleValueEvent(mValueEventListener);
     }
 
     private List<SouvenirDb> parseResponseToList(DataSnapshot dataSnapshot) {
@@ -91,6 +87,33 @@ public class FirebaseHandlerImpl implements FirebaseHandler {
     }
 
     @Override
+    public void fetchSouvenirsForCurrentUser(@NonNull OnResultListener listener,
+                                             @NonNull CustomEventListener valueEventListener) {
+        if (TextUtils.isEmpty(mAuth.getUid())) {
+            Timber.w("Current user is null; not retrieving souvenirs...");
+            listener.onResult(Result.failure(mErrorMessages
+                    .get(R.string.error_message_firebase_not_signed_in)));
+            return;
+        }
+
+        if (mValueEventListener != null && mValueEventListener.isRunning()) {
+            Timber.w("Already executing request; returning...");
+            listener.onResult(Result.failure(mErrorMessages
+                    .get(R.string.error_message_firebase_already_executing)));
+            return;
+        }
+
+        initEventListener(valueEventListener);
+
+        mRef.child(mAuth.getUid()).addListenerForSingleValueEvent(mValueEventListener);
+    }
+
+    private void initEventListener(CustomEventListener valueEventListener) {
+        mValueEventListener = valueEventListener;
+        mValueEventListener.setRunning(true);
+    }
+
+    @Override
     public void storeSouvenir(SouvenirDb souvenir, DatabaseReference.CompletionListener completionListener) {
         mRef.child(souvenir.getUid()).child(souvenir.getId()).setValue(souvenir, completionListener);
     }
@@ -98,6 +121,34 @@ public class FirebaseHandlerImpl implements FirebaseHandler {
     @Override
     public void deleteSouvenir(SouvenirDb souvenir, DatabaseReference.CompletionListener completionListener) {
         mRef.child(souvenir.getUid()).child(souvenir.getId()).removeValue(completionListener);
+    }
+
+    @VisibleForTesting
+    public void setValueEventListener(@NonNull CustomEventListener valueEventListener) {
+        mValueEventListener = valueEventListener;
+    }
+
+    public static class CustomEventListener implements ValueEventListener {
+
+        private boolean isRunning = false;
+
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            setRunning(false);
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+            setRunning(false);
+        }
+
+        public boolean isRunning() {
+            return isRunning;
+        }
+
+        public void setRunning(boolean running) {
+            isRunning = running;
+        }
     }
 
 }

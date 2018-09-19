@@ -32,8 +32,8 @@ public class LocationRepositoryImpl implements LocationRepository {
 
     @Inject
     public LocationRepositoryImpl(Geocoder geocoder,
-                              FusedLocationProviderClient client,
-                              @LocationErrorMsgs Map<Integer,String> errorMessages) {
+                                  FusedLocationProviderClient client,
+                                  @LocationErrorMsgs Map<Integer,String> errorMessages) {
         mGeocoder = geocoder;
         mClient = client;
         mErrorMessages = errorMessages;
@@ -70,7 +70,7 @@ public class LocationRepositoryImpl implements LocationRepository {
         mResult = null;
     }
 
-    private static class LocationAsyncTask extends AsyncTask<Location, Void, Result<Address>> {
+    public static class LocationAsyncTask extends AsyncTask<Location, Void, Result<Address>> {
 
         private final LocationResultListener mListener;
         private final Geocoder mGeocoder;

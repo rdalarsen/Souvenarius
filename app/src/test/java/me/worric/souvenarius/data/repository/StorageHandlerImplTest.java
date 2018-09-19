@@ -10,7 +10,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.File;
 import java.util.Arrays;
@@ -19,21 +21,23 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(org.mockito.junit.MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 public class StorageHandlerImplTest {
 
-    @Mock
-    private StorageReference mReference;
-    @Mock
-    private Uri mUri;
-    @Mock
-    private UploadTask mUploadTask;
-    @Mock
-    private Task<Void> mVoidTask;
+    @Mock private StorageReference mReference;
+    @Mock private Uri mUri;
+    @Mock private UploadTask mUploadTask;
+    @Mock private Task<Void> mVoidTask;
+
+    @Captor private ArgumentCaptor<String> mChildCaptor;
+    @Captor private ArgumentCaptor<Uri> mUriCaptor;
+
     private StorageHandler mHandler;
 
     @Before
@@ -43,54 +47,50 @@ public class StorageHandlerImplTest {
 
     @Test
     public void uploadPhoto_correctlyUsesStorageReference() {
-        String path = "path/name";
-        File file = new File(path);
-        String nameFromPath = file.getName();
+        final String path = "path/name";
+        final File file = new File(path);
+        final String nameFromPath = file.getName();
 
-        ArgumentCaptor<String> childCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<Uri> uriCaptor = ArgumentCaptor.forClass(Uri.class);
-        when(mReference.child(childCaptor.capture())).thenReturn(mReference);
-        when(mReference.putFile(uriCaptor.capture())).thenReturn(mUploadTask);
+        when(mReference.child(anyString())).thenReturn(mReference);
+        when(mReference.putFile(any(Uri.class))).thenReturn(mUploadTask);
 
         mHandler.uploadPhoto(file, mUri);
 
-        assertThat(childCaptor.getValue(), is(equalTo(nameFromPath)));
-        assertThat(uriCaptor.getValue(), is(equalTo(mUri)));
-        verify(mReference).child(childCaptor.getValue());
-        verify(mReference).putFile(uriCaptor.getValue());
+        verify(mReference).child(mChildCaptor.capture());
+        verify(mReference).putFile(mUriCaptor.capture());
+        assertThat(mChildCaptor.getValue(), is(equalTo(nameFromPath)));
+        assertThat(mUriCaptor.getValue(), is(equalTo(mUri)));
     }
 
     @Test
     public void removePhoto_correctlyUsesStorageReference() {
-        String photoName = "1234.jpg";
-        ArgumentCaptor<String> childCaptor = ArgumentCaptor.forClass(String.class);
-        when(mReference.child(childCaptor.capture())).thenReturn(mReference);
+        final String photoName = "1234.jpg";
+
+        when(mReference.child(anyString())).thenReturn(mReference);
         when(mReference.delete()).thenReturn(mVoidTask);
 
         mHandler.removePhoto(photoName);
 
-        assertThat(childCaptor.getValue(), is(equalTo(photoName)));
-        verify(mReference).child(childCaptor.getValue());
         verify(mReference).delete();
+        verify(mReference).child(mChildCaptor.capture());
+        assertThat(mChildCaptor.getValue(), is(equalTo(photoName)));
     }
 
     @Test
     public void removePhotos_correctlyUsesStorageReference() {
-        List<String> fileNames = Arrays.asList(
-                "foo.jpg",
-                "bar.jpg",
-                "baz.jpg"
-        );
-        ArgumentCaptor<String> childCaptor = ArgumentCaptor.forClass(String.class);
-        when(mReference.child(childCaptor.capture())).thenReturn(mReference);
+        final List<String> fileNames = Arrays.asList("foo.jpg", "bar.jpg", "baz.jpg");
+        final int numExpectedInvocations = fileNames.size();
+
+        when(mReference.child(anyString())).thenReturn(mReference);
         when(mReference.delete()).thenReturn(mVoidTask);
 
         mHandler.removePhotos(fileNames);
 
-        verify(mReference, times(fileNames.size())).delete();
-        assertThat(childCaptor.getAllValues().get(0), is(equalTo(fileNames.get(0))));
-        assertThat(childCaptor.getAllValues().get(1), is(equalTo(fileNames.get(1))));
-        assertThat(childCaptor.getAllValues().get(2), is(equalTo(fileNames.get(2))));
+        verify(mReference, times(numExpectedInvocations)).delete();
+        verify(mReference, times(numExpectedInvocations)).child(mChildCaptor.capture());
+        assertThat(mChildCaptor.getAllValues().get(0), is(equalTo(fileNames.get(0))));
+        assertThat(mChildCaptor.getAllValues().get(1), is(equalTo(fileNames.get(1))));
+        assertThat(mChildCaptor.getAllValues().get(2), is(equalTo(fileNames.get(2))));
     }
 
 }

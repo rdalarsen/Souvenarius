@@ -73,8 +73,11 @@ dependencies {
     testImplementation "junit:junit:$junitVersion"
     testImplementation "org.mockito:mockito-core:$mockitoVersion"
     testImplementation "org.hamcrest:hamcrest-library:$hamcrestVersion"
+    testImplementation "android.arch.core:core-testing:$archVersion"
+    androidTestImplementation "android.arch.core:core-testing:$archVersion"
     androidTestImplementation "com.android.support.test:runner:$espressoRunnerVersion"
     androidTestImplementation "com.android.support.test:rules:$espressoRulesVersion"
+    androidTestImplementation "com.linkedin.dexmaker:dexmaker-mockito:$dexmakerVersion"
     androidTestImplementation "com.android.support.test.espresso:espresso-core:$espressoVersion"
     androidTestImplementation "com.android.support.test.espresso:espresso-contrib:$espressoVersion"
 }

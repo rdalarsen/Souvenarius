@@ -13,6 +13,8 @@ public interface FirebaseHandler {
 
     void fetchSouvenirsForCurrentUser(@NonNull OnResultListener listener);
 
+    void fetchSouvenirsForCurrentUser(@NonNull OnResultListener listener, @NonNull FirebaseHandlerImpl.CustomEventListener valueEventListener);
+
     void storeSouvenir(SouvenirDb souvenir, DatabaseReference.CompletionListener completionListener);
 
     void deleteSouvenir(SouvenirDb souvenir, DatabaseReference.CompletionListener completionListener);
