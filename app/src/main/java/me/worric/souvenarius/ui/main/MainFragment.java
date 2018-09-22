@@ -54,19 +54,22 @@ public class MainFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        mViewModel = ViewModelProviders.of(getActivity(), mFactory).get(MainViewModel.class);
+        mAdapter = new SouvenirAdapter(mClickListener);
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_main, container, false);
+        mBinding.setViewmodel(mViewModel);
+        mBinding.setLifecycleOwner(this);
         return mBinding.getRoot();
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(getActivity(), mFactory).get(MainViewModel.class);
         mViewModel.getSouvenirs().observe(getViewLifecycleOwner(), souvenirResult -> {
             mBinding.setResultSouvenirs(souvenirResult);
             if (souvenirResult.status.equals(Result.Status.SUCCESS)) {
@@ -74,8 +77,6 @@ public class MainFragment extends Fragment {
                 restoreLayoutManagerState(savedInstanceState);
             }
         });
-        mBinding.setViewmodel(mViewModel);
-        mBinding.setLifecycleOwner(this);
         setupRecyclerView();
     }
 
@@ -92,7 +93,6 @@ public class MainFragment extends Fragment {
     }
 
     private void setupRecyclerView() {
-        mAdapter = new SouvenirAdapter(mClickListener);
         mBinding.rvSouvenirList.setAdapter(mAdapter);
         mBinding.rvSouvenirList.setHasFixedSize(true);
         mBinding.srlRefresh.setOnRefreshListener(() -> {
