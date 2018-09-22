@@ -40,26 +40,31 @@ public class EditDialog extends DialogFragment {
         super.onAttach(context);
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mTextType = (DetailFragment.TextType) getArguments().getSerializable(KEY_TEXT_TYPE);
+        mViewModel = ViewModelProviders.of(getParentFragment(), mFactory).get(DetailViewModel.class);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.dialog_edit, container, false);
+        mBinding.setViewmodel(mViewModel);
+        mBinding.setLifecycleOwner(this);
+        mBinding.setClickListener(mClickListener);
+        mBinding.setTextType(mTextType);
         return mBinding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mTextType = (DetailFragment.TextType) getArguments().getSerializable(KEY_TEXT_TYPE);
-        mViewModel = ViewModelProviders.of(getParentFragment(), mFactory).get(DetailViewModel.class);
         mViewModel.getCurrentSouvenir().observe(getViewLifecycleOwner(), souvenirDb -> {
             mBinding.setCurrentSouvenir(souvenirDb);
             restoreScrollPosition(savedInstanceState);
         });
-        mBinding.setTextType(mTextType);
-        mBinding.setViewmodel(mViewModel);
-        mBinding.setLifecycleOwner(this);
-        mBinding.setClickListener(mClickListener);
     }
 
     private void restoreScrollPosition(Bundle savedInstanceState) {
@@ -78,7 +83,7 @@ public class EditDialog extends DialogFragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mScrollViewPosition != null) {
             outState.putIntArray(KEY_SCROLL_POSITION, mScrollViewPosition);
@@ -89,7 +94,7 @@ public class EditDialog extends DialogFragment {
         Toast.makeText(getContext(), R.string.error_message_detail_edit_dialog_no_connection, Toast.LENGTH_SHORT).show();
     }
 
-    private ClickListener mClickListener = new ClickListener() {
+    private final ClickListener mClickListener = new ClickListener() {
         @Override
         public void onSaveClicked(View view) {
             if (!NetUtils.isConnected(getContext())) {
