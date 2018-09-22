@@ -27,20 +27,10 @@ public class SignInFragment extends Fragment {
     private FragmentSigninBinding mBinding;
     private boolean mIsConnected;
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_signin, container, false);
-        return mBinding.getRoot();
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mBinding.setLifecycleOwner(this);
-        mBinding.setClickListener(mListener);
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         mIsConnected = initIsConnected(savedInstanceState);
-        mBinding.setIsConnected(mIsConnected);
     }
 
     private boolean initIsConnected(@Nullable Bundle savedInstanceState) {
@@ -50,6 +40,16 @@ public class SignInFragment extends Fragment {
             return savedInstanceState.getBoolean(KEY_IS_CONNECTED, false);
         }
         return false;
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_signin, container, false);
+        mBinding.setLifecycleOwner(this);
+        mBinding.setClickListener(mListener);
+        mBinding.setIsConnected(mIsConnected);
+        return mBinding.getRoot();
     }
 
     @Override
