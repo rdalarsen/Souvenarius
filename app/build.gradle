@@ -17,6 +17,7 @@ android {
         versionCode 2
         versionName "1.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        resConfigs "en"
     }
     buildTypes {
         release {
@@ -51,8 +52,8 @@ dependencies {
     implementation "android.arch.persistence.room:runtime:$archVersion"
     annotationProcessor "android.arch.persistence.room:compiler:$archVersion"
     // Firebase & Google services
-    implementation "com.firebaseui:firebase-ui-auth:$uiAuthVersion"
-    implementation "com.firebaseui:firebase-ui-storage:$uiStorageVersion"
+    implementation "com.firebaseui:firebase-ui-auth:$firebaseUiVersion"
+    implementation "com.firebaseui:firebase-ui-storage:$firebaseUiVersion"
     implementation "com.google.firebase:firebase-database:$databaseVersion"
     implementation "com.google.firebase:firebase-storage:$storageVersion"
     implementation "com.google.android.gms:play-services-location:$locationVersion"
