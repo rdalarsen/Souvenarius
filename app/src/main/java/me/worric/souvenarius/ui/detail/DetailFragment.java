@@ -68,30 +68,32 @@ public class DetailFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        String souvenirId = getArguments().getString(KEY_SOUVENIR_ID);
+        mViewModel = ViewModelProviders.of(this, mFactory).get(DetailViewModel.class);
+        mViewModel.setSouvenirId(souvenirId);
+        mAdapter = new SouvenirPhotoAdapter(mDeletePhotoClickListener);
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_detail, container, false);
+        mBinding.setViewmodel(mViewModel);
+        mBinding.setClickHandler(mEditClickListener);
+        mBinding.setLifecycleOwner(this);
         return mBinding.getRoot();
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        String souvenirId = getArguments().getString(KEY_SOUVENIR_ID);
-        mViewModel = ViewModelProviders.of(this, mFactory).get(DetailViewModel.class);
-        mViewModel.setSouvenirId(souvenirId);
         mViewModel.getCurrentSouvenir().observe(getViewLifecycleOwner(), souvenir -> {
             mAdapter.swapPhotos(souvenir);
             mBinding.setCurrentSouvenir(souvenir);
             restoreLayoutManagerState(savedInstanceState);
             restoreScrollViewState(savedInstanceState);
         });
-        mBinding.setLifecycleOwner(this);
-        mBinding.setViewmodel(mViewModel);
-        mBinding.setClickHandler(mEditClickListener);
+
         setupRecyclerView();
     }
 
@@ -115,7 +117,6 @@ public class DetailFragment extends Fragment {
     private void setupRecyclerView() {
         mBinding.rvSouvenirPhotoList.setLayoutManager(new LinearLayoutManager(getContext(),
                 LinearLayoutManager.HORIZONTAL, false));
-        mAdapter = new SouvenirPhotoAdapter(mDeletePhotoClickListener);
         mBinding.rvSouvenirPhotoList.setAdapter(mAdapter);
         mBinding.rvSouvenirPhotoList.setHasFixedSize(true);
         SnapHelper snapHelper = new LinearSnapHelper();
@@ -231,7 +232,7 @@ public class DetailFragment extends Fragment {
         Toast.makeText(getContext(), R.string.error_message_detail_no_connection, Toast.LENGTH_SHORT).show();
     }
 
-    private DeletePhotoClickListener mDeletePhotoClickListener = photoName -> {
+    private final DeletePhotoClickListener mDeletePhotoClickListener = photoName -> {
         if (!NetUtils.isConnected(getContext())) {
             showErrorToast();
             return;
