@@ -48,27 +48,27 @@ public class AddFragment extends Fragment {
         super.onAttach(context);
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mViewModel = ViewModelProviders.of(this, mFactory).get(AddViewModel.class);
+        restorePhotoFile(savedInstanceState);
+    }
+
+    private void restorePhotoFile(@Nullable Bundle savedInstanceState) {
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_FILE_PATH)) {
+            mViewModel.setPhotoFile(savedInstanceState.getString(KEY_FILE_PATH));
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_add, container, false);
-        return mBinding.getRoot();
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this, mFactory).get(AddViewModel.class);
-        restorePhotoFile(savedInstanceState);
         mBinding.setViewmodel(mViewModel);
         mBinding.setLifecycleOwner(this);
         mBinding.setClickListener(mClickListener);
-    }
-
-    private void restorePhotoFile(Bundle savedInstanceState) {
-        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_FILE_PATH)) {
-            mViewModel.setPhotoFile(savedInstanceState.getString(KEY_FILE_PATH));
-        }
+        return mBinding.getRoot();
     }
 
     @Override
@@ -143,10 +143,7 @@ public class AddFragment extends Fragment {
                 return;
             }
 
-            String story = mBinding.etStory.getText().toString();
-            String title = mBinding.etSouvenirTitle.getText().toString();
-            String place = mBinding.etPlace.getText().toString();
-            SouvenirSaveInfo info = new SouvenirSaveInfo(story, title, place);
+            SouvenirSaveInfo info = extractEditTextValuesToSaveInfo();
             if (info.hasMissingValues()) {
                 Toast.makeText(getContext(), R.string.error_message_add_missing_values,
                         Toast.LENGTH_SHORT).show();
@@ -160,6 +157,15 @@ public class AddFragment extends Fragment {
             }
         }
     };
+
+    @NonNull
+    private SouvenirSaveInfo extractEditTextValuesToSaveInfo() {
+        String story = mBinding.etStory.getText().toString();
+        String title = mBinding.etSouvenirTitle.getText().toString();
+        String place = mBinding.etPlace.getText().toString();
+        
+        return new SouvenirSaveInfo(story, title, place);
+    }
 
     public interface ClickListener {
         void onAddPhotoClicked(View view);
