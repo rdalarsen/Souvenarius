@@ -18,4 +18,10 @@
         android:icon="@drawable/ic_sort"
         app:showAsAction="ifRoom" />
 
+    <item
+        android:title="@string/menu_main_search"
+        android:id="@+id/action_main_search"
+        android:icon="@drawable/ic_search"
+        app:showAsAction="ifRoom" />
+
 </menu>

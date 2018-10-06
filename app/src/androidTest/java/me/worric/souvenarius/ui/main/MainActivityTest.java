@@ -1,5 +1,6 @@
 package me.worric.souvenarius.ui.main;
 
+import android.support.test.filters.MediumTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -13,9 +14,11 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
-import static android.support.test.espresso.matcher.ViewMatchers.*;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
 
 @RunWith(AndroidJUnit4.class)
+@MediumTest
 public class MainActivityTest {
 
     @Rule
@@ -46,6 +49,17 @@ public class MainActivityTest {
         onView(withId(R.id.sv_detail_root))
                 .check(matches(isDisplayed()));
         onView(withId(R.id.rv_souvenir_photo_list))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void onToolbarSearchButtonClick_searchFragmentIsDisplayed() {
+        onView(withId(R.id.action_main_search))
+                .perform(click());
+
+        onView(withId(android.support.design.R.id.search_src_text))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.rv_search_result_list))
                 .check(matches(isDisplayed()));
     }
 

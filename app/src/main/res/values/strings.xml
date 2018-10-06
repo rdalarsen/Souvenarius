@@ -28,6 +28,7 @@
     <string name="menu_main_sign_out">Sign out</string>
     <string name="menu_main_refresh_data">Refresh data</string>
     <string name="menu_main_sort_by_date_asc_desc">Sort by date asc/desc</string>
+    <string name="menu_main_search">Search</string>
     <string name="main_toast_sort_asc">Sort by date ascending</string>
     <string name="main_toast_sort_desc">Sort by date descending</string>
     <string name="content_desc_main_item_souvenir_photo">Souvenir photo</string>
@@ -64,6 +65,10 @@
     <string name="sign_in_notice">You need to sign in to use the app.</string>
     <string name="btn_label_sign_in">Sign in</string>
 
+    <!-- Search Fragment -->
+    <string name="error_message_search_missing_title">Missing title</string>
+    <string name="hint_search_search_for_title">Search for title…</string>
+
     <!-- Widget -->
     <string name="content_desc_widget_souvenir_photo">Souvenir photo</string>
     <string name="content_desc_widget_add_souvenir">Add souvenir</string>
@@ -78,6 +83,7 @@
 
     <!-- Souvenir repository -->
     <string name="error_message_souvenir_repo_not_logged_in">Not signed in.</string>
+    <string name="error_message_souvenir_repo_no_souvenirs_found_on_query">No matches for given query.</string>
 
     <!-- Firebase Handler -->
     <string name="error_message_firebase_not_signed_in">Not signed in.</string>

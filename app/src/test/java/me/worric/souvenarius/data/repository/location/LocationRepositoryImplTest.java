@@ -1,4 +1,4 @@
-package me.worric.souvenarius.data.repository;
+package me.worric.souvenarius.data.repository.location;
 
 import android.arch.core.executor.testing.InstantTaskExecutorRule;
 import android.arch.lifecycle.Lifecycle;
@@ -58,6 +58,7 @@ public class LocationRepositoryImplTest {
     @Mock private FusedLocationProviderClient mClient;
     @Mock private Task<Location> mLocationTask;
     @Mock private LifecycleOwner mLifecycleOwner;
+    @Mock private LocationTaskRunner mLocationTaskRunner;
     @Mock private Geocoder mGeocoder;
 
     @Captor private ArgumentCaptor<OnSuccessListener<Location>> mSuccessListenerCaptor;
@@ -67,7 +68,7 @@ public class LocationRepositoryImplTest {
 
     @Before
     public void setUp() {
-        mRepository = new LocationRepositoryImpl(mGeocoder, mClient, sErrorMessages);
+        mRepository = new LocationRepositoryImpl(mGeocoder, mClient, mLocationTaskRunner, sErrorMessages);
     }
 
     @Test

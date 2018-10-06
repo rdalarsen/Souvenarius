@@ -14,7 +14,7 @@ import java.io.File;
 import javax.inject.Inject;
 
 import me.worric.souvenarius.data.model.SouvenirDb;
-import me.worric.souvenarius.data.repository.SouvenirRepository;
+import me.worric.souvenarius.data.repository.souvenir.SouvenirRepository;
 import me.worric.souvenarius.ui.widget.UpdateWidgetService;
 import timber.log.Timber;
 

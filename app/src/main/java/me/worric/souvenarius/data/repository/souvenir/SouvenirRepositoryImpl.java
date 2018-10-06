@@ -1,4 +1,4 @@
-package me.worric.souvenarius.data.repository;
+package me.worric.souvenarius.data.repository.souvenir;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
@@ -25,10 +25,9 @@ import javax.inject.Singleton;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.db.AppDatabase;
-import me.worric.souvenarius.data.db.tasks.SouvenirDeleteTask;
-import me.worric.souvenarius.data.db.tasks.SouvenirInsertTask;
-import me.worric.souvenarius.data.db.tasks.SouvenirUpdateTask;
+import me.worric.souvenarius.data.db.tasks.OnResultListener;
 import me.worric.souvenarius.data.model.SouvenirDb;
+import me.worric.souvenarius.data.repository.UpdateSouvenirsService;
 import me.worric.souvenarius.di.AppContext;
 import me.worric.souvenarius.di.SouvenirErrorMsgs;
 import me.worric.souvenarius.ui.main.SortStyle;
@@ -48,20 +47,23 @@ public class SouvenirRepositoryImpl implements SouvenirRepository {
     private final AppDatabase mAppDatabase;
     private final MutableLiveData<QueryParameters> mQueryParameters = new MutableLiveData<>();
     private final SharedPreferences mPrefs;
+    private final DbTaskRunner mDbTaskRunner;
 
     @Inject
     public SouvenirRepositoryImpl(FirebaseHandler firebaseHandler,
-                              StorageHandler storageHandler,
-                              @SouvenirErrorMsgs Map<Integer,String> errorMessages,
-                              AppDatabase appDatabase,
-                              SharedPreferences prefs,
-                              @AppContext Context context) {
+                                  StorageHandler storageHandler,
+                                  @SouvenirErrorMsgs Map<Integer,String> errorMessages,
+                                  AppDatabase appDatabase,
+                                  SharedPreferences prefs,
+                                  @AppContext Context context,
+                                  DbTaskRunner dbTaskRunner) {
         mFirebaseHandler = firebaseHandler;
         mStorageHandler = storageHandler;
         mErrorMessages = errorMessages;
         mAuth = FirebaseAuth.getInstance();
         mAppDatabase = appDatabase;
         mPrefs = prefs;
+        mDbTaskRunner = dbTaskRunner;
         initQueryParameters();
         UpdateSouvenirsService.startSouvenirsUpdate(context);
     }
@@ -74,16 +76,23 @@ public class SouvenirRepositoryImpl implements SouvenirRepository {
     public LiveData<Result<List<SouvenirDb>>> getSouvenirs() {
         return Transformations.switchMap(mQueryParameters, parameters -> {
             if (TextUtils.isEmpty(parameters.getUid())) {
-                MutableLiveData<Result<List<SouvenirDb>>> errorLiveData = new MutableLiveData<>();
-                errorLiveData.setValue(Result.failure(mErrorMessages
-                        .get(R.string.error_message_souvenir_repo_not_logged_in)));
-                return errorLiveData;
+                return createErrorLiveData();
             }
-            String queryString = String.format(QUERY_STRING, parameters.getSortStyle().toString());
-            SupportSQLiteQuery simpleQuery = new SimpleSQLiteQuery(queryString, new Object[]{parameters.getUid()});
-            return Transformations.map(mAppDatabase.souvenirDao().getSouvenirs(simpleQuery),
+            return Transformations.map(mAppDatabase.souvenirDao().getSouvenirs(createQuery(parameters)),
                     Result::success);
         });
+    }
+
+    private LiveData<Result<List<SouvenirDb>>> createErrorLiveData() {
+        MutableLiveData<Result<List<SouvenirDb>>> errorLiveData = new MutableLiveData<>();
+        errorLiveData.setValue(Result.failure(mErrorMessages
+                .get(R.string.error_message_souvenir_repo_not_logged_in)));
+        return errorLiveData;
+    }
+
+    private SupportSQLiteQuery createQuery(QueryParameters parameters) {
+        String queryString = String.format(QUERY_STRING, parameters.getSortStyle().toString());
+        return new SimpleSQLiteQuery(queryString, new Object[]{parameters.getUid()});
     }
 
     @Override
@@ -92,7 +101,25 @@ public class SouvenirRepositoryImpl implements SouvenirRepository {
     }
 
     @Override
-    public void addSouvenir(SouvenirDb db, File photo, SouvenirRepository.OnAddSuccessListener successListener) {
+    public LiveData<Result<List<SouvenirDb>>> findSouvenirsByTitle(String title) {
+        return Transformations.map(mAppDatabase.souvenirDao().findSouvenirsByTitle(
+                mAuth.getUid(), formatTitleForUseWithLike(title)),
+                this::createResult);
+    }
+
+    private String formatTitleForUseWithLike(String title) {
+        return String.format("%%%s%%", title);
+    }
+
+    private Result<List<SouvenirDb>> createResult(List<SouvenirDb> souvenirs) {
+        if (souvenirs.isEmpty()) {
+            return Result.failure(mErrorMessages.get(R.string.error_message_souvenir_repo_no_souvenirs_found_on_query));
+        }
+        return Result.success(souvenirs);
+    }
+
+    @Override
+    public void addSouvenir(SouvenirDb souvenir, File photo, SouvenirRepository.OnAddSuccessListener successListener) {
         DatabaseReference.CompletionListener completionListener = (databaseError, databaseReference) -> {
             if (databaseError != null) {
                 Timber.e(databaseError.toException(), "There was a problem adding the souvenir to the database.");
@@ -106,20 +133,26 @@ public class SouvenirRepositoryImpl implements SouvenirRepository {
             }
         };
 
-        SouvenirInsertTask.OnDataInsertListener listener = souvenirDb -> {
-            if (souvenirDb != null) {
+        OnResultListener<SouvenirDb> listener = new OnResultListener<SouvenirDb>() {
+            @Override
+            public void onSuccess(SouvenirDb souvenirDb) {
                 mFirebaseHandler.storeSouvenir(souvenirDb, completionListener);
                 if (successListener != null) {
                     successListener.onSuccessfulAdd();
                 }
             }
+
+            @Override
+            public void onFailure() {
+                Timber.e("The database call did not complete successfully");
+            }
         };
 
-        db.setTimestamp(Instant.now().toEpochMilli());
-        db.setId(UUID.randomUUID().toString());
-        db.setUid(mAuth.getUid());
+        souvenir.setTimestamp(Instant.now().toEpochMilli());
+        souvenir.setId(UUID.randomUUID().toString());
+        souvenir.setUid(mAuth.getUid());
 
-        new SouvenirInsertTask(mAppDatabase.souvenirDao(), listener).execute(db);
+        mDbTaskRunner.runInsertTask(souvenir, mAppDatabase, listener);
     }
 
     @Override
@@ -137,13 +170,19 @@ public class SouvenirRepositoryImpl implements SouvenirRepository {
             }
         };
 
-        SouvenirUpdateTask.OnDataUpdateListener listener = numRowsAffected -> {
-            if (numRowsAffected > 0) {
-                mFirebaseHandler.storeSouvenir(souvenir, completionListener);
+        OnResultListener<SouvenirDb> listener = new OnResultListener<SouvenirDb>() {
+            @Override
+            public void onSuccess(SouvenirDb souvenirDb) {
+                mFirebaseHandler.storeSouvenir(souvenirDb, completionListener);
+            }
+
+            @Override
+            public void onFailure() {
+                Timber.e("The database call did not complete successfully");
             }
         };
 
-        new SouvenirUpdateTask(mAppDatabase.souvenirDao(), listener).execute(souvenir);
+        mDbTaskRunner.runUpdateTask(souvenir, mAppDatabase, listener);
     }
 
     @Override
@@ -162,16 +201,22 @@ public class SouvenirRepositoryImpl implements SouvenirRepository {
             }
         };
 
-        SouvenirDeleteTask.OnDataDeleteListener listener = numRowsAffected -> {
-            if (numRowsAffected > 0) {
-                mFirebaseHandler.deleteSouvenir(souvenir, completionListener);
+        OnResultListener<SouvenirDb> listener = new OnResultListener<SouvenirDb>() {
+            @Override
+            public void onSuccess(SouvenirDb souvenirDb) {
+                mFirebaseHandler.deleteSouvenir(souvenirDb, completionListener);
                 if (successListener != null) {
                     successListener.onSuccessfulDelete();
                 }
             }
+
+            @Override
+            public void onFailure() {
+                Timber.e("The database call did not complete successfully");
+            }
         };
 
-        new SouvenirDeleteTask(mAppDatabase.souvenirDao(), listener).execute(souvenir);
+        mDbTaskRunner.runDeleteTask(souvenir, mAppDatabase, listener);
     }
 
     @Override

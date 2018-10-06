@@ -26,6 +26,7 @@ import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.data.repository.UpdateSouvenirsService;
 import me.worric.souvenarius.databinding.FragmentMainBinding;
+import me.worric.souvenarius.ui.common.FabStateChanger;
 import me.worric.souvenarius.ui.common.NetUtils;
 import me.worric.souvenarius.ui.common.PrefsUtils;
 
@@ -39,6 +40,8 @@ public class MainFragment extends Fragment {
     private SouvenirAdapter mAdapter;
     private boolean mShouldRestoreLayoutManagerState = true;
     private Parcelable mLayoutManagerState;
+    private FabStateChanger mFabStateChanger;
+    private MainFragmentEventListener mMainFragmentEventListener;
     @Inject
     protected ViewModelProvider.Factory mFactory;
     @Inject
@@ -48,6 +51,13 @@ public class MainFragment extends Fragment {
     public void onAttach(Context context) {
         AndroidSupportInjection.inject(this);
         super.onAttach(context);
+        try {
+            mFabStateChanger = (FabStateChanger) context;
+            mMainFragmentEventListener = (MainFragmentEventListener) context;
+        } catch (ClassCastException cce) {
+            throw new IllegalArgumentException("Attached activity does not implement either" +
+                    " FabStateChanger or MainFragmentEventListener or both: " + context.toString());
+        }
     }
 
     @Override
@@ -55,7 +65,8 @@ public class MainFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         mViewModel = ViewModelProviders.of(getActivity(), mFactory).get(MainViewModel.class);
-        mAdapter = new SouvenirAdapter(mClickListener);
+        mAdapter = new SouvenirAdapter(souvenir ->
+                mMainFragmentEventListener.onSouvenirClicked(souvenir));
     }
 
     @Nullable
@@ -73,7 +84,7 @@ public class MainFragment extends Fragment {
         mViewModel.getSouvenirs().observe(getViewLifecycleOwner(), souvenirResult -> {
             mBinding.setResultSouvenirs(souvenirResult);
             if (souvenirResult.status.equals(Result.Status.SUCCESS)) {
-                mAdapter.swapLists(souvenirResult.response);
+                mAdapter.swapSouvenirs(souvenirResult.response);
                 restoreLayoutManagerState(savedInstanceState);
             }
         });
@@ -105,7 +116,7 @@ public class MainFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity) getActivity()).setFabState(FabState.ADD);
+        mFabStateChanger.changeFabState(FabState.ADD);
     }
 
     @Override
@@ -137,13 +148,16 @@ public class MainFragment extends Fragment {
                 refreshData();
                 return true;
             case R.id.action_main_sign_out:
-                ((MainActivity) getActivity()).handleSignOut();
+                mMainFragmentEventListener.onSignOutClicked();
                 return true;
             case R.id.action_main_toggle_sort:
                 SortStyle sortStyle = PrefsUtils.getSortStyleFromPrefs(mSharedPreferences,
                         PREFS_KEY_SORT_STYLE);
                 mShouldRestoreLayoutManagerState = false;
                 toggleAndPropagateSortStyle(sortStyle);
+                return true;
+            case R.id.action_main_search:
+                mMainFragmentEventListener.onSearchClicked();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -159,6 +173,13 @@ public class MainFragment extends Fragment {
 
     private void showErrorToast() {
         Toast.makeText(getContext(), R.string.error_message_main_no_connection, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mFabStateChanger = null;
+        mMainFragmentEventListener = null;
     }
 
     private void toggleAndPropagateSortStyle(SortStyle sortStyle) {
@@ -177,11 +198,10 @@ public class MainFragment extends Fragment {
         }
     }
 
-    private final ClickListener mClickListener = souvenir ->
-            ((MainActivity) getActivity()).handleSouvenirClicked(souvenir);
-
-    public interface ClickListener {
+    public interface MainFragmentEventListener {
         void onSouvenirClicked(SouvenirDb souvenir);
+        void onSignOutClicked();
+        void onSearchClicked();
     }
 
     public static MainFragment newInstance() {

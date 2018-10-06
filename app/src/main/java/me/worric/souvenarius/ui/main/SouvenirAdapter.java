@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import java.util.List;
+import java.util.Objects;
 
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.model.SouvenirDb;
@@ -14,14 +15,18 @@ import me.worric.souvenarius.databinding.ItemMainSouvenirBinding;
 
 public class SouvenirAdapter extends RecyclerView.Adapter<SouvenirAdapter.SouvenirViewholder> {
 
-    private final MainFragment.ClickListener mListener;
-    private List<SouvenirDb> mSouvenirs;
-
-    SouvenirAdapter(MainFragment.ClickListener listener) {
-        mListener = listener;
+    public interface SouvenirClickListener {
+        void onSouvenirClicked(SouvenirDb souvenir);
     }
 
-    public void swapLists(List<SouvenirDb> souvenirs) {
+    private final SouvenirClickListener mListener;
+    private List<SouvenirDb> mSouvenirs;
+
+    SouvenirAdapter(SouvenirClickListener listener) {
+        mListener = Objects.requireNonNull(listener);
+    }
+
+    void swapSouvenirs(List<SouvenirDb> souvenirs) {
         mSouvenirs = souvenirs;
         notifyDataSetChanged();
     }

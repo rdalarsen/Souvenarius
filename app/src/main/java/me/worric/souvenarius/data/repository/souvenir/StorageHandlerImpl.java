@@ -1,4 +1,4 @@
-package me.worric.souvenarius.data.repository;
+package me.worric.souvenarius.data.repository.souvenir;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;

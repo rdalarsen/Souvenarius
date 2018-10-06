@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.databinding.FragmentSigninBinding;
+import me.worric.souvenarius.ui.common.FabStateChanger;
 import me.worric.souvenarius.ui.common.NetUtils;
 import me.worric.souvenarius.ui.main.FabState;
 import me.worric.souvenarius.ui.main.MainActivity;
@@ -26,6 +27,20 @@ public class SignInFragment extends Fragment {
     private static final String KEY_IS_CONNECTED = "key_is_connected";
     private FragmentSigninBinding mBinding;
     private boolean mIsConnected;
+    private FabStateChanger mFabStateChanger;
+    private SignInFragmentEventListener mSignInFragmentEventListener;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            mFabStateChanger = (FabStateChanger) context;
+            mSignInFragmentEventListener = (SignInFragmentEventListener) context;
+        } catch (ClassCastException cce) {
+            throw new IllegalArgumentException("Attached activity does not implement either" +
+                    " FabStateChanger or SignInFragmentEventListener or both: " + context.toString());
+        }
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,7 +73,7 @@ public class SignInFragment extends Fragment {
         IntentFilter filter = new IntentFilter(MainActivity.ACTION_CONNECTIVITY_CHANGED);
         LocalBroadcastManager.getInstance(getContext())
                 .registerReceiver(mReceiver, filter);
-        ((MainActivity) getActivity()).setFabState(FabState.HIDDEN);
+        mFabStateChanger.changeFabState(FabState.HIDDEN);
     }
 
     @Override
@@ -74,6 +89,13 @@ public class SignInFragment extends Fragment {
         outState.putBoolean(KEY_IS_CONNECTED, mIsConnected);
     }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mFabStateChanger = null;
+        mSignInFragmentEventListener = null;
+    }
+
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -87,10 +109,14 @@ public class SignInFragment extends Fragment {
     };
 
     private SignInButtonClickListener mListener = isConnected ->
-            ((MainActivity) getActivity()).handleSignIn(isConnected);
+            mSignInFragmentEventListener.onSignInClicked(isConnected);
 
     public interface SignInButtonClickListener {
         void onSignInButtonClicked(boolean hasInternetAccess);
+    }
+
+    public interface SignInFragmentEventListener {
+        void onSignInClicked(boolean isConnected);
     }
 
     public static SignInFragment newInstance() {

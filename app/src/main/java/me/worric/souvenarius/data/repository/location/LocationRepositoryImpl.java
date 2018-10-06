@@ -1,4 +1,4 @@
-package me.worric.souvenarius.data.repository;
+package me.worric.souvenarius.data.repository.location;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
@@ -27,15 +27,18 @@ public class LocationRepositoryImpl implements LocationRepository {
     private static final int MAX_ADDRESS_RESULTS = 1;
     private final Geocoder mGeocoder;
     private final FusedLocationProviderClient mClient;
+    private final LocationTaskRunner mLocationTaskRunner;
     private final Map<Integer,String> mErrorMessages;
     private MutableLiveData<Result<Address>> mResult;
 
     @Inject
     public LocationRepositoryImpl(Geocoder geocoder,
                                   FusedLocationProviderClient client,
+                                  LocationTaskRunner locationTaskRunner,
                                   @LocationErrorMsgs Map<Integer,String> errorMessages) {
         mGeocoder = geocoder;
         mClient = client;
+        mLocationTaskRunner = locationTaskRunner;
         mErrorMessages = errorMessages;
     }
 
@@ -52,7 +55,7 @@ public class LocationRepositoryImpl implements LocationRepository {
         try {
             mClient.getLastLocation().addOnSuccessListener(location -> {
                 LocationResultListener listener = result -> mResult.setValue(result);
-                new LocationAsyncTask(listener, mGeocoder, mErrorMessages).execute(location);
+                mLocationTaskRunner.runGeocodingTask(location, mGeocoder, mErrorMessages, listener);
             }).addOnFailureListener(e -> {
                 Result<Address> result = Result.failure(mErrorMessages
                         .get(R.string.error_message_location_repo_no_device_location));

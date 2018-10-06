@@ -70,6 +70,8 @@ dependencies {
     implementation "com.jakewharton.timber:timber:$timberVersion"
     // Threetenabp
     implementation "com.jakewharton.threetenabp:threetenabp:$threetenabpVersion"
+    // Stetho
+    debugImplementation "com.facebook.stetho:stetho:$stethoVersion"
     // Testing
     testImplementation "junit:junit:$junitVersion"
     testImplementation "org.mockito:mockito-core:$mockitoVersion"

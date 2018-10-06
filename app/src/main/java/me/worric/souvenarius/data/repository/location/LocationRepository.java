@@ -1,4 +1,4 @@
-package me.worric.souvenarius.data.repository;
+package me.worric.souvenarius.data.repository.location;
 
 import android.arch.lifecycle.LiveData;
 import android.location.Address;

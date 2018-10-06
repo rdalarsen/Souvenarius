@@ -17,10 +17,10 @@ import me.worric.souvenarius.data.model.SouvenirDb;
 public interface SouvenirDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertAll(SouvenirDb[] souvenirs);
+    Long[] insertAll(SouvenirDb[] souvenirs);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(SouvenirDb souvenirDbs);
+    Long insert(SouvenirDb souvenirDbs);
 
     @Query("SELECT * FROM souvenirs WHERE uid = :uid ORDER BY timestamp DESC LIMIT 1")
     SouvenirDb findMostRecentSync(String uid);
@@ -39,5 +39,8 @@ public interface SouvenirDao {
 
     @RawQuery(observedEntities = SouvenirDb.class)
     LiveData<List<SouvenirDb>> getSouvenirs(SupportSQLiteQuery query);
+
+    @Query("SELECT * FROM souvenirs WHERE uid = :uid AND title LIKE :title")
+    LiveData<List<SouvenirDb>> findSouvenirsByTitle(String uid, String title);
 
 }

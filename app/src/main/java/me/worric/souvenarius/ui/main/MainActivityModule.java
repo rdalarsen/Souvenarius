@@ -1,15 +1,13 @@
 package me.worric.souvenarius.ui.main;
 
 import android.content.Context;
+import android.support.v4.app.FragmentManager;
 
 import dagger.Binds;
 import dagger.Module;
-import dagger.android.ContributesAndroidInjector;
+import dagger.Provides;
 import me.worric.souvenarius.di.ActivityContext;
 import me.worric.souvenarius.di.ActivityScope;
-import me.worric.souvenarius.ui.add.AddFragment;
-import me.worric.souvenarius.ui.detail.DetailFragment;
-import me.worric.souvenarius.ui.detail.EditDialog;
 
 @Module
 public abstract class MainActivityModule {
@@ -19,16 +17,12 @@ public abstract class MainActivityModule {
     @ActivityContext
     abstract Context bindContext(MainActivity mainActivity);
 
-    @ContributesAndroidInjector
-    abstract MainFragment contributeMainFragment();
+    @Binds
+    abstract Navigator bindNavigator(NavigatorImpl impl);
 
-    @ContributesAndroidInjector
-    abstract AddFragment contributeAddFragment();
-
-    @ContributesAndroidInjector
-    abstract DetailFragment contributeDetailFragment();
-
-    @ContributesAndroidInjector
-    abstract EditDialog contributeEditDialogFragment();
+    @Provides
+    static FragmentManager provideFragmentManager(MainActivity mainActivity) {
+        return mainActivity.getSupportFragmentManager();
+    }
 
 }

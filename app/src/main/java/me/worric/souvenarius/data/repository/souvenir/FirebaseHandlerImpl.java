@@ -1,4 +1,4 @@
-package me.worric.souvenarius.data.repository;
+package me.worric.souvenarius.data.repository.souvenir;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;

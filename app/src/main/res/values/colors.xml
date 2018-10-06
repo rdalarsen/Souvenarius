@@ -10,4 +10,7 @@
     <color name="black_30p">#4DFFFFFF</color>
     <color name="colorAccent_40p">#66FFC107</color>
     <color name="colorAccent_75p">#BFFFC107</color>
+
+    <!-- Search -->
+    <color name="blue_et_40p">#FF80A5FF</color>
 </resources>

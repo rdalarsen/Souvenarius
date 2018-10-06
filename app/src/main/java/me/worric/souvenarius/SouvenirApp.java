@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.app.Service;
 
+import com.facebook.stetho.Stetho;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 
 import javax.inject.Inject;
@@ -30,6 +31,9 @@ public class SouvenirApp extends Application implements HasActivityInjector, Has
                 .application(this)
                 .build()
                 .inject(this);
+        if (BuildConfig.DEBUG) {
+            Stetho.initializeWithDefaults(this);
+        }
     }
 
     @Override

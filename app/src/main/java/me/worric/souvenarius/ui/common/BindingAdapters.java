@@ -3,7 +3,9 @@ package me.worric.souvenarius.ui.common;
 import android.databinding.BindingAdapter;
 import android.graphics.drawable.Drawable;
 import android.location.Address;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
@@ -11,13 +13,30 @@ import com.bumptech.glide.RequestBuilder;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
+import java.util.List;
+import java.util.Objects;
 
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.Result;
+import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.ui.GlideApp;
+import me.worric.souvenarius.ui.search.SearchResultsAdapter;
 import timber.log.Timber;
 
 public class BindingAdapters {
+
+    @BindingAdapter({"searchAdapter", "searchResults"})
+    public static void updateSearchResults(RecyclerView recyclerView, SearchResultsAdapter adapter,
+                                           Result<List<SouvenirDb>> result) {
+        adapter.swapItems(result);
+    }
+
+    @BindingAdapter("visibleUnless")
+    public static void visibleUnless(View view, Result.Status status) {
+        view.setVisibility((status == null || Objects.equals(status, Result.Status.FAILURE)
+                ? View.VISIBLE
+                : View.GONE));
+    }
 
     @BindingAdapter("dialogText")
     public static void dialogText(EditText editText, String dialogText) {

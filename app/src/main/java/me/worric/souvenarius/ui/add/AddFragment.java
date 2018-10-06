@@ -23,10 +23,10 @@ import javax.inject.Inject;
 import dagger.android.support.AndroidSupportInjection;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.databinding.FragmentAddBinding;
+import me.worric.souvenarius.ui.common.FabStateChanger;
 import me.worric.souvenarius.ui.common.FileUtils;
 import me.worric.souvenarius.ui.common.NetUtils;
 import me.worric.souvenarius.ui.main.FabState;
-import me.worric.souvenarius.ui.main.MainActivity;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
@@ -39,6 +39,8 @@ public class AddFragment extends Fragment {
     private static final String KEY_FILE_PATH = "key_file_path";
     private FragmentAddBinding mBinding;
     private AddViewModel mViewModel;
+    private FabStateChanger mFabStateChanger;
+    private AddFragmentEventListener mAddFragmentEventListener;
     @Inject
     protected ViewModelProvider.Factory mFactory;
 
@@ -46,6 +48,13 @@ public class AddFragment extends Fragment {
     public void onAttach(Context context) {
         AndroidSupportInjection.inject(this);
         super.onAttach(context);
+        try {
+            mFabStateChanger = (FabStateChanger) context;
+            mAddFragmentEventListener = (AddFragmentEventListener) context;
+        } catch (ClassCastException cce) {
+            throw new IllegalArgumentException("Attached activity does not implement either" +
+                    " FabStateChanger or AddFragmentEventListener or both: " + context.toString());
+        }
     }
 
     @Override
@@ -74,7 +83,7 @@ public class AddFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity) getActivity()).setFabState(FabState.HIDDEN);
+        mFabStateChanger.changeFabState(FabState.HIDDEN);
     }
 
     @Override
@@ -125,6 +134,13 @@ public class AddFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mFabStateChanger = null;
+        mAddFragmentEventListener = null;
+    }
+
     private final ClickListener mClickListener = new ClickListener() {
         @Override
         public void onAddPhotoClicked(View view) {
@@ -150,7 +166,7 @@ public class AddFragment extends Fragment {
             } else {
                 if (mViewModel.addSouvenir(info, getContext())) {
                     Toast.makeText(getContext(), R.string.success_message_add_souvenir_saved, Toast.LENGTH_SHORT).show();
-                    ((MainActivity) getActivity()).handleSouvenirSaved();
+                    mAddFragmentEventListener.onSouvenirSaved();
                 } else {
                     Toast.makeText(getContext(), R.string.error_message_souvenir_not_saved, Toast.LENGTH_SHORT).show();
                 }
@@ -170,6 +186,10 @@ public class AddFragment extends Fragment {
     public interface ClickListener {
         void onAddPhotoClicked(View view);
         void onSaveSouvenirClicked(View view);
+    }
+
+    public interface AddFragmentEventListener {
+        void onSouvenirSaved();
     }
 
     public static AddFragment newInstance() {

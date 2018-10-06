@@ -1,34 +1,37 @@
 package me.worric.souvenarius.data.db.tasks;
 
 import android.os.AsyncTask;
+import android.support.v4.util.Pair;
 
 import me.worric.souvenarius.data.db.dao.SouvenirDao;
 import me.worric.souvenarius.data.model.SouvenirDb;
 
-public final class SouvenirInsertTask extends AsyncTask<SouvenirDb, Void, SouvenirDb> {
+public class SouvenirInsertTask extends AsyncTask<SouvenirDb, Void, Pair<SouvenirDb,Long>> {
 
-    private SouvenirDao mDao;
-    private OnDataInsertListener mListener;
+    private final SouvenirDao mDao;
+    private final OnResultListener<SouvenirDb> mListener;
 
-    public SouvenirInsertTask(SouvenirDao dao, OnDataInsertListener listener) {
+    public SouvenirInsertTask(SouvenirDao dao, OnResultListener<SouvenirDb> listener) {
         mDao = dao;
         mListener = listener;
     }
 
     @Override
-    protected SouvenirDb doInBackground(SouvenirDb... souvenirDbs) {
+    protected Pair<SouvenirDb,Long> doInBackground(SouvenirDb... souvenirDbs) {
         SouvenirDb souvenirDb = souvenirDbs[0];
-        mDao.insert(souvenirDb);
-        return souvenirDb;
+        Long id = mDao.insert(souvenirDb);
+        return Pair.create(souvenirDb, id);
     }
 
     @Override
-    protected void onPostExecute(SouvenirDb souvenirDb) {
-        mListener.onDataInserted(souvenirDb);
-    }
-
-    public interface OnDataInsertListener {
-        void onDataInserted(SouvenirDb souvenirDb);
+    protected void onPostExecute(Pair<SouvenirDb,Long> result) {
+        if (mListener != null) {
+            if (result.first != null && result.second != null && result.second > -1L) {
+                mListener.onSuccess(result.first);
+            } else {
+                mListener.onFailure();
+            }
+        }
     }
 
 }

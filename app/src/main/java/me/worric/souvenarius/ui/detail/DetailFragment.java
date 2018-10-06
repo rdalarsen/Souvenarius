@@ -30,10 +30,10 @@ import javax.inject.Inject;
 import dagger.android.support.AndroidSupportInjection;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.databinding.FragmentDetailBinding;
+import me.worric.souvenarius.ui.common.FabStateChanger;
 import me.worric.souvenarius.ui.common.FileUtils;
 import me.worric.souvenarius.ui.common.NetUtils;
 import me.worric.souvenarius.ui.main.FabState;
-import me.worric.souvenarius.ui.main.MainActivity;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_CANCELED;
@@ -41,7 +41,9 @@ import static android.app.Activity.RESULT_OK;
 import static me.worric.souvenarius.ui.common.FileUtils.PHOTO_HEIGHT;
 import static me.worric.souvenarius.ui.common.FileUtils.PHOTO_WIDTH;
 
-public class DetailFragment extends Fragment {
+public class DetailFragment extends Fragment implements
+        DeletePhotoConfirmationDialog.PhotoDeletionConfirmedListener,
+        DeleteSouvenirConfirmationDialog.SouvenirDeletionConfirmedListener {
 
     private static final String KEY_LAYOUT_MANAGER_STATE = "key_layout_manager_state";
     private static final String KEY_SCROLL_POSITION = "key_scroll_position";
@@ -55,6 +57,8 @@ public class DetailFragment extends Fragment {
     private SouvenirPhotoAdapter mAdapter;
     private Parcelable mLayoutManagerState;
     private int[] mScrollViewPosition;
+    private FabStateChanger mFabStateChanger;
+    private DetailFragmentEventListener mDetailFragmentEventListener;
     @Inject
     protected ViewModelProvider.Factory mFactory;
 
@@ -62,6 +66,13 @@ public class DetailFragment extends Fragment {
     public void onAttach(Context context) {
         AndroidSupportInjection.inject(this);
         super.onAttach(context);
+        try {
+            mFabStateChanger = (FabStateChanger) context;
+            mDetailFragmentEventListener = (DetailFragmentEventListener) context;
+        } catch (ClassCastException cce) {
+            throw new IllegalArgumentException("Attached activity does not implement either" +
+                    " FabStateChanger or DetailFragmentEventListener or both: " + context.toString());
+        }
     }
 
     @Override
@@ -126,7 +137,7 @@ public class DetailFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity) getActivity()).setFabState(FabState.HIDDEN);
+        mFabStateChanger.changeFabState(FabState.HIDDEN);
     }
 
     @Override
@@ -176,11 +187,20 @@ public class DetailFragment extends Fragment {
         }
     }
 
-    public void onDeleteSouvenirConfirmed() {
-        mViewModel.deleteSouvenir(getContext());
-        ((MainActivity) getActivity()).handleSouvenirDeleted();
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mDetailFragmentEventListener = null;
+        mFabStateChanger = null;
     }
 
+    @Override
+    public void onDeleteSouvenirConfirmed() {
+        mViewModel.deleteSouvenir(getContext());
+        mDetailFragmentEventListener.onSouvenirDeleted();
+    }
+
+    @Override
     public void onDeletePhotoConfirmed(String photoName) {
         File photoFile = FileUtils.getLocalFileForPhotoName(photoName, getContext());
         if (mViewModel.deletePhoto(photoFile)) {
@@ -232,7 +252,7 @@ public class DetailFragment extends Fragment {
         Toast.makeText(getContext(), R.string.error_message_detail_no_connection, Toast.LENGTH_SHORT).show();
     }
 
-    private final DeletePhotoClickListener mDeletePhotoClickListener = photoName -> {
+    private final SouvenirPhotoAdapter.DeletePhotoClickListener mDeletePhotoClickListener = photoName -> {
         if (!NetUtils.isConnected(getContext())) {
             showErrorToast();
             return;
@@ -242,11 +262,7 @@ public class DetailFragment extends Fragment {
                 .show(getChildFragmentManager(), TAG_DELETE_PHOTO);
     };
 
-    public interface DeletePhotoClickListener {
-        void onDeletePhotoClicked(String photoName);
-    }
-
-    private EditClickListener mEditClickListener = view -> {
+    private final EditClickListener mEditClickListener = view -> {
         if (!NetUtils.isConnected(getContext())) {
             showErrorToast();
             return;
@@ -270,6 +286,10 @@ public class DetailFragment extends Fragment {
 
     public interface EditClickListener {
         void onEditClicked(View view);
+    }
+
+    public interface DetailFragmentEventListener {
+        void onSouvenirDeleted();
     }
 
     public static DetailFragment newInstance(String souvenirId) {

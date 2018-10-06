@@ -1,35 +1,37 @@
 package me.worric.souvenarius.data.db.tasks;
 
 import android.os.AsyncTask;
+import android.support.v4.util.Pair;
 
 import me.worric.souvenarius.data.db.dao.SouvenirDao;
 import me.worric.souvenarius.data.model.SouvenirDb;
 
-public final class SouvenirDeleteTask extends AsyncTask<SouvenirDb, Void, Integer> {
+public class SouvenirDeleteTask extends AsyncTask<SouvenirDb, Void, Pair<SouvenirDb,Integer>> {
 
-    private SouvenirDao mDao;
-    private OnDataDeleteListener mListener;
+    private final SouvenirDao mDao;
+    private final OnResultListener<SouvenirDb> mListener;
 
-    public SouvenirDeleteTask(SouvenirDao dao, OnDataDeleteListener listener) {
+    public SouvenirDeleteTask(SouvenirDao dao, OnResultListener<SouvenirDb> listener) {
         mDao = dao;
         mListener = listener;
     }
 
     @Override
-    protected Integer doInBackground(SouvenirDb... souvenirDbs) {
+    protected Pair<SouvenirDb,Integer> doInBackground(SouvenirDb... souvenirDbs) {
         SouvenirDb souvenir = souvenirDbs[0];
-        return mDao.deleteSouvenir(souvenir.getId());
+        Integer result = mDao.deleteSouvenir(souvenir.getId());
+        return Pair.create(souvenir, result);
     }
 
     @Override
-    protected void onPostExecute(Integer numRowsAffected) {
+    protected void onPostExecute(Pair<SouvenirDb,Integer> result) {
         if (mListener != null) {
-            mListener.onDataDeleted(numRowsAffected);
+            if (result.first != null && result.second != null && result.second > 0) {
+                mListener.onSuccess(result.first);
+            } else {
+                mListener.onFailure();
+            }
         }
-    }
-
-    public interface OnDataDeleteListener {
-        void onDataDeleted(int numRowsAffected);
     }
 
 }

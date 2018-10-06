@@ -1,8 +1,7 @@
-package me.worric.souvenarius.data.repository;
+package me.worric.souvenarius.data.repository.location;
 
 import android.arch.core.executor.testing.InstantTaskExecutorRule;
 import android.location.Geocoder;
-import android.location.Location;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -13,6 +12,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -43,6 +43,7 @@ public class LocationRepositoryImplTest {
     @Rule public InstantTaskExecutorRule mInstantTaskExecutorRule = new InstantTaskExecutorRule();
 
     @Mock private FusedLocationProviderClient mClient;
+    @Spy private LocationTaskRunnerImpl mLocationTaskRunner;
 
     private LocationRepository mRepository;
     private Geocoder mGeocoder = new Geocoder(InstrumentationRegistry.getTargetContext(),
@@ -50,7 +51,7 @@ public class LocationRepositoryImplTest {
 
     @Before
     public void setUp() {
-        mRepository = new LocationRepositoryImpl(mGeocoder, mClient, sErrorMessages);
+        mRepository = new LocationRepositoryImpl(mGeocoder, mClient, mLocationTaskRunner, sErrorMessages);
     }
 
     /**
@@ -61,14 +62,14 @@ public class LocationRepositoryImplTest {
      */
     @Test
     public void locationAsyncTask_correctlyHandlesNullLocation() throws InterruptedException {
-        final CountDownLatch latch = new CountDownLatch(1);
+        final CountDownLatch signal = new CountDownLatch(1);
         final LocationRepositoryImpl.LocationResultListener listener = result -> {
             assertThat(result.message, is(ERROR_MESSAGE_1));
-            latch.countDown();
+            signal.countDown();
         };
 
-        new LocationRepositoryImpl.LocationAsyncTask(listener, mGeocoder, sErrorMessages).executeOnExecutor(Runnable::run, new Location[1]);
-        latch.await();
+        mLocationTaskRunner.runGeocodingTask(null, mGeocoder, sErrorMessages, listener);
+        signal.await();
     }
 
 }

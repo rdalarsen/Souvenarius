@@ -1,4 +1,4 @@
-package me.worric.souvenarius.data.repository;
+package me.worric.souvenarius.data.repository.souvenir;
 
 import android.arch.lifecycle.LiveData;
 
@@ -14,6 +14,8 @@ public interface SouvenirRepository {
     LiveData<Result<List<SouvenirDb>>> getSouvenirs();
 
     LiveData<SouvenirDb> findSouvenirById(String souvenirId);
+
+    LiveData<Result<List<SouvenirDb>>> findSouvenirsByTitle(String title);
 
     void addSouvenir(SouvenirDb db, File photo, OnAddSuccessListener successListener);
 

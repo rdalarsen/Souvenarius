@@ -8,12 +8,12 @@ import me.worric.souvenarius.data.model.SouvenirDb;
 import timber.log.Timber;
 
 
-public final class SouvenirInsertAllTask extends AsyncTask<SouvenirDb[],Void,Void> {
+public class SouvenirInsertAllTask extends AsyncTask<SouvenirDb[], Void, Long[]> {
 
-    private AppDatabase mAppDatabase;
-    private SouvenirDao mDao;
-    private String mUid;
-    private OnDataInsertAllListener mListener;
+    private final AppDatabase mAppDatabase;
+    private final SouvenirDao mDao;
+    private final String mUid;
+    private final OnDataInsertAllListener mListener;
 
     public SouvenirInsertAllTask(AppDatabase appDatabase, String uid, OnDataInsertAllListener listener) {
         mAppDatabase = appDatabase;
@@ -23,23 +23,24 @@ public final class SouvenirInsertAllTask extends AsyncTask<SouvenirDb[],Void,Voi
     }
 
     @Override
-    protected Void doInBackground(SouvenirDb[]... souvenirs) {
+    protected Long[] doInBackground(SouvenirDb[]... souvenirs) {
+        Long[] result;
         try {
             mAppDatabase.beginTransaction();
             int numDeletedSouvenirs = mDao.removeUserSouvenirs(mUid);
-            mDao.insertAll(souvenirs[0]);
+            result = mDao.insertAll(souvenirs[0]);
             mAppDatabase.setTransactionSuccessful();
             Timber.i("Deleted %d souvenirs from db before inserting %d new",
                     numDeletedSouvenirs, souvenirs[0].length);
         } finally {
             mAppDatabase.endTransaction();
         }
-        return null;
+        return result;
     }
 
     @Override
-    protected void onPostExecute(Void aVoid) {
-        if (mListener != null) {
+    protected void onPostExecute(Long[] ids) {
+        if (mListener != null && ids != null && ids.length > 0) {
             mListener.onDataInserted();
         }
     }

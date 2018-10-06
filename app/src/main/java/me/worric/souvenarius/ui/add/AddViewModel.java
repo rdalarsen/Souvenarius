@@ -13,8 +13,8 @@ import javax.inject.Inject;
 
 import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.model.SouvenirDb;
-import me.worric.souvenarius.data.repository.LocationRepository;
-import me.worric.souvenarius.data.repository.SouvenirRepository;
+import me.worric.souvenarius.data.repository.location.LocationRepository;
+import me.worric.souvenarius.data.repository.souvenir.SouvenirRepository;
 import me.worric.souvenarius.ui.widget.UpdateWidgetService;
 
 public class AddViewModel extends ViewModel {

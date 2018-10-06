@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="souvenir"
+            type="me.worric.souvenarius.data.model.SouvenirDb" />
+        <variable
+            name="clickListener"
+            type="me.worric.souvenarius.ui.search.SearchResultsAdapter.SearchResultClickListener" />
+    </data>
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="?android:listPreferredItemHeightLarge"
+        android:onClick="@{() -> clickListener.onSearchResultClicked(souvenir)}">
+
+        <TextView
+            android:id="@+id/tv_item_search_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:fontFamily="sans-serif-light"
+            android:textStyle="italic"
+            android:text="@{souvenir.title ?? @string/error_message_search_missing_title}"
+            tools:text="Test Title" />
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

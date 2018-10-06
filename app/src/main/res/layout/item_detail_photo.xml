@@ -12,7 +12,7 @@
             type="Integer" />
         <variable
             name="clickListener"
-            type="me.worric.souvenarius.ui.detail.DetailFragment.DeletePhotoClickListener" />
+            type="me.worric.souvenarius.ui.detail.SouvenirPhotoAdapter.DeletePhotoClickListener" />
     </data>
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"

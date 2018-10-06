@@ -15,10 +15,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
 
@@ -38,14 +36,17 @@ import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.data.repository.UpdateSouvenirsService;
 import me.worric.souvenarius.databinding.ActivityMainBinding;
 import me.worric.souvenarius.ui.add.AddFragment;
-import me.worric.souvenarius.ui.common.NavigationUtils;
+import me.worric.souvenarius.ui.common.FabStateChanger;
 import me.worric.souvenarius.ui.detail.DetailFragment;
+import me.worric.souvenarius.ui.search.SearchFragment;
 import me.worric.souvenarius.ui.signin.SignInFragment;
-import me.worric.souvenarius.ui.widget.SouvenirWidgetProvider;
 import me.worric.souvenarius.ui.widget.UpdateWidgetService;
 import timber.log.Timber;
 
-public class MainActivity extends AppCompatActivity implements HasSupportFragmentInjector {
+public class MainActivity extends AppCompatActivity implements HasSupportFragmentInjector,
+        FabStateChanger, DetailFragment.DetailFragmentEventListener,
+        MainFragment.MainFragmentEventListener, AddFragment.AddFragmentEventListener,
+        SearchFragment.SearchFragmentEventListener, SignInFragment.SignInFragmentEventListener {
 
     public static final String KEY_IS_CONNECTED = "key_is_connected";
     public static final String ACTION_CONNECTIVITY_CHANGED = "action_connectivity_changed";
@@ -56,6 +57,8 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     private ActivityMainBinding mBinding;
     private FirebaseAuth mAuth;
     private LocalBroadcastManager mBroadcastManager;
+    @Inject
+    protected Navigator mNavigator;
     @Inject
     protected ViewModelProvider.Factory mFactory;
     @Inject
@@ -76,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         mBroadcastManager = LocalBroadcastManager.getInstance(this);
 
         checkLocationPermissions();
-        setupNavigationFlow(savedInstanceState);
+        mNavigator.initNavigation(savedInstanceState, mAuth.getCurrentUser(), getIntent());
         restoreSavedValues(savedInstanceState);
     }
 
@@ -90,57 +93,6 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                     Manifest.permission.ACCESS_FINE_LOCATION
             }, RC_PERMISSION_RESULTS);
-        }
-    }
-
-    private void setupNavigationFlow(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            return;
-        } else if (mAuth.getCurrentUser() == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, SignInFragment.newInstance())
-                    .commit();
-            return;
-        }
-
-        Intent launchIntent = getIntent();
-        if (launchIntent == null) return;
-
-        // First we handle the case that the app was closed via back button and then launched
-        // from history at a later time. In this case, we want the app to show the main screen,
-        // regardless of what action is in the Intent, e.g. if the app was launched from the
-        // widget last time.
-        // See this SO post on the matter: https://stackoverflow.com/a/41381757/8562738.
-        // Also check this article: https://medium.com/@JakobUlbrich/flag-attributes-in-android-how-to-use-them-ac4ec8aee7d1
-        int flags = launchIntent.getFlags();
-        if ((flags | NavigationUtils.LAUNCHED_FROM_HISTORY_AND_IN_NEW_TASK) == flags) {
-            Timber.i("Intent flags: detected launch from history + new task. Doing normal launch");
-            NavigationUtils.normalLaunch(getSupportFragmentManager());
-            return;
-        }
-
-        String action = launchIntent.getAction();
-        if (TextUtils.isEmpty(action)) throw new IllegalArgumentException("Action cannot be null or empty");
-        Timber.i("action of launch intent is: %s", action);
-
-        FragmentManager fm = getSupportFragmentManager();
-        switch (action) {
-            case SouvenirWidgetProvider.ACTION_WIDGET_LAUNCH_ADD_SOUVENIR:
-                // handle widget action of launching add souvenir
-                NavigationUtils.buildMainFragmentNavigation(fm);
-                NavigationUtils.buildCustomFragmentNavigation(fm, AddFragment.newInstance());
-                break;
-            case SouvenirWidgetProvider.ACTION_WIDGET_LAUNCH_SOUVENIR_DETAILS:
-                // handle widget action of launching souvenir details
-                NavigationUtils.buildMainFragmentNavigation(fm);
-                NavigationUtils.buildCustomFragmentNavigation(fm, DetailFragment.newInstance(launchIntent
-                        .getStringExtra(SouvenirWidgetProvider.EXTRA_SOUVENIR_ID)));
-                break;
-            case Intent.ACTION_MAIN:
-                NavigationUtils.normalLaunch(fm);
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown action: " + action);
         }
     }
 
@@ -195,9 +147,7 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
 
         if (requestCode == RC_SIGN_IN_ACTIVITY) {
             if (resultCode == RESULT_OK) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, MainFragment.newInstance())
-                        .commit();
+                mNavigator.navigateToMain();
                 mMainViewModel.updateUserId(mAuth.getUid());
                 UpdateSouvenirsService.startSouvenirsUpdate(this);
             } else {
@@ -206,20 +156,11 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         }
     }
 
-    public void handleSouvenirClicked(SouvenirDb souvenir) {
-        String souvenirId = souvenir.getId();
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, DetailFragment.newInstance(souvenirId))
-                .addToBackStack(null)
-                .commit();
-        mBinding.appbarLayout.setExpanded(true);
-    }
-
+    /*
+    * MainActivity callbacks
+    */
     public void handleAddFabClicked(View view) {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, AddFragment.newInstance())
-                .addToBackStack(null)
-                .commit();
+        mNavigator.navigateToAdd();
         mBinding.appbarLayout.setExpanded(true);
     }
 
@@ -227,15 +168,27 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         Toast.makeText(this, R.string.error_message_offline_mode, Toast.LENGTH_SHORT).show();
     }
 
-    public void handleSouvenirDeleted() {
-        getSupportFragmentManager().popBackStack();
+    /*
+    * DetailFragment callbacks
+    */
+    @Override
+    public void onSouvenirDeleted() {
+        mNavigator.navigateBack();
     }
 
-    public void handleSouvenirSaved() {
-        getSupportFragmentManager().popBackStack();
+    /*
+    * AddFragment callbacks
+    */
+    @Override
+    public void onSouvenirSaved() {
+        mNavigator.navigateBack();
     }
 
-    public void handleSignIn(boolean isConnected) {
+    /*
+    * SignInFragment callbacks
+    */
+    @Override
+    public void onSignInClicked(boolean isConnected) {
         if (isConnected) {
             launchSignInActivity();
         } else {
@@ -251,16 +204,49 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
                 .build(), RC_SIGN_IN_ACTIVITY);
     }
 
-    public void handleSignOut() {
+    /*
+    * MainFragment callbacks
+    */
+    @Override
+    public void onSouvenirClicked(SouvenirDb souvenir) {
+        mNavigator.navigateToDetail(souvenir.getId());
+        mBinding.appbarLayout.setExpanded(true);
+    }
+
+    @Override
+    public void onSignOutClicked() {
         mAuth.signOut();
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, SignInFragment.newInstance())
-                .commit();
+        mNavigator.navigateToSignIn();
         mMainViewModel.updateUserId(null);
         UpdateWidgetService.startWidgetUpdate(this);
     }
 
-    public void setFabState(FabState fabState) {
+    @Override
+    public void onSearchClicked() {
+        mNavigator.navigateToSearch();
+        mBinding.appbarLayout.setExpanded(true);
+    }
+
+    /*
+    * SearchFragment callbacks
+    */
+    @Override
+    public void onClearButtonClicked() {
+        mNavigator.navigateBack();
+        mBinding.appbarLayout.setExpanded(true);
+    }
+
+    @Override
+    public void onSearchResultClicked(SouvenirDb souvenir) {
+        mNavigator.navigateToDetail(souvenir.getId());
+        mBinding.appbarLayout.setExpanded(true);
+    }
+
+    /*
+    * FabStateChanger callback
+    */
+    @Override
+    public void changeFabState(FabState fabState) {
         mBinding.setFabState(fabState);
     }
 
@@ -295,5 +281,4 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     public AndroidInjector<Fragment> supportFragmentInjector() {
         return mInjector;
     }
-
 }

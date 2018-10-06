@@ -6,20 +6,26 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import java.util.Objects;
+
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.databinding.ItemDetailPhotoBinding;
 
 public class SouvenirPhotoAdapter extends RecyclerView.Adapter<SouvenirPhotoAdapter.SouvenirPhotoViewholder> {
 
-    private final DetailFragment.DeletePhotoClickListener mListener;
-    private SouvenirDb mSouvenir;
-
-    SouvenirPhotoAdapter(DetailFragment.DeletePhotoClickListener listener) {
-        mListener = listener;
+    public interface DeletePhotoClickListener {
+        void onDeletePhotoClicked(String photoName);
     }
 
-    public void swapPhotos(final SouvenirDb newSouvenir) {
+    private final DeletePhotoClickListener mListener;
+    private SouvenirDb mSouvenir;
+
+    SouvenirPhotoAdapter(DeletePhotoClickListener listener) {
+        mListener = Objects.requireNonNull(listener);
+    }
+
+    void swapPhotos(final SouvenirDb newSouvenir) {
         mSouvenir = newSouvenir;
         notifyDataSetChanged();
     }
@@ -28,7 +34,8 @@ public class SouvenirPhotoAdapter extends RecyclerView.Adapter<SouvenirPhotoAdap
     @Override
     public SouvenirPhotoViewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        ItemDetailPhotoBinding binding = DataBindingUtil.inflate(inflater, R.layout.item_detail_photo, parent, false);
+        ItemDetailPhotoBinding binding = DataBindingUtil.inflate(inflater, R.layout.item_detail_photo,
+                parent, false);
         binding.setClickListener(mListener);
         return new SouvenirPhotoViewholder(binding);
     }
