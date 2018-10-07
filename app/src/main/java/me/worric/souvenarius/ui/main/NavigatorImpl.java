@@ -81,7 +81,8 @@ public class NavigatorImpl implements Navigator {
         if (savedInstanceState != null) {
             return;
         } else if (user == null) {
-            createReplaceTransaction(false, false, SignInFragment.newInstance());
+            createReplaceTransaction(false, false, SignInFragment.newInstance())
+                    .commit();
             return;
         }
 
