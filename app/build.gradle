@@ -15,7 +15,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 2
-        versionName "1.0.1"
+        versionName "1.1.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         resConfigs "en"
     }
@@ -54,9 +54,11 @@ dependencies {
     // Firebase & Google services
     implementation "com.firebaseui:firebase-ui-auth:$firebaseUiVersion"
     implementation "com.firebaseui:firebase-ui-storage:$firebaseUiVersion"
+    implementation "com.google.firebase:firebase-auth:$authVersion"
     implementation "com.google.firebase:firebase-database:$databaseVersion"
     implementation "com.google.firebase:firebase-storage:$storageVersion"
     implementation "com.google.android.gms:play-services-location:$locationVersion"
+    implementation "com.google.android.gms:play-services-auth:$gpsAuthVersion"
     // Dagger
     implementation "com.google.dagger:dagger:$daggerVersion"
     annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
