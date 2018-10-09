@@ -25,9 +25,14 @@ public class AddViewModel extends ViewModel {
 
     @Inject
     public AddViewModel(SouvenirRepository souvenirRepository, LocationRepository locationRepository) {
-        mSouvenirRepository = souvenirRepository;
+        this(souvenirRepository, locationRepository, new MutableLiveData<>());
+    }
+
+    public AddViewModel(SouvenirRepository souvenirRepository, LocationRepository locationRepository,
+                        MutableLiveData<File> photoFile) {
         mLocationRepository = locationRepository;
-        mPhotoFile = new MutableLiveData<>();
+        mSouvenirRepository = souvenirRepository;
+        mPhotoFile = photoFile;
     }
 
     public boolean addSouvenir(@NonNull SouvenirSaveInfo info, @NonNull Context context) {
