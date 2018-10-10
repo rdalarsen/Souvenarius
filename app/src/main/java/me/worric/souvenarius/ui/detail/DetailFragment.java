@@ -12,6 +12,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.ShareCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.SnapHelper;
@@ -29,6 +30,7 @@ import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
 import me.worric.souvenarius.R;
+import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.databinding.FragmentDetailBinding;
 import me.worric.souvenarius.ui.common.FabStateChanger;
 import me.worric.souvenarius.ui.common.FileUtils;
@@ -182,9 +184,37 @@ public class DetailFragment extends Fragment implements
                 DeleteSouvenirConfirmationDialog.newInstance()
                         .show(getChildFragmentManager(), TAG_DELETE_SOUVENIR);
                 return true;
+            case R.id.action_detail_share_souvenir:
+                startActivity(createShareIntent());
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @NonNull
+    private Intent createShareIntent() {
+        return ShareCompat.IntentBuilder.from(getActivity())
+                .setChooserTitle(R.string.share_dialog_title_detail)
+                .setType("text/plain")
+                .setText(createTextFromSouvenir())
+                .createChooserIntent();
+    }
+
+    @NonNull
+    private String createTextFromSouvenir() {
+        SouvenirDb souvenir = mViewModel.getCurrentSouvenir().getValue();
+        if (souvenir != null) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(souvenir.getTitle());
+            sb.append("\n");
+            sb.append(souvenir.getPlace());
+            sb.append("\n");
+            sb.append(souvenir.getStory());
+
+            return sb.toString();
+        }
+        return "";
     }
 
     @Override

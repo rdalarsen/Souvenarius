@@ -59,6 +59,8 @@
     <string name="label_place_detail">Place</string>
     <string name="label_story_detail">Story</string>
     <string name="label_edit_detail">edit</string>
+    <string name="menu_detail_share_souvenir">Share souvenir…</string>
+    <string name="share_dialog_title_detail">Share Souvenir</string>
 
     <!-- Sign in fragment -->
     <string name="sign_in_notice_no_internet">You need to sign in to use the app. Please also make sure you\'re connected to the internet.</string>

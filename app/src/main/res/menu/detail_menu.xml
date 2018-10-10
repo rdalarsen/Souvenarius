@@ -13,4 +13,10 @@
         android:title="@string/menu_detail_delete_souvenir"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/action_detail_share_souvenir"
+        android:title="@string/menu_detail_share_souvenir"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_share" />
+
 </menu>
