@@ -27,10 +27,14 @@ public class DetailViewModel extends ViewModel {
 
     @Inject
     public DetailViewModel(SouvenirRepository repository) {
+        this(repository, new MutableLiveData<>(), new MediatorLiveData<>(), new MutableLiveData<>());
+    }
+
+    public DetailViewModel(SouvenirRepository repository, MutableLiveData<String> souvenirId, MediatorLiveData<SouvenirDb> currentSouvenir, MutableLiveData<File> photoFile) {
         mRepository = repository;
-        mSouvenirId = new MutableLiveData<>();
-        mPhotoFile = new MutableLiveData<>();
-        mCurrentSouvenir = new MediatorLiveData<>();
+        mSouvenirId = souvenirId;
+        mCurrentSouvenir = currentSouvenir;
+        mPhotoFile = photoFile;
         LiveData<SouvenirDb> findOne = Transformations.switchMap(mSouvenirId, mRepository::findSouvenirById);
         mCurrentSouvenir.addSource(findOne, mCurrentSouvenir::setValue);
     }
