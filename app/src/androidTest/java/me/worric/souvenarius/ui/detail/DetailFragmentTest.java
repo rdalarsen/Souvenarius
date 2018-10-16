@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import me.worric.souvenarius.R;
+import me.worric.souvenarius.data.db.AppDatabase;
 import me.worric.souvenarius.ui.main.MainActivity;
 
 import static android.support.test.espresso.Espresso.onView;
@@ -27,6 +28,7 @@ import static android.support.test.espresso.intent.matcher.IntentMatchers.hasExt
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasExtraWithKey;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
 
@@ -69,4 +71,21 @@ public class DetailFragmentTest {
                 .check(matches(not(isDisplayed())));
     }
 
+    @Test
+    public void detailFragment_navigateToDetailFragment_showsCorrectSouvenirDetails() {
+        onView(withId(R.id.rv_souvenir_list))
+                .perform(actionOnItemAtPosition(0, click()));
+
+        onView(withId(R.id.tv_detail_title))
+                .check(matches(withText(AppDatabase.MY_TITLE)));
+        onView(withId(R.id.tv_detail_place))
+                .check(matches(withText(AppDatabase.MY_PLACE)));
+        onView(withId(R.id.tv_detail_story))
+                .check(matches(withText(AppDatabase.MY_STORY)));
+        onView(withId(R.id.tv_detail_num_photos))
+                .check(matches(withText(AppDatabase.NUM_PHOTOS)));
+        onView(withId(R.id.tv_detail_timestamp))
+                .check(matches(withText(AppDatabase.FORMATTED_DATE)));
+    }
+    
 }
