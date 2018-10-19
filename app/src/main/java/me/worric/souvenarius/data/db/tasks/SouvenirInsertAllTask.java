@@ -16,8 +16,12 @@ public class SouvenirInsertAllTask extends AsyncTask<SouvenirDb[], Void, Long[]>
     private final OnDataInsertAllListener mListener;
 
     public SouvenirInsertAllTask(AppDatabase appDatabase, String uid, OnDataInsertAllListener listener) {
+        this(appDatabase, appDatabase.souvenirDao(), uid, listener);
+    }
+
+    public SouvenirInsertAllTask(AppDatabase appDatabase, SouvenirDao dao, String uid, OnDataInsertAllListener listener) {
         mAppDatabase = appDatabase;
-        mDao = appDatabase.souvenirDao();
+        mDao = dao;
         mUid = uid;
         mListener = listener;
     }
@@ -40,6 +44,7 @@ public class SouvenirInsertAllTask extends AsyncTask<SouvenirDb[], Void, Long[]>
 
     @Override
     protected void onPostExecute(Long[] ids) {
+        Timber.d("Current thread (PostExecute): %s", Thread.currentThread().getName());
         if (mListener != null && ids != null && ids.length > 0) {
             mListener.onDataInserted();
         }
