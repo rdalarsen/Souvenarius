@@ -1,0 +1,17 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion androidVersions.compileSdkVersion
+    defaultConfig {
+        minSdkVersion androidVersions.minSdkVersion
+        targetSdkVersion androidVersions.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+    }
+}
+
+dependencies {
+    compileOnly "junit:junit:$junitVersion"
+    compileOnly "com.android.support.test:runner:$espressoRunnerVersion"
+    implementation "com.android.support.test.uiautomator:uiautomator-v18:$uiAutomatorVersion"
+}

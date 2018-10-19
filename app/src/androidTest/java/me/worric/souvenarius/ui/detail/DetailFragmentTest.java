@@ -12,6 +12,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import me.worric.libtestrule.DisableAnimationsRule;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.db.AppDatabase;
 import me.worric.souvenarius.ui.main.MainActivity;
@@ -38,6 +39,9 @@ public class DetailFragmentTest {
 
     @Rule
     public final IntentsTestRule<MainActivity> mRule = new IntentsTestRule<>(MainActivity.class);
+
+    @Rule
+    public final DisableAnimationsRule mAnimationsRule = new DisableAnimationsRule();
 
     @Test
     public void detailFragment_onShareSouvenirClick_correctIntentIsLaunched() {

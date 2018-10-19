@@ -9,11 +9,11 @@ android {
             storePassword 'souvenarius'
         }
     }
-    compileSdkVersion 28
+    compileSdkVersion androidVersions.compileSdkVersion
     defaultConfig {
         applicationId "me.worric.souvenarius"
-        minSdkVersion 21
-        targetSdkVersion 28
+        minSdkVersion androidVersions.minSdkVersion
+        targetSdkVersion androidVersions.targetSdkVersion
         versionCode 2
         versionName "1.1.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -89,6 +89,7 @@ dependencies {
     androidTestImplementation "com.android.support.test.espresso:espresso-core:$espressoVersion"
     androidTestImplementation "com.android.support.test.espresso:espresso-contrib:$espressoVersion"
     androidTestImplementation "com.android.support.test.espresso:espresso-intents:$espressoVersion"
+    androidTestImplementation project(":libtestrule")
 }
 
 apply plugin: 'com.google.gms.google-services'
