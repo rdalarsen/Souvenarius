@@ -8,6 +8,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import me.worric.libtestrule.DisableAnimationsRule;
 import me.worric.souvenarius.R;
 
 import static android.support.test.espresso.Espresso.onView;
@@ -23,6 +24,9 @@ public class MainActivityTest {
 
     @Rule
     public final ActivityTestRule<MainActivity> mTestRule = new ActivityTestRule<>(MainActivity.class);
+
+    @Rule
+    public final DisableAnimationsRule mAnimationsRule = new DisableAnimationsRule();
 
     @Test
     public void onStartup_SouvenirsListIsDisplayed() {
