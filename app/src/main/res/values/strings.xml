@@ -66,6 +66,8 @@
     <string name="sign_in_notice_no_internet">You need to sign in to use the app. Please also make sure you\'re connected to the internet.</string>
     <string name="sign_in_notice">You need to sign in to use the app.</string>
     <string name="btn_label_sign_in">Sign in</string>
+    <string name="hint_sign_in_email">Email Address</string>
+    <string name="hint_sign_in_password">Password</string>
 
     <!-- Search Fragment -->
     <string name="error_message_search_missing_title">Missing title</string>
