@@ -68,6 +68,7 @@
     <string name="btn_label_sign_in">Sign in</string>
     <string name="hint_sign_in_email">Email Address</string>
     <string name="hint_sign_in_password">Password</string>
+    <string name="error_message_sign_in_invalid_email">Invalid Email</string>
 
     <!-- Search Fragment -->
     <string name="error_message_search_missing_title">Missing title</string>

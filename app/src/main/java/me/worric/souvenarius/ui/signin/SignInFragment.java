@@ -14,6 +14,8 @@ import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.databinding.FragmentSigninBinding;
@@ -111,8 +113,25 @@ public class SignInFragment extends Fragment {
         }
     };
 
-    private SignInButtonClickListener mListener = isConnected ->
-            mSignInFragmentEventListener.onSignInClicked(isConnected);
+    private SignInButtonClickListener mListener = isConnected -> {
+        final String email = mBinding.etSigninEmail.getText().toString();
+        final String password = mBinding.etSigninPassword.getText().toString();
+
+        if (mCredentialVerifier.checkIfValidEmail(email)) {
+            Toast.makeText(getContext(), "Login Successful", Toast.LENGTH_SHORT).show();
+//            mSignInFragmentEventListener.onSignInClicked(isConnected);
+        } else {
+            mBinding.tilSigninEmail.setError(getString(R.string.error_message_sign_in_invalid_email));
+            requestFocusOnError(mBinding.etSigninEmail);
+        }
+    };
+
+    private void requestFocusOnError(View view) {
+        if (view.requestFocus()) {
+            InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(mBinding.etSigninEmail, InputMethodManager.SHOW_IMPLICIT);
+        }
+    }
 
     public interface SignInButtonClickListener {
         void onSignInButtonClicked(boolean isConnected);
