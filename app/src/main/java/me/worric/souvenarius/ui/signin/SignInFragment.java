@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +30,7 @@ public class SignInFragment extends Fragment {
     private boolean mIsConnected;
     private FabStateChanger mFabStateChanger;
     private SignInFragmentEventListener mSignInFragmentEventListener;
+    private CredentialVerifier mCredentialVerifier;
 
     @Override
     public void onAttach(Context context) {
@@ -45,6 +47,7 @@ public class SignInFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mCredentialVerifier = new CredentialVerifier(Patterns.EMAIL_ADDRESS);
         mIsConnected = initIsConnected(savedInstanceState);
     }
 
@@ -112,7 +115,7 @@ public class SignInFragment extends Fragment {
             mSignInFragmentEventListener.onSignInClicked(isConnected);
 
     public interface SignInButtonClickListener {
-        void onSignInButtonClicked(boolean hasInternetAccess);
+        void onSignInButtonClicked(boolean isConnected);
     }
 
     public interface SignInFragmentEventListener {
