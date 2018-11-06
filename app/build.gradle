@@ -55,7 +55,6 @@ dependencies {
     implementation "android.arch.persistence.room:runtime:$archVersion"
     annotationProcessor "android.arch.persistence.room:compiler:$archVersion"
     // Firebase & Google services
-    implementation "com.firebaseui:firebase-ui-auth:$firebaseUiVersion"
     implementation "com.firebaseui:firebase-ui-storage:$firebaseUiVersion"
     implementation "com.google.firebase:firebase-auth:$authVersion"
     implementation "com.google.firebase:firebase-database:$databaseVersion"
