@@ -69,6 +69,8 @@
     <string name="hint_sign_in_email">Email Address</string>
     <string name="hint_sign_in_password">Password</string>
     <string name="error_message_sign_in_invalid_email">Invalid Email</string>
+    <string name="error_message_sign_in_empty_email_error">Empty email not allowed.</string>
+    <string name="error_message_sign_in_empty_password_error">Empty password not allowed.</string>
 
     <!-- Search Fragment -->
     <string name="error_message_search_missing_title">Missing title</string>
