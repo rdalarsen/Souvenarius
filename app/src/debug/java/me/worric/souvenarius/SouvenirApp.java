@@ -31,9 +31,7 @@ public class SouvenirApp extends Application implements HasActivityInjector, Has
                 .application(this)
                 .build()
                 .inject(this);
-        if (BuildConfig.DEBUG) {
-            Stetho.initializeWithDefaults(this);
-        }
+        Stetho.initializeWithDefaults(this);
     }
 
     @Override

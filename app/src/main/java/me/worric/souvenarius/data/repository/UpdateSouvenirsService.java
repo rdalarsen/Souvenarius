@@ -11,7 +11,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
-import me.worric.souvenarius.BuildConfig;
 import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.db.AppDatabase;
 import me.worric.souvenarius.data.db.tasks.SouvenirInsertAllTask;

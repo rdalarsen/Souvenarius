@@ -15,7 +15,6 @@ import javax.inject.Singleton;
 import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
-import me.worric.souvenarius.BuildConfig;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.db.AppDatabase;
 import me.worric.souvenarius.data.repository.location.LocationRepository;
@@ -41,9 +40,8 @@ public abstract class DataModule {
     @Provides
     @Singleton
     static AppDatabase provideDatabase(@AppContext Context context) {
-        return BuildConfig.USE_MOCK
-                ? Room.inMemoryDatabaseBuilder(context, AppDatabase.class).addCallback(AppDatabase.sCallback).build()
-                : Room.databaseBuilder(context, AppDatabase.class, AppDatabase.DB_NAME).build();
+        return Room.inMemoryDatabaseBuilder(context, AppDatabase.class)
+                .addCallback(AppDatabase.sCallback).build();
     }
 
     @Binds
