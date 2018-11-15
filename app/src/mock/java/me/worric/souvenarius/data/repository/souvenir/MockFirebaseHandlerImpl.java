@@ -24,7 +24,7 @@ public class MockFirebaseHandlerImpl implements FirebaseHandler {
 
     @Override
     public void fetchSouvenirsForCurrentUser(@NonNull OnResultListener listener, @NonNull FirebaseHandlerImpl.CustomEventListener valueEventListener) {
-        listener.onResult(Result.failure("There was an error in the request"));
+        listener.onResult(Result.failure("Mock failure response."));
     }
 
     @Override

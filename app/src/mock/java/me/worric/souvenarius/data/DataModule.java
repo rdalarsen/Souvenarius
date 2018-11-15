@@ -25,10 +25,10 @@ import me.worric.souvenarius.data.repository.souvenir.DbTaskRunner;
 import me.worric.souvenarius.data.repository.souvenir.DbTaskRunnerImpl;
 import me.worric.souvenarius.data.repository.souvenir.FirebaseHandler;
 import me.worric.souvenarius.data.repository.souvenir.MockFirebaseHandlerImpl;
+import me.worric.souvenarius.data.repository.souvenir.MockStorageHandlerImpl;
 import me.worric.souvenarius.data.repository.souvenir.SouvenirRepository;
 import me.worric.souvenarius.data.repository.souvenir.SouvenirRepositoryImpl;
 import me.worric.souvenarius.data.repository.souvenir.StorageHandler;
-import me.worric.souvenarius.data.repository.souvenir.StorageHandlerImpl;
 import me.worric.souvenarius.di.AppContext;
 import me.worric.souvenarius.di.FirebaseErrorMsgs;
 import me.worric.souvenarius.di.LocationErrorMsgs;
@@ -54,7 +54,7 @@ public abstract class DataModule {
     abstract FirebaseHandler bindFirebaseHandler(MockFirebaseHandlerImpl mockImpl);
 
     @Binds
-    abstract StorageHandler bindStorageHandler(StorageHandlerImpl impl);
+    abstract StorageHandler bindStorageHandler(MockStorageHandlerImpl mockImpl);
 
     @Binds
     abstract DbTaskRunner bindDbTaskRunner(DbTaskRunnerImpl impl);
