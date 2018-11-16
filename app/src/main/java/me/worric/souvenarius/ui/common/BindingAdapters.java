@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-import com.bumptech.glide.RequestBuilder;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
@@ -19,7 +18,8 @@ import java.util.Objects;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.model.SouvenirDb;
-import me.worric.souvenarius.ui.GlideApp;
+import me.worric.souvenarius.ui.GlideLoaderProvider;
+import me.worric.souvenarius.ui.GlideRequest;
 import me.worric.souvenarius.ui.search.SearchResultsAdapter;
 import timber.log.Timber;
 
@@ -52,8 +52,7 @@ public class BindingAdapters {
             return;
         }
 
-        GlideApp.with(view.getContext())
-                .load(photoFile)
+        GlideLoaderProvider.getInstance().loadImageFromLocalFile(view.getContext(), photoFile)
                 .error(android.R.color.transparent)
                 .centerCrop()
                 .into(view);
@@ -81,16 +80,18 @@ public class BindingAdapters {
     @BindingAdapter({"imageName"})
     public static void loadImageFromName(ImageView view, String imageName) {
         File localPhoto = FileUtils.getLocalFileForPhotoName(imageName, view.getContext());
-        RequestBuilder<Drawable> requestBuilder;
+        GlideRequest<Drawable> request;
 
         if (localPhoto != null && localPhoto.exists()) {
-            requestBuilder = GlideApp.with(view.getContext()).load(localPhoto);
+            request = GlideLoaderProvider.getInstance()
+                    .loadImageFromLocalFile(view.getContext(), localPhoto);
         } else {
             StorageReference reference = NetUtils.getStorageReferenceForAllUsers(imageName);
-            requestBuilder = GlideApp.with(view.getContext()).load(reference);
+            request = GlideLoaderProvider.getInstance()
+                    .loadImageFromFirebaseStorage(view.getContext(), reference);
         }
 
-        requestBuilder.into(view);
+        request.into(view);
     }
 
 }
