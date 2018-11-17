@@ -75,6 +75,8 @@
     <!-- Search Fragment -->
     <string name="error_message_search_missing_title">Missing title</string>
     <string name="hint_search_search_for_title">Search for title…</string>
+    <string name="search_iconcontentdesc">Souvenir thumbnail</string>
+    <string name="search_arrowcontentdesc">Navigation arrow</string>
 
     <!-- Widget -->
     <string name="content_desc_widget_souvenir_photo">Souvenir photo</string>
