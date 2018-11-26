@@ -118,10 +118,7 @@ public class SignInFragment extends Fragment {
         }
     };
 
-    private SignInButtonClickListener mListener = isConnected -> {
-        final String email = mBinding.etSigninEmail.getText().toString();
-        final String password = mBinding.etSigninPassword.getText().toString();
-
+    private SignInButtonClickListener mListener = (isConnected, email, password) -> {
         final boolean emailIsMissing = email.isEmpty();
         final boolean passwordIsMissing = password.isEmpty();
 
@@ -191,7 +188,7 @@ public class SignInFragment extends Fragment {
     }
 
     public interface SignInButtonClickListener {
-        void onSignInButtonClicked(boolean isConnected);
+        void onSignInButtonClicked(final boolean isConnected, final String email, final String password);
     }
 
     public interface SignInFragmentEventListener {

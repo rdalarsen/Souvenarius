@@ -43,7 +43,7 @@
             app:layout_constraintTop_toBottomOf="@+id/til_signin_email"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/btn_launch_sign_in"
+            app:layout_constraintBottom_toTopOf="@+id/btn_signin_signin"
             app:layout_constraintWidth_max="300dp"
             app:layout_constraintWidth_percent="0.75">
 
@@ -58,7 +58,7 @@
         </android.support.design.widget.TextInputLayout>
 
         <Button
-            android:id="@+id/btn_launch_sign_in"
+            android:id="@+id/btn_signin_signin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -69,7 +69,7 @@
             style="@style/Widget.AppCompat.Button.Colored"
             android:enabled="@{isConnected}"
             android:text="@string/btn_label_sign_in"
-            android:onClick="@{() -> clickListener.onSignInButtonClicked(isConnected)}" />
+            android:onClick="@{() -> clickListener.onSignInButtonClicked(isConnected, etSigninEmail.text.toString.trim, etSigninPassword.text.toString.trim)}" />
 
     </android.support.constraint.ConstraintLayout>
 </layout>
