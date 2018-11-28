@@ -18,6 +18,6 @@ public interface SouvenirAppComponent {
         SouvenirAppComponent build();
     }
 
-    void inject(SouvenirApp app);
+    void inject(BaseSouvenirApp app);
 
 }

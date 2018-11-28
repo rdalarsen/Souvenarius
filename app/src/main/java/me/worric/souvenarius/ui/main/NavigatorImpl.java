@@ -78,15 +78,13 @@ public class NavigatorImpl implements Navigator {
     @Override
     public void initNavigation(@Nullable Bundle savedInstanceState, @Nullable FirebaseUser user,
                                @Nullable Intent launchIntent) {
-        if (savedInstanceState != null) {
+        if (savedInstanceState != null || launchIntent == null) {
             return;
         } else if (user == null) {
             createReplaceTransaction(false, false, SignInFragment.newInstance())
                     .commit();
             return;
         }
-
-        if (launchIntent == null) return;
 
         // First we handle the case that the app was closed via back button and then launched
         // from history at a later time. In this case, we want the app to show the main screen,
