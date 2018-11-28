@@ -179,6 +179,12 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         }
     }
 
+    @Override
+    public void onCreateAccountClicked() {
+        mNavigator.navigateToCreateAccount();
+        mBinding.appbarLayout.setExpanded(true);
+    }
+
     /*
     * MainFragment callbacks
     */

@@ -17,6 +17,7 @@ import me.worric.souvenarius.di.ActivityScope;
 import me.worric.souvenarius.ui.add.AddFragment;
 import me.worric.souvenarius.ui.detail.DetailFragment;
 import me.worric.souvenarius.ui.search.SearchFragment;
+import me.worric.souvenarius.ui.createaccount.CreateAccountFragment;
 import me.worric.souvenarius.ui.signin.SignInFragment;
 import me.worric.souvenarius.ui.widget.SouvenirWidgetProvider;
 import timber.log.Timber;
@@ -67,6 +68,14 @@ public class NavigatorImpl implements Navigator {
     public void navigateToMain() {
         mFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, MainFragment.newInstance())
+                .commit();
+    }
+
+    @Override
+    public void navigateToCreateAccount() {
+        mFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, CreateAccountFragment.newInstance())
+                .addToBackStack(null)
                 .commit();
     }
 

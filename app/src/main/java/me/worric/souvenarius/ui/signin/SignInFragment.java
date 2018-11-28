@@ -72,7 +72,7 @@ public class SignInFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_signin, container, false);
         mBinding.setLifecycleOwner(this);
-        mBinding.setClickListener(mListener);
+        mBinding.setClickListener(mClickListener);
         mBinding.setIsConnected(mIsConnected);
         return mBinding.getRoot();
     }
@@ -118,49 +118,57 @@ public class SignInFragment extends Fragment {
         }
     };
 
-    private SignInButtonClickListener mListener = (isConnected, email, password) -> {
-        final boolean emailIsMissing = email.isEmpty();
-        final boolean passwordIsMissing = password.isEmpty();
+    private ClickListener mClickListener = new ClickListener() {
+        @Override
+        public void onSignInButtonClicked(boolean isConnected, String email, String password) {
+            final boolean emailIsMissing = email.isEmpty();
+            final boolean passwordIsMissing = password.isEmpty();
 
-        if (emailIsMissing || passwordIsMissing) {
-        Timber.e("Email is missing: %s. Password is missing: %s", emailIsMissing, passwordIsMissing);
-            if (emailIsMissing) {
-                mBinding.tilSigninEmail.setError(getString(R.string.error_message_sign_in_empty_email_error));
+            if (emailIsMissing || passwordIsMissing) {
+                Timber.e("Email is missing: %s. Password is missing: %s", emailIsMissing, passwordIsMissing);
+                if (emailIsMissing) {
+                    mBinding.tilSigninEmail.setError(getString(R.string.error_message_sign_in_empty_email_error));
+                } else {
+                    clearEmailInputError();
+                }
+
+                if (passwordIsMissing) {
+                    mBinding.tilSigninPassword.setError(getString(R.string.error_message_sign_in_empty_password_error));
+                } else {
+                    clearPasswordInputError();
+                }
+                return;
             } else {
-                clearEmailInputError();
+                clearAllInputErrors();
             }
 
-            if (passwordIsMissing) {
-                mBinding.tilSigninPassword.setError(getString(R.string.error_message_sign_in_empty_password_error));
+            if (mCredentialVerifier.checkIfValidEmail(email)) {
+                mAuth.signInWithEmailAndPassword(email, password)
+                        .addOnSuccessListener(authResult -> {
+                            Timber.d("Auth attempt successful");
+                            if (authResult.getUser() != null) {
+                                Timber.i("User successfully logged in! Username: %s, UID: %s",
+                                        authResult.getUser().getDisplayName(),
+                                        authResult.getUser().getUid());
+                                mSignInFragmentEventListener.onSignInSuccessful(isConnected);
+                            } else {
+                                Timber.w("Login failed");
+                                Toast.makeText(getContext(), "Username or password incorrect.", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .addOnFailureListener(e -> {
+                            Timber.e(e, "Auth attempt failed");
+                            Toast.makeText(getContext(), "Could not log in: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
             } else {
-                clearPasswordInputError();
+                mBinding.tilSigninEmail.setError(getString(R.string.error_message_sign_in_invalid_email));
+                requestFocusOnError(mBinding.etSigninEmail);
             }
-            return;
-        } else {
-            clearAllInputErrors();
         }
 
-        if (mCredentialVerifier.checkIfValidEmail(email)) {
-            mAuth.signInWithEmailAndPassword(email, password)
-                    .addOnSuccessListener(authResult -> {
-                        Timber.d("Auth attempt successful");
-                        if (authResult.getUser() != null) {
-                            Timber.i("User successfully logged in! Username: %s, UID: %s",
-                                    authResult.getUser().getDisplayName(),
-                                    authResult.getUser().getUid());
-                            mSignInFragmentEventListener.onSignInSuccessful(isConnected);
-                        } else {
-                            Timber.w("Login failed");
-                            Toast.makeText(getContext(), "Username or password incorrect.", Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        Timber.e(e, "Auth attempt failed");
-                        Toast.makeText(getContext(), "Could not log in: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
-        } else {
-            mBinding.tilSigninEmail.setError(getString(R.string.error_message_sign_in_invalid_email));
-            requestFocusOnError(mBinding.etSigninEmail);
+        @Override
+        public void onCreateAccountButtonClicked() {
+            mSignInFragmentEventListener.onCreateAccountClicked();
         }
     };
 
@@ -187,12 +195,14 @@ public class SignInFragment extends Fragment {
         }
     }
 
-    public interface SignInButtonClickListener {
+    public interface ClickListener {
         void onSignInButtonClicked(final boolean isConnected, final String email, final String password);
+        void onCreateAccountButtonClicked();
     }
 
     public interface SignInFragmentEventListener {
         void onSignInSuccessful(boolean isConnected);
+        void onCreateAccountClicked();
     }
 
     public static SignInFragment newInstance() {
