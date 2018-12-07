@@ -11,6 +11,9 @@
         <variable
             name="searchResultAdapter"
             type="me.worric.souvenarius.ui.search.SearchResultsAdapter" />
+        <variable
+            name="dividerDecoration"
+            type="android.support.v7.widget.DividerItemDecoration" />
     </data>
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
@@ -28,6 +31,7 @@
             android:adapter="@{searchResultAdapter}"
             app:searchAdapter="@{searchResultAdapter}"
             app:searchResults="@{viewmodel.souvenirSearchResults}"
+            app:itemDecoration="@{dividerDecoration}"
             tools:listitem="@layout/item_search_result" />
 
     </android.support.constraint.ConstraintLayout>

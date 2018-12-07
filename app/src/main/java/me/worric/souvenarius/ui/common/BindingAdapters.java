@@ -31,6 +31,13 @@ public class BindingAdapters {
         adapter.swapItems(result);
     }
 
+    @BindingAdapter("itemDecoration")
+    public static void setItemDecoration(RecyclerView view, RecyclerView.ItemDecoration oldValue,
+                                         RecyclerView.ItemDecoration value) {
+        if (oldValue != null && view.getItemDecorationCount() > 0) return;
+        view.addItemDecoration(value);
+    }
+
     @BindingAdapter("visibleUnless")
     public static void visibleUnless(View view, Result.Status status) {
         view.setVisibility((status == null || Objects.equals(status, Result.Status.FAILURE)
