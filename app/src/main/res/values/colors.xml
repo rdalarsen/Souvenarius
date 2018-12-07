@@ -13,4 +13,5 @@
 
     <!-- Search -->
     <color name="blue_et_40p">#FF80A5FF</color>
+    <color name="grey_arrow">#cecece</color>
 </resources>

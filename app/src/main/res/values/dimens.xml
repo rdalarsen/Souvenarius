@@ -10,4 +10,5 @@
     <dimen name="card_vertical_margin">1dp</dimen>
     <dimen name="card_corner_radius_detail">0dp</dimen>
     <dimen name="label_margin_detail">4dp</dimen>
+    <dimen name="search_arrow_size">40dp</dimen>
 </resources>
