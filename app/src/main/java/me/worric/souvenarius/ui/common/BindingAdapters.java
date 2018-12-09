@@ -13,7 +13,6 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.util.List;
-import java.util.Objects;
 
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.Result;
@@ -34,15 +33,17 @@ public class BindingAdapters {
     @BindingAdapter("itemDecoration")
     public static void setItemDecoration(RecyclerView view, RecyclerView.ItemDecoration oldValue,
                                          RecyclerView.ItemDecoration value) {
-        if (oldValue != null && view.getItemDecorationCount() > 0) return;
-        view.addItemDecoration(value);
+        if (oldValue != null) {
+            view.removeItemDecoration(oldValue);
+        }
+        if (value != null) {
+            view.addItemDecoration(value);
+        }
     }
 
-    @BindingAdapter("visibleUnless")
-    public static void visibleUnless(View view, Result.Status status) {
-        view.setVisibility((status == null || Objects.equals(status, Result.Status.FAILURE)
-                ? View.VISIBLE
-                : View.GONE));
+    @BindingAdapter("goneUnless")
+    public static void goneUnless(View view, boolean visible) {
+        view.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     @BindingAdapter("dialogText")

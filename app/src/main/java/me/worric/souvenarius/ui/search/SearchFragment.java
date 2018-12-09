@@ -77,7 +77,7 @@ public class SearchFragment extends Fragment {
         mBinding.setViewmodel(mViewModel);
         mBinding.setLifecycleOwner(this);
         mBinding.setSearchResultAdapter(mAdapter);
-        mBinding.setDividerDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+        mBinding.setItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         return mBinding.getRoot();
     }
 
