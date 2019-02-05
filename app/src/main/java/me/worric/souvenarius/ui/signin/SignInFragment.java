@@ -1,5 +1,6 @@
 package me.worric.souvenarius.ui.signin;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -37,6 +38,7 @@ public class SignInFragment extends Fragment {
     private SignInFragmentEventListener mSignInFragmentEventListener;
     private CredentialVerifier mCredentialVerifier;
     private FirebaseAuth mAuth;
+    private SignInViewModel mViewModel;
 
     @Override
     public void onAttach(Context context) {
@@ -53,6 +55,7 @@ public class SignInFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mViewModel = ViewModelProviders.of(this).get(SignInViewModel.class);
         mCredentialVerifier = new CredentialVerifier(Patterns.EMAIL_ADDRESS);
         mIsConnected = initIsConnected(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
@@ -71,6 +74,7 @@ public class SignInFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_signin, container, false);
+        mBinding.setViewModel(mViewModel);
         mBinding.setLifecycleOwner(this);
         mBinding.setClickListener(mClickListener);
         mBinding.setIsConnected(mIsConnected);
@@ -121,6 +125,11 @@ public class SignInFragment extends Fragment {
     private ClickListener mClickListener = new ClickListener() {
         @Override
         public void onSignInButtonClicked(boolean isConnected, String email, String password) {
+            mViewModel.performSignIn();
+
+            /* disable all functionality */
+            if (true) return;
+
             final boolean emailIsMissing = email.isEmpty();
             final boolean passwordIsMissing = password.isEmpty();
 

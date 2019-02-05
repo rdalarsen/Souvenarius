@@ -3,6 +3,7 @@ package me.worric.souvenarius.ui.common;
 import android.databinding.BindingAdapter;
 import android.graphics.drawable.Drawable;
 import android.location.Address;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
@@ -20,9 +21,25 @@ import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.ui.GlideLoaderProvider;
 import me.worric.souvenarius.ui.GlideRequest;
 import me.worric.souvenarius.ui.search.SearchResultsAdapter;
+import me.worric.souvenarius.ui.signin.SignInViewModel;
 import timber.log.Timber;
 
 public class BindingAdapters {
+
+    @BindingAdapter("errorText")
+    public static void setError(TextInputLayout layout, SignInViewModel.SignInError oldError,
+                                SignInViewModel.SignInError error) {
+        if (error != null ) {
+            layout.setError(error.getErrorText());
+        }
+    }
+
+    @BindingAdapter("errorEnabled")
+    public static void setErrorEnabled(TextInputLayout layout, boolean oldValue, boolean value) {
+        if (oldValue != value) {
+            layout.setErrorEnabled(value);
+        }
+    }
 
     @BindingAdapter({"searchAdapter", "searchResults"})
     public static void updateSearchResults(RecyclerView recyclerView, SearchResultsAdapter adapter,

@@ -4,13 +4,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
         <variable
+            name="viewModel"
+            type="me.worric.souvenarius.ui.signin.SignInViewModel" />
+        <variable
             name="isConnected"
             type="Boolean" />
         <variable
             name="clickListener"
             type="me.worric.souvenarius.ui.signin.SignInFragment.ClickListener" />
     </data>
-
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -25,13 +27,16 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed"
             app:layout_constraintWidth_max="300dp"
-            app:layout_constraintWidth_percent="0.75">
+            app:layout_constraintWidth_percent="0.75"
+            app:errorEnabled="@{viewModel.hasEmailError}"
+            app:errorText="@{viewModel.emailError}">
 
             <EditText
                 android:id="@+id/et_signin_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/hint_sign_in_email"
+                android:text="@={viewModel.emailContent}"
                 android:inputType="textEmailAddress"
                 android:maxLines="1" />
 
