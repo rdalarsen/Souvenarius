@@ -1,12 +1,11 @@
 package me.worric.souvenarius.ui.main;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.ViewModel;
-
 import java.util.List;
 
 import javax.inject.Inject;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModel;
 import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.data.repository.souvenir.SouvenirRepository;

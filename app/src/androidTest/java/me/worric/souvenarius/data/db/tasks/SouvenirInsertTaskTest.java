@@ -1,7 +1,5 @@
 package me.worric.souvenarius.data.db.tasks;
 
-import android.support.test.runner.AndroidJUnit4;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,6 +13,7 @@ import org.mockito.junit.MockitoRule;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import me.worric.souvenarius.data.db.dao.SouvenirDao;
 import me.worric.souvenarius.data.model.SouvenirDb;
 

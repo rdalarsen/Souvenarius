@@ -12,11 +12,11 @@
             name="searchResultAdapter"
             type="me.worric.souvenarius.ui.search.SearchResultsAdapter" />
     </data>
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_search_result_list"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -24,11 +24,11 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             android:adapter="@{searchResultAdapter}"
             app:searchAdapter="@{searchResultAdapter}"
             app:searchResults="@{viewmodel.souvenirSearchResults}"
             tools:listitem="@layout/item_search_result" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

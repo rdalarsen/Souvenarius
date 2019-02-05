@@ -16,7 +16,7 @@ android {
         targetSdkVersion androidVersions.targetSdkVersion
         versionCode 2
         versionName "1.1.2"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resConfigs "en"
     }
     buildTypes {
@@ -41,19 +41,19 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     // Support libraries
-    implementation "com.android.support:appcompat-v7:$supportLibVersion"
-    implementation "com.android.support:cardview-v7:$supportLibVersion"
-    implementation "com.android.support:recyclerview-v7:$supportLibVersion"
-    implementation "com.android.support:design:$supportLibVersion"
-    implementation "com.android.support.constraint:constraint-layout:$constVersion"
+    implementation "androidx.appcompat:appcompat:$appCompatVersion"
+    implementation "androidx.cardview:cardview:$supportLibVersion"
+    implementation "androidx.recyclerview:recyclerview:$supportLibVersion"
+    implementation "com.google.android.material:material:$supportLibVersion"
+    implementation "androidx.constraintlayout:constraintlayout:$constVersion"
     // Resolve dependency conflicts
-    implementation "com.android.support:support-v4:$supportLibVersion"
-    implementation "com.android.support:customtabs:$supportLibVersion"
+    implementation "androidx.legacy:legacy-support-v4:$supportLibVersion"
+    implementation "androidx.browser:browser:$supportLibVersion"
     // Architecture Components
-    implementation "android.arch.lifecycle:extensions:$archVersion"
-    implementation "android.arch.lifecycle:common-java8:$archVersion"
-    implementation "android.arch.persistence.room:runtime:$archVersion"
-    annotationProcessor "android.arch.persistence.room:compiler:$archVersion"
+    implementation "androidx.lifecycle:lifecycle-extensions:$archVersion"
+    implementation "androidx.lifecycle:lifecycle-common-java8:$archVersion"
+    implementation "androidx.room:room-runtime:$archVersion"
+    annotationProcessor "androidx.room:room-compiler:$archVersion"
     // Firebase & Google services
     implementation "com.firebaseui:firebase-ui-auth:$firebaseUiVersion"
     implementation "com.firebaseui:firebase-ui-storage:$firebaseUiVersion"
@@ -81,14 +81,15 @@ dependencies {
     testImplementation "junit:junit:$junitVersion"
     testImplementation "org.mockito:mockito-core:$mockitoVersion"
     testImplementation "org.hamcrest:hamcrest-library:$hamcrestVersion"
-    testImplementation "android.arch.core:core-testing:$archVersion"
-    androidTestImplementation "android.arch.core:core-testing:$archVersion"
-    androidTestImplementation "com.android.support.test:runner:$espressoRunnerVersion"
-    androidTestImplementation "com.android.support.test:rules:$espressoRulesVersion"
+    testImplementation "androidx.arch.core:core-testing:$archVersion"
+    androidTestImplementation "androidx.arch.core:core-testing:$archVersion"
+    androidTestImplementation "androidx.test:runner:$espressoRunnerVersion"
+    androidTestImplementation "androidx.test:rules:$espressoRulesVersion"
+    androidTestImplementation "androidx.test.ext:junit:$extJunitVersion"
     androidTestImplementation "com.linkedin.dexmaker:dexmaker-mockito:$dexmakerVersion"
-    androidTestImplementation "com.android.support.test.espresso:espresso-core:$espressoVersion"
-    androidTestImplementation "com.android.support.test.espresso:espresso-contrib:$espressoVersion"
-    androidTestImplementation "com.android.support.test.espresso:espresso-intents:$espressoVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-intents:$espressoVersion"
     androidTestImplementation project(":libtestrule")
 }
 

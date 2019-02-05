@@ -1,10 +1,5 @@
 package me.worric.souvenarius.data.repository.location;
 
-import android.arch.core.executor.testing.InstantTaskExecutorRule;
-import android.arch.lifecycle.Lifecycle;
-import android.arch.lifecycle.LifecycleOwner;
-import android.arch.lifecycle.LifecycleRegistry;
-import android.arch.lifecycle.LiveData;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -26,6 +21,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.HashMap;
 import java.util.Map;
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LifecycleRegistry;
+import androidx.lifecycle.LiveData;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.Result;
 

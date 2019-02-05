@@ -1,7 +1,7 @@
 package me.worric.souvenarius.ui.main;
 
 import android.content.Context;
-import android.support.v4.app.FragmentManager;
+import androidx.fragment.app.FragmentManager;
 
 import dagger.Binds;
 import dagger.Module;

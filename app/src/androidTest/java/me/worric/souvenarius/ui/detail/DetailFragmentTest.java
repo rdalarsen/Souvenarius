@@ -3,33 +3,33 @@ package me.worric.souvenarius.ui.detail;
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Intent;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.intent.rule.IntentsTestRule;
-import android.support.test.filters.MediumTest;
-import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.espresso.intent.rule.IntentsTestRule;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.MediumTest;
 import me.worric.libtestrule.DisableAnimationsRule;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.db.AppDatabase;
 import me.worric.souvenarius.ui.main.MainActivity;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
-import static android.support.test.espresso.intent.Intents.intended;
-import static android.support.test.espresso.intent.Intents.intending;
-import static android.support.test.espresso.intent.matcher.IntentMatchers.anyIntent;
-import static android.support.test.espresso.intent.matcher.IntentMatchers.hasAction;
-import static android.support.test.espresso.intent.matcher.IntentMatchers.hasExtra;
-import static android.support.test.espresso.intent.matcher.IntentMatchers.hasExtraWithKey;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
+import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.Intents.intending;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.anyIntent;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtraWithKey;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
 
@@ -45,7 +45,7 @@ public class DetailFragmentTest {
 
     @Test
     public void detailFragment_onShareSouvenirClick_correctIntentIsLaunched() {
-        final String shareDialogTitle = InstrumentationRegistry.getTargetContext()
+        final String shareDialogTitle = ApplicationProvider.getApplicationContext()
                 .getString(R.string.share_dialog_title_detail);
 
         // Prevent launching the actual intent (which otherwise creates a non-dismissible chooser window)

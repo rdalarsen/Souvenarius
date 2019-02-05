@@ -2,9 +2,10 @@ package me.worric.souvenarius.ui.main;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 
 import com.google.firebase.auth.FirebaseUser;
+
+import androidx.annotation.Nullable;
 
 public interface Navigator {
 

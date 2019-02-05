@@ -3,11 +3,12 @@ package me.worric.souvenarius.ui.common;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import androidx.annotation.NonNull;
 
 public final class NetUtils {
 

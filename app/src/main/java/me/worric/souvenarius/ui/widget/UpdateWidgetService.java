@@ -5,14 +5,14 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.v4.app.JobIntentService;
 import android.text.TextUtils;
 
 import com.google.firebase.auth.FirebaseAuth;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.JobIntentService;
 import dagger.android.AndroidInjection;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.Result;

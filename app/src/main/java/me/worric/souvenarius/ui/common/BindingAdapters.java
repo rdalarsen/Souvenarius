@@ -1,9 +1,7 @@
 package me.worric.souvenarius.ui.common;
 
-import android.databinding.BindingAdapter;
 import android.graphics.drawable.Drawable;
 import android.location.Address;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
@@ -16,6 +14,8 @@ import java.io.File;
 import java.util.List;
 import java.util.Objects;
 
+import androidx.databinding.BindingAdapter;
+import androidx.recyclerview.widget.RecyclerView;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.model.SouvenirDb;

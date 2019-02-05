@@ -14,11 +14,11 @@
             name="clickListener"
             type="me.worric.souvenarius.ui.detail.SouvenirPhotoAdapter.DeletePhotoClickListener" />
     </data>
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/cv_detail_item_photo_container"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -53,6 +53,6 @@
                 android:visibility="@{placeInArray > 0 ? View.VISIBLE : View.GONE}"
                 android:onClick="@{() -> clickListener.onDeletePhotoClicked(photoName)}" />
 
-        </android.support.v7.widget.CardView>
-    </android.support.constraint.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

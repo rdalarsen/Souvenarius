@@ -1,7 +1,5 @@
 package me.worric.souvenarius.data.repository.location;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -16,6 +14,8 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.di.LocationErrorMsgs;

@@ -1,8 +1,5 @@
 package me.worric.souvenarius.ui.add;
 
-import android.arch.core.executor.testing.InstantTaskExecutorRule;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.location.Address;
 
@@ -18,6 +15,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.File;
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.data.repository.location.LocationRepositoryImpl;

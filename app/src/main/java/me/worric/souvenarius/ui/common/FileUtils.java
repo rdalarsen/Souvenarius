@@ -5,8 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
-import android.support.annotation.NonNull;
-import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 
 import org.threeten.bp.ZonedDateTime;
@@ -17,6 +15,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import androidx.annotation.NonNull;
+import androidx.core.content.FileProvider;
 import timber.log.Timber;
 
 public final class FileUtils {

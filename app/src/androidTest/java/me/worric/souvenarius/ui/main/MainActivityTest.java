@@ -1,22 +1,21 @@
 package me.worric.souvenarius.ui.main;
 
-import android.support.test.filters.MediumTest;
-import android.support.test.rule.ActivityTestRule;
-import android.support.test.runner.AndroidJUnit4;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.MediumTest;
+import androidx.test.rule.ActivityTestRule;
 import me.worric.libtestrule.DisableAnimationsRule;
 import me.worric.souvenarius.R;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 @RunWith(AndroidJUnit4.class)
 @MediumTest
@@ -61,7 +60,7 @@ public class MainActivityTest {
         onView(withId(R.id.action_main_search))
                 .perform(click());
 
-        onView(withId(android.support.design.R.id.search_src_text))
+        onView(withId(com.google.android.material.R.id.search_src_text))
                 .check(matches(isDisplayed()));
         onView(withId(R.id.rv_search_result_list))
                 .check(matches(isDisplayed()));

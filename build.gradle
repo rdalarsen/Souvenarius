@@ -25,9 +25,10 @@ ext {
             targetSdkVersion    : 28,
             minSdkVersion       : 21
     ]
-    supportLibVersion = '28.0.0'
+    supportLibVersion = '1.0.0'
+    appCompatVersion = '1.0.2'
     constVersion = '1.1.3'
-    archVersion = '1.1.1'
+    archVersion = '2.0.0'
     storageVersion = '16.0.4'
     databaseVersion = '16.0.4'
     firebaseUiVersion = '4.2.1'
@@ -43,10 +44,11 @@ ext {
     mockitoVersion = '2.23.0'
     dexmakerVersion = '2.19.1'
     hamcrestVersion = '1.3'
-    espressoRunnerVersion = '1.0.2'
-    espressoRulesVersion = '1.0.2'
-    espressoVersion = '3.0.2'
-    uiAutomatorVersion = '2.1.3'
+    extJunitVersion = '1.1.0'
+    espressoRunnerVersion = '1.1.1'
+    espressoRulesVersion = '1.1.1'
+    espressoVersion = '3.1.1'
+    uiAutomatorVersion = '2.2.0'
 }
 
 task clean(type: Delete) {

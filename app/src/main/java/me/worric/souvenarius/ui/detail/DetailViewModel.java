@@ -1,18 +1,18 @@
 package me.worric.souvenarius.ui.detail;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MediatorLiveData;
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.Transformations;
-import android.arch.lifecycle.ViewModel;
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.text.Editable;
 
 import java.io.File;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Transformations;
+import androidx.lifecycle.ViewModel;
 import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.data.repository.souvenir.SouvenirRepository;
 import me.worric.souvenarius.ui.widget.UpdateWidgetService;

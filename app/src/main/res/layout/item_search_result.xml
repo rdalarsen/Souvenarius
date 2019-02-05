@@ -10,7 +10,7 @@
             name="clickListener"
             type="me.worric.souvenarius.ui.search.SearchResultsAdapter.SearchResultClickListener" />
     </data>
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="?android:listPreferredItemHeightLarge"
         android:onClick="@{() -> clickListener.onSearchResultClicked(souvenir)}">
@@ -29,5 +29,5 @@
             android:text="@{souvenir.title ?? @string/error_message_search_missing_title}"
             tools:text="Test Title" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

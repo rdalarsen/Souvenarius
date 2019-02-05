@@ -1,14 +1,15 @@
 package me.worric.libtestrule;
 
 import android.app.Instrumentation;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.uiautomator.UiDevice;
 
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import java.io.IOException;
+
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.uiautomator.UiDevice;
 
 public class DisableAnimationsRule implements TestRule {
 
@@ -46,7 +47,5 @@ public class DisableAnimationsRule implements TestRule {
         UiDevice.getInstance(instrumentation)
                 .executeShellCommand("settings put global animator_duration_scale 1");
     }
-
-
 
 }

@@ -8,7 +8,7 @@
             name="clickListener"
             type="me.worric.souvenarius.ui.signin.SignInFragment.SignInButtonClickListener" />
     </data>
-    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -41,5 +41,5 @@
             android:text="@string/btn_label_sign_in"
             android:onClick="@{() -> clickListener.onSignInButtonClicked(isConnected)}" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

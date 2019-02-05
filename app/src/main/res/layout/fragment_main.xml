@@ -14,11 +14,11 @@
             name="resultSouvenirs"
             type="me.worric.souvenarius.data.Result&lt;List&lt;SouvenirDb&gt;&gt;" />
     </data>
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v4.widget.SwipeRefreshLayout
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/srl_refresh"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -27,17 +27,17 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
 
-            <android.support.v7.widget.RecyclerView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_souvenir_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingStart="2dp"
                 android:paddingEnd="2dp"
                 android:nestedScrollingEnabled="true"
-                app:layoutManager="android.support.v7.widget.GridLayoutManager"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:spanCount="@integer/souvenir_list_span_count"
                 tools:listitem="@layout/item_main_souvenir" />
-        </android.support.v4.widget.SwipeRefreshLayout>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <TextView
             android:id="@+id/tv_souvenir_list_error_text"
@@ -50,5 +50,5 @@
             android:visibility="@{resultSouvenirs.response.size() > 0 ? View.GONE : View.VISIBLE}"
             android:text="@{resultSouvenirs.status == Status.SUCCESS ? @string/souvenir_list_error_message : viewmodel.souvenirs.message}" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

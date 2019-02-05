@@ -2,20 +2,20 @@ package me.worric.souvenarius.data.repository;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.v4.app.JobIntentService;
 import android.text.TextUtils;
 
 import com.google.firebase.auth.FirebaseAuth;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.JobIntentService;
 import dagger.android.AndroidInjection;
 import me.worric.souvenarius.BuildConfig;
 import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.db.AppDatabase;
-import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.data.db.tasks.SouvenirInsertAllTask;
+import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.data.repository.souvenir.FirebaseHandler;
 import me.worric.souvenarius.ui.widget.UpdateWidgetService;
 import timber.log.Timber;
