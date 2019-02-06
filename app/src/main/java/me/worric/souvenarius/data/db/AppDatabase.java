@@ -1,12 +1,6 @@
 package me.worric.souvenarius.data.db;
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
-import android.arch.persistence.room.Database;
-import android.arch.persistence.room.OnConflictStrategy;
-import android.arch.persistence.room.RoomDatabase;
-import android.arch.persistence.room.TypeConverters;
 import android.content.ContentValues;
-import android.support.annotation.NonNull;
 
 import org.threeten.bp.Instant;
 import org.threeten.bp.ZoneId;
@@ -14,6 +8,12 @@ import org.threeten.bp.ZonedDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
 import org.threeten.bp.format.FormatStyle;
 
+import androidx.annotation.NonNull;
+import androidx.room.Database;
+import androidx.room.OnConflictStrategy;
+import androidx.room.RoomDatabase;
+import androidx.room.TypeConverters;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 import me.worric.souvenarius.data.db.dao.SouvenirDao;
 import me.worric.souvenarius.data.model.SouvenirDb;
 

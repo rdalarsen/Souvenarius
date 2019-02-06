@@ -2,8 +2,8 @@ package me.worric.souvenarius.data.repository;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.v4.app.JobIntentService;
+import androidx.annotation.NonNull;
+import androidx.core.app.JobIntentService;
 import android.text.TextUtils;
 
 import com.google.firebase.auth.FirebaseAuth;

@@ -1,10 +1,11 @@
 package me.worric.souvenarius.data.repository.souvenir;
 
 import android.net.Uri;
-import android.support.annotation.NonNull;
 
 import java.io.File;
 import java.util.List;
+
+import androidx.annotation.NonNull;
 
 public interface StorageHandler {
 

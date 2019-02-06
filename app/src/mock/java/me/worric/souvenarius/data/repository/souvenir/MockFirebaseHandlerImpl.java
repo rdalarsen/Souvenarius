@@ -1,12 +1,11 @@
 package me.worric.souvenarius.data.repository.souvenir;
 
-import android.support.annotation.NonNull;
-
 import com.google.firebase.database.DatabaseReference;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import androidx.annotation.NonNull;
 import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.model.SouvenirDb;
 

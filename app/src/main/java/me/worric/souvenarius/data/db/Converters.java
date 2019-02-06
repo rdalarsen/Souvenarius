@@ -1,11 +1,11 @@
 package me.worric.souvenarius.data.db;
 
-import android.arch.persistence.room.TypeConverter;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
+
+import androidx.room.TypeConverter;
 
 public class Converters {
 

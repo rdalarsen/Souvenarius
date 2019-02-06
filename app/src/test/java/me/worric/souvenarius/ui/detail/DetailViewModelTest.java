@@ -1,9 +1,5 @@
 package me.worric.souvenarius.ui.detail;
 
-import android.arch.core.executor.testing.InstantTaskExecutorRule;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MediatorLiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.text.Editable;
 
@@ -20,6 +16,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.io.File;
 import java.util.ArrayList;
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.MutableLiveData;
 import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.data.repository.souvenir.SouvenirRepository;
 import me.worric.souvenarius.data.repository.souvenir.SouvenirRepositoryImpl;

@@ -1,7 +1,6 @@
 package me.worric.souvenarius.data.repository.souvenir;
 
 import android.net.Uri;
-import android.support.annotation.NonNull;
 
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -12,6 +11,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import androidx.annotation.NonNull;
 import timber.log.Timber;
 
 import static me.worric.souvenarius.ui.common.NetUtils.STORAGE_PATH;

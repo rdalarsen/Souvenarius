@@ -1,6 +1,5 @@
 package me.worric.souvenarius.data;
 
-import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.location.Geocoder;
 
@@ -12,6 +11,7 @@ import java.util.Map;
 
 import javax.inject.Singleton;
 
+import androidx.room.Room;
 import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;

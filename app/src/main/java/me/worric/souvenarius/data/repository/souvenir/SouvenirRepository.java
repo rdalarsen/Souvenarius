@@ -1,10 +1,9 @@
 package me.worric.souvenarius.data.repository.souvenir;
 
-import android.arch.lifecycle.LiveData;
-
 import java.io.File;
 import java.util.List;
 
+import androidx.lifecycle.LiveData;
 import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.ui.main.SortStyle;

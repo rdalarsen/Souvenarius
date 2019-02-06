@@ -1,7 +1,5 @@
 package me.worric.souvenarius.data.repository.souvenir;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -18,6 +16,8 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.model.SouvenirDb;

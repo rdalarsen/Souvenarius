@@ -1,24 +1,23 @@
 package me.worric.souvenarius.ui.signin;
 
-import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.MediumTest;
-import android.support.test.rule.ActivityTestRule;
-import android.support.test.runner.AndroidJUnit4;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.MediumTest;
+import androidx.test.rule.ActivityTestRule;
 import me.worric.libtestrule.DisableAnimationsRule;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.ui.main.MainActivity;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static android.support.test.espresso.action.ViewActions.typeText;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.typeText;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static me.worric.souvenarius.testutils.CustomMatchers.hasTextInputLayoutError;
 import static org.hamcrest.Matchers.not;
 
@@ -26,9 +25,9 @@ import static org.hamcrest.Matchers.not;
 @MediumTest
 public class SignInFragmentTest {
 
-    public static final String EMAIL_ERROR_MESSAGE = InstrumentationRegistry.getTargetContext()
+    public static final String EMAIL_ERROR_MESSAGE = ApplicationProvider.getApplicationContext()
             .getString(R.string.error_message_sign_in_empty_email_error);
-    public static final String PASSWORD_ERROR_MESSAGE = InstrumentationRegistry.getTargetContext()
+    public static final String PASSWORD_ERROR_MESSAGE = ApplicationProvider.getApplicationContext()
             .getString(R.string.error_message_sign_in_empty_password_error);
     public static final String TEST_EMAIL = "test@email.com";
     public static final String TEST_PASSWORD = "testpassword";

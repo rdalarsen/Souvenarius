@@ -10,7 +10,7 @@
             name="clickListener"
             type="me.worric.souvenarius.ui.search.SearchResultsAdapter.SearchResultClickListener" />
     </data>
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="?listPreferredItemHeightLarge"
         android:foreground="?attr/selectableItemBackground"
@@ -97,5 +97,5 @@
             android:tint="@color/grey_arrow"
             android:contentDescription="@string/search_arrowcontentdesc" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -1,8 +1,8 @@
 package me.worric.souvenarius.data.db.tasks;
 
 import android.os.AsyncTask;
-import android.support.v4.util.Pair;
 
+import androidx.core.util.Pair;
 import me.worric.souvenarius.data.db.dao.SouvenirDao;
 import me.worric.souvenarius.data.model.SouvenirDb;
 

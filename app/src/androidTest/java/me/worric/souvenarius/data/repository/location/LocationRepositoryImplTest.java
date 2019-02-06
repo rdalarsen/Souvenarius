@@ -1,9 +1,6 @@
 package me.worric.souvenarius.data.repository.location;
 
-import android.arch.core.executor.testing.InstantTaskExecutorRule;
 import android.location.Geocoder;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 
@@ -21,6 +18,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import me.worric.souvenarius.R;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -46,7 +46,7 @@ public class LocationRepositoryImplTest {
     @Spy private LocationTaskRunnerImpl mLocationTaskRunner;
 
     private LocationRepository mRepository;
-    private Geocoder mGeocoder = new Geocoder(InstrumentationRegistry.getTargetContext(),
+    private Geocoder mGeocoder = new Geocoder(ApplicationProvider.getApplicationContext(),
             Locale.getDefault());
 
     @Before

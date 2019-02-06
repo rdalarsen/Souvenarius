@@ -2,16 +2,16 @@ package me.worric.souvenarius.ui.main;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 
 import com.google.firebase.auth.FirebaseUser;
 
 import javax.inject.Inject;
 
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.di.ActivityScope;
 import me.worric.souvenarius.ui.add.AddFragment;

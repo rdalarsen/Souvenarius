@@ -1,14 +1,15 @@
 package me.worric.souvenarius.ui.signin;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.Transformations;
-import android.arch.lifecycle.ViewModel;
+
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Patterns;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Transformations;
+import androidx.lifecycle.ViewModel;
 import timber.log.Timber;
 
 public class SignInViewModel extends ViewModel {

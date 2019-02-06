@@ -13,13 +13,13 @@
             type="me.worric.souvenarius.ui.search.SearchResultsAdapter" />
         <variable
             name="itemDecoration"
-            type="android.support.v7.widget.RecyclerView.ItemDecoration" />
+            type="androidx.recyclerview.widget.RecyclerView.ItemDecoration" />
     </data>
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_search_result_list"
             android:background="@color/colorAccent"
             android:layout_width="0dp"
@@ -28,7 +28,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             android:adapter="@{searchResultAdapter}"
             app:searchAdapter="@{searchResultAdapter}"
             app:searchResults="@{viewmodel.souvenirSearchResults}"
@@ -58,7 +58,7 @@
             android:tint="@color/grey_arrow"
             android:src="@drawable/ic_error" />
 
-        <android.support.constraint.Group
+        <androidx.constraintlayout.widget.Group
             android:id="@+id/grp_search_errorGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -66,5 +66,5 @@
             app:constraint_referenced_ids="tv_search_errorText,iv_search_errorImage"
             tools:visibility="visible" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

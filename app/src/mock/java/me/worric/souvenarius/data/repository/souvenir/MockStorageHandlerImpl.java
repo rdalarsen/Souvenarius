@@ -1,7 +1,6 @@
 package me.worric.souvenarius.data.repository.souvenir;
 
 import android.net.Uri;
-import android.support.annotation.NonNull;
 
 import java.io.File;
 import java.util.List;
@@ -10,6 +9,7 @@ import java.util.ListIterator;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import androidx.annotation.NonNull;
 import timber.log.Timber;
 
 @Singleton

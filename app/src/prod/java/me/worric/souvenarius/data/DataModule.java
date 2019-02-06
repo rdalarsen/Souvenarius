@@ -1,6 +1,6 @@
 package me.worric.souvenarius.data;
 
-import android.arch.persistence.room.Room;
+import androidx.room.Room;
 import android.content.Context;
 import android.location.Geocoder;
 

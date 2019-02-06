@@ -12,6 +12,6 @@ android {
 
 dependencies {
     compileOnly "junit:junit:$junitVersion"
-    compileOnly "com.android.support.test:runner:$espressoRunnerVersion"
-    implementation "com.android.support.test.uiautomator:uiautomator-v18:$uiAutomatorVersion"
+    compileOnly "androidx.test:runner:$espressoRunnerVersion"
+    implementation "androidx.test.uiautomator:uiautomator:$uiAutomatorVersion"
 }

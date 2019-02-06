@@ -1,7 +1,6 @@
 package me.worric.souvenarius.ui;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.GlideBuilder;
@@ -15,6 +14,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.InputStream;
 
+import androidx.annotation.NonNull;
 import me.worric.souvenarius.R;
 
 @GlideModule

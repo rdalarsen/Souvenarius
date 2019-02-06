@@ -1,10 +1,5 @@
 package me.worric.souvenarius.data.model;
 
-import android.arch.persistence.room.ColumnInfo;
-import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.PrimaryKey;
-import android.support.annotation.NonNull;
-
 import com.google.firebase.database.Exclude;
 
 import org.threeten.bp.Instant;
@@ -16,6 +11,10 @@ import org.threeten.bp.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 import me.worric.souvenarius.ui.detail.DetailFragment;
 
 @Entity(tableName = "souvenirs")
