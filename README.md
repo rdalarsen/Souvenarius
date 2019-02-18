@@ -12,7 +12,7 @@ This is Souvenarius, a small app that lets the user save a virtual souvenir, a p
 - Offline viewing of souvenirs with Room database used as cache
 - Multi-user support
 - Complete CRUD support for managing Souvenirs
-- Useful and visually appealing Material Design UI patterns such as auto-hiding Toolbar and a floating action button
+- Useful and visually appealing Material Design UI patterns such as auto-hiding Toolbar and a Floating Action Button
 
 #### Technical features
 
@@ -20,3 +20,4 @@ In addition to the formal requirements set forth by Udacity, I also looked for p
 
 - DataBinding, the easier and more flexible way of binding data to views.
 - Dagger2, the dependency injection pattern that eases development and provides increased separation of concerns
+- Automated testing (instrumented and non-instrumented) of critical app components via a combination of Espresso, JUnit, and Mockito
