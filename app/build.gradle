@@ -25,8 +25,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.dummy_config
         }
-        debug {
-            buildConfigField("Boolean", "USE_MOCK", "true")
+    }
+    flavorDimensions "default"
+    productFlavors {
+        mock {
+            dimension "default"
+        }
+        prod {
+            dimension "default"
         }
     }
     dataBinding {
@@ -55,7 +61,6 @@ dependencies {
     implementation "androidx.room:room-runtime:$archVersion"
     annotationProcessor "androidx.room:room-compiler:$archVersion"
     // Firebase & Google services
-    implementation "com.firebaseui:firebase-ui-auth:$firebaseUiVersion"
     implementation "com.firebaseui:firebase-ui-storage:$firebaseUiVersion"
     implementation "com.google.firebase:firebase-auth:$authVersion"
     implementation "com.google.firebase:firebase-database:$databaseVersion"

@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModel;
 import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.data.repository.souvenir.SouvenirRepository;
+import timber.log.Timber;
 
 public class SearchViewModel extends ViewModel {
 
@@ -34,6 +35,13 @@ public class SearchViewModel extends ViewModel {
 
     public LiveData<Result<List<SouvenirDb>>> getSouvenirSearchResults() {
         return mSouvenirSearchResults;
+    }
+
+    public LiveData<Result.Status> getStatus() {
+        return Transformations.map(mSouvenirSearchResults, r -> {
+            Timber.d("Status=%s", r.status != null ? r.status : "NULL VALUE");
+            return r.status;
+        });
     }
 
     public void submitTitleSearchQuery(String titleSearchQuery) {

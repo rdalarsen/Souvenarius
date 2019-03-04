@@ -11,6 +11,9 @@
         <variable
             name="searchResultAdapter"
             type="me.worric.souvenarius.ui.search.SearchResultsAdapter" />
+        <variable
+            name="itemDecoration"
+            type="androidx.recyclerview.widget.RecyclerView.ItemDecoration" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -28,7 +31,39 @@
             android:adapter="@{searchResultAdapter}"
             app:searchAdapter="@{searchResultAdapter}"
             app:searchResults="@{viewmodel.souvenirSearchResults}"
+            app:itemDecoration="@{itemDecoration}"
+            app:goneUnless="@{viewmodel.status == Status.SUCCESS}"
             tools:listitem="@layout/item_search_result" />
+
+        <TextView
+            android:id="@+id/tv_search_errorText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.3"
+            android:text="@string/error_message_search_no_results" />
+
+        <ImageView
+            android:id="@+id/iv_search_errorImage"
+            android:layout_width="@dimen/search_errorImage_size"
+            android:layout_height="@dimen/search_errorImage_size"
+            app:layout_constraintBottom_toTopOf="@+id/tv_search_errorText"
+            app:layout_constraintStart_toStartOf="@+id/tv_search_errorText"
+            app:layout_constraintEnd_toEndOf="@+id/tv_search_errorText"
+            android:contentDescription="@string/search_errorIconContentDec"
+            android:tint="@color/grey_arrow"
+            android:src="@drawable/ic_error" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/grp_search_errorGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:goneUnless="@{viewmodel.status == Status.FAILURE}"
+            app:constraint_referenced_ids="tv_search_errorText,iv_search_errorImage"
+            tools:visibility="visible" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -66,10 +66,26 @@
     <string name="sign_in_notice_no_internet">You need to sign in to use the app. Please also make sure you\'re connected to the internet.</string>
     <string name="sign_in_notice">You need to sign in to use the app.</string>
     <string name="btn_label_sign_in">Sign in</string>
+    <string name="btnlabel_signin_create">Create account</string>
+    <string name="hint_sign_in_email">Email Address</string>
+    <string name="hint_sign_in_password">Password</string>
+    <string name="error_message_sign_in_invalid_email">Invalid Email</string>
+    <string name="error_message_sign_in_empty_email_error">Empty email not allowed.</string>
+    <string name="error_message_sign_in_empty_password_error">Empty password not allowed.</string>
+
+    <!-- Create account fragment -->
+    <string name="btnlabel_createaccount_create">Create Account</string>
+    <string name="hint_createaccount_email">Email</string>
+    <string name="hint_createaccount_password">Password</string>
 
     <!-- Search Fragment -->
     <string name="error_message_search_missing_title">Missing title</string>
+    <string name="error_message_search_missing_place">N/A</string>
+    <string name="error_message_search_missing_date">Unknown</string>
     <string name="hint_search_search_for_title">Search for title…</string>
+    <string name="search_iconcontentdesc">Souvenir thumbnail</string>
+    <string name="search_errorIconContentDec">Error icon</string>
+    <string name="error_message_search_no_results">No results. Please try searching again.</string>
 
     <!-- Widget -->
     <string name="content_desc_widget_souvenir_photo">Souvenir photo</string>

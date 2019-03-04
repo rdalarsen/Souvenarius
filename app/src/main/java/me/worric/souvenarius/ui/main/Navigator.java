@@ -24,6 +24,8 @@ public interface Navigator {
 
     void navigateBack();
 
+    void navigateToCreateAccount();
+
     void initNavigation(@Nullable Bundle savedInstanceState, @Nullable FirebaseUser user,
                         @Nullable Intent launchIntent);
 

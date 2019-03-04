@@ -15,7 +15,6 @@ import androidx.room.Room;
 import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
-import me.worric.souvenarius.BuildConfig;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.db.AppDatabase;
 import me.worric.souvenarius.data.repository.location.LocationRepository;
@@ -25,11 +24,11 @@ import me.worric.souvenarius.data.repository.location.LocationTaskRunnerImpl;
 import me.worric.souvenarius.data.repository.souvenir.DbTaskRunner;
 import me.worric.souvenarius.data.repository.souvenir.DbTaskRunnerImpl;
 import me.worric.souvenarius.data.repository.souvenir.FirebaseHandler;
-import me.worric.souvenarius.data.repository.souvenir.FirebaseHandlerImpl;
+import me.worric.souvenarius.data.repository.souvenir.MockFirebaseHandlerImpl;
+import me.worric.souvenarius.data.repository.souvenir.MockStorageHandlerImpl;
 import me.worric.souvenarius.data.repository.souvenir.SouvenirRepository;
 import me.worric.souvenarius.data.repository.souvenir.SouvenirRepositoryImpl;
 import me.worric.souvenarius.data.repository.souvenir.StorageHandler;
-import me.worric.souvenarius.data.repository.souvenir.StorageHandlerImpl;
 import me.worric.souvenarius.di.AppContext;
 import me.worric.souvenarius.di.FirebaseErrorMsgs;
 import me.worric.souvenarius.di.LocationErrorMsgs;
@@ -41,9 +40,8 @@ public abstract class DataModule {
     @Provides
     @Singleton
     static AppDatabase provideDatabase(@AppContext Context context) {
-        return BuildConfig.USE_MOCK
-                ? Room.inMemoryDatabaseBuilder(context, AppDatabase.class).addCallback(AppDatabase.sCallback).build()
-                : Room.databaseBuilder(context, AppDatabase.class, AppDatabase.DB_NAME).build();
+        return Room.inMemoryDatabaseBuilder(context, AppDatabase.class)
+                .addCallback(AppDatabase.sCallback).build();
     }
 
     @Binds
@@ -53,10 +51,10 @@ public abstract class DataModule {
     abstract LocationRepository bindLocationRepository(LocationRepositoryImpl impl);
 
     @Binds
-    abstract FirebaseHandler bindFirebaseHandler(FirebaseHandlerImpl impl);
+    abstract FirebaseHandler bindFirebaseHandler(MockFirebaseHandlerImpl mockImpl);
 
     @Binds
-    abstract StorageHandler bindStorageHandler(StorageHandlerImpl impl);
+    abstract StorageHandler bindStorageHandler(MockStorageHandlerImpl mockImpl);
 
     @Binds
     abstract DbTaskRunner bindDbTaskRunner(DbTaskRunnerImpl impl);

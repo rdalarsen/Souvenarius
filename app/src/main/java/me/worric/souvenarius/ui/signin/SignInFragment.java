@@ -4,22 +4,29 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.databinding.FragmentSigninBinding;
 import me.worric.souvenarius.ui.common.FabStateChanger;
 import me.worric.souvenarius.ui.common.NetUtils;
 import me.worric.souvenarius.ui.main.FabState;
 import me.worric.souvenarius.ui.main.MainActivity;
+import timber.log.Timber;
 
 
 public class SignInFragment extends Fragment {
@@ -29,6 +36,9 @@ public class SignInFragment extends Fragment {
     private boolean mIsConnected;
     private FabStateChanger mFabStateChanger;
     private SignInFragmentEventListener mSignInFragmentEventListener;
+    private CredentialVerifier mCredentialVerifier;
+    private FirebaseAuth mAuth;
+    private SignInViewModel mViewModel;
 
     @Override
     public void onAttach(Context context) {
@@ -45,7 +55,10 @@ public class SignInFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mViewModel = ViewModelProviders.of(this).get(SignInViewModel.class);
+        mCredentialVerifier = new CredentialVerifier(Patterns.EMAIL_ADDRESS);
         mIsConnected = initIsConnected(savedInstanceState);
+        mAuth = FirebaseAuth.getInstance();
     }
 
     private boolean initIsConnected(@Nullable Bundle savedInstanceState) {
@@ -61,8 +74,9 @@ public class SignInFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_signin, container, false);
+        mBinding.setViewModel(mViewModel);
         mBinding.setLifecycleOwner(this);
-        mBinding.setClickListener(mListener);
+        mBinding.setClickListener(mClickListener);
         mBinding.setIsConnected(mIsConnected);
         return mBinding.getRoot();
     }
@@ -108,15 +122,96 @@ public class SignInFragment extends Fragment {
         }
     };
 
-    private SignInButtonClickListener mListener = isConnected ->
-            mSignInFragmentEventListener.onSignInClicked(isConnected);
+    private ClickListener mClickListener = new ClickListener() {
+        @Override
+        public void onSignInButtonClicked(boolean isConnected, String email, String password) {
+            mViewModel.performSignIn();
 
-    public interface SignInButtonClickListener {
-        void onSignInButtonClicked(boolean hasInternetAccess);
+            /* disable all functionality */
+            if (true) return;
+
+            final boolean emailIsMissing = email.isEmpty();
+            final boolean passwordIsMissing = password.isEmpty();
+
+            if (emailIsMissing || passwordIsMissing) {
+                Timber.e("Email is missing: %s. Password is missing: %s", emailIsMissing, passwordIsMissing);
+                if (emailIsMissing) {
+                    mBinding.tilSigninEmail.setError(getString(R.string.error_message_sign_in_empty_email_error));
+                } else {
+                    clearEmailInputError();
+                }
+
+                if (passwordIsMissing) {
+                    mBinding.tilSigninPassword.setError(getString(R.string.error_message_sign_in_empty_password_error));
+                } else {
+                    clearPasswordInputError();
+                }
+                return;
+            } else {
+                clearAllInputErrors();
+            }
+
+            if (mCredentialVerifier.checkIfValidEmail(email)) {
+                mAuth.signInWithEmailAndPassword(email, password)
+                        .addOnSuccessListener(authResult -> {
+                            Timber.d("Auth attempt successful");
+                            if (authResult.getUser() != null) {
+                                Timber.i("User successfully logged in! Username: %s, UID: %s",
+                                        authResult.getUser().getDisplayName(),
+                                        authResult.getUser().getUid());
+                                mSignInFragmentEventListener.onSignInSuccessful(isConnected);
+                            } else {
+                                Timber.w("Login failed");
+                                Toast.makeText(getContext(), "Username or password incorrect.", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .addOnFailureListener(e -> {
+                            Timber.e(e, "Auth attempt failed");
+                            Toast.makeText(getContext(), "Could not log in: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
+            } else {
+                mBinding.tilSigninEmail.setError(getString(R.string.error_message_sign_in_invalid_email));
+                requestFocusOnError(mBinding.etSigninEmail);
+            }
+        }
+
+        @Override
+        public void onCreateAccountButtonClicked() {
+            mSignInFragmentEventListener.onCreateAccountClicked();
+        }
+    };
+
+    private void clearEmailInputError() {
+        Timber.d("Clearing email input error");
+        mBinding.tilSigninEmail.setErrorEnabled(false);
+    }
+
+    private void clearPasswordInputError() {
+        Timber.d("Clearing password input error");
+        mBinding.tilSigninPassword.setErrorEnabled(false);
+    }
+
+    private void clearAllInputErrors() {
+        Timber.d("Clearing ALL input errors");
+        mBinding.tilSigninEmail.setErrorEnabled(false);
+        mBinding.tilSigninPassword.setErrorEnabled(false);
+    }
+
+    private void requestFocusOnError(View view) {
+        if (view.requestFocus()) {
+            InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(mBinding.etSigninEmail, InputMethodManager.SHOW_IMPLICIT);
+        }
+    }
+
+    public interface ClickListener {
+        void onSignInButtonClicked(final boolean isConnected, final String email, final String password);
+        void onCreateAccountButtonClicked();
     }
 
     public interface SignInFragmentEventListener {
-        void onSignInClicked(boolean isConnected);
+        void onSignInSuccessful(boolean isConnected);
+        void onCreateAccountClicked();
     }
 
     public static SignInFragment newInstance() {

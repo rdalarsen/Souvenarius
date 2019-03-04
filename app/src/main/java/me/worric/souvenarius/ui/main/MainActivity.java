@@ -20,10 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
-import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
-
-import java.util.Collections;
 
 import javax.inject.Inject;
 
@@ -51,7 +48,6 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     public static final String KEY_IS_CONNECTED = "key_is_connected";
     public static final String ACTION_CONNECTIVITY_CHANGED = "action_connectivity_changed";
     private static final int RC_PERMISSION_RESULTS = 404;
-    private static final int RC_SIGN_IN_ACTIVITY = 909;
     private Boolean mIsConnected;
     private MainViewModel mMainViewModel;
     private ActivityMainBinding mBinding;
@@ -141,21 +137,6 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == RC_SIGN_IN_ACTIVITY) {
-            if (resultCode == RESULT_OK) {
-                mNavigator.navigateToMain();
-                mMainViewModel.updateUserId(mAuth.getUid());
-                UpdateSouvenirsService.startSouvenirsUpdate(this);
-            } else {
-                Timber.w("login unsuccessful");
-            }
-        }
-    }
-
     /*
     * MainActivity callbacks
     */
@@ -188,20 +169,20 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     * SignInFragment callbacks
     */
     @Override
-    public void onSignInClicked(boolean isConnected) {
+    public void onSignInSuccessful(boolean isConnected) {
         if (isConnected) {
-            launchSignInActivity();
+            mNavigator.navigateToMain();
+            mMainViewModel.updateUserId(mAuth.getUid());
+            UpdateSouvenirsService.startSouvenirsUpdate(this);
         } else {
             Toast.makeText(this, R.string.main_connectivity_error_message, Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void launchSignInActivity() {
-        startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder()
-                .setIsSmartLockEnabled(false)
-                .setAvailableProviders(Collections.singletonList(
-                        new AuthUI.IdpConfig.EmailBuilder().build()))
-                .build(), RC_SIGN_IN_ACTIVITY);
+    @Override
+    public void onCreateAccountClicked() {
+        mNavigator.navigateToCreateAccount();
+        mBinding.appbarLayout.setExpanded(true);
     }
 
     /*

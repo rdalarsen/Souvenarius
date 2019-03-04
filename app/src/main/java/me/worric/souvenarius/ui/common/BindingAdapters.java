@@ -7,23 +7,39 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-import com.bumptech.glide.RequestBuilder;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.util.List;
-import java.util.Objects;
 
 import androidx.databinding.BindingAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.model.SouvenirDb;
-import me.worric.souvenarius.ui.GlideApp;
+import me.worric.souvenarius.ui.GlideLoaderProvider;
+import me.worric.souvenarius.ui.GlideRequest;
 import me.worric.souvenarius.ui.search.SearchResultsAdapter;
+import me.worric.souvenarius.ui.signin.SignInViewModel;
 import timber.log.Timber;
 
 public class BindingAdapters {
+
+    @BindingAdapter("errorText")
+    public static void setError(TextInputLayout layout, SignInViewModel.SignInError oldError,
+                                SignInViewModel.SignInError error) {
+        if (error != null ) {
+            layout.setError(error.getErrorText());
+        }
+    }
+
+    @BindingAdapter("errorEnabled")
+    public static void setErrorEnabled(TextInputLayout layout, boolean oldValue, boolean value) {
+        if (oldValue != value) {
+            layout.setErrorEnabled(value);
+        }
+    }
 
     @BindingAdapter({"searchAdapter", "searchResults"})
     public static void updateSearchResults(RecyclerView recyclerView, SearchResultsAdapter adapter,
@@ -31,11 +47,20 @@ public class BindingAdapters {
         adapter.swapItems(result);
     }
 
-    @BindingAdapter("visibleUnless")
-    public static void visibleUnless(View view, Result.Status status) {
-        view.setVisibility((status == null || Objects.equals(status, Result.Status.FAILURE)
-                ? View.VISIBLE
-                : View.GONE));
+    @BindingAdapter("itemDecoration")
+    public static void setItemDecoration(RecyclerView view, RecyclerView.ItemDecoration oldValue,
+                                         RecyclerView.ItemDecoration value) {
+        if (oldValue != null) {
+            view.removeItemDecoration(oldValue);
+        }
+        if (value != null) {
+            view.addItemDecoration(value);
+        }
+    }
+
+    @BindingAdapter("goneUnless")
+    public static void goneUnless(View view, boolean visible) {
+        view.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     @BindingAdapter("dialogText")
@@ -52,8 +77,7 @@ public class BindingAdapters {
             return;
         }
 
-        GlideApp.with(view.getContext())
-                .load(photoFile)
+        GlideLoaderProvider.getInstance().loadImageFromLocalFile(view.getContext(), photoFile)
                 .error(android.R.color.transparent)
                 .centerCrop()
                 .into(view);
@@ -81,16 +105,18 @@ public class BindingAdapters {
     @BindingAdapter({"imageName"})
     public static void loadImageFromName(ImageView view, String imageName) {
         File localPhoto = FileUtils.getLocalFileForPhotoName(imageName, view.getContext());
-        RequestBuilder<Drawable> requestBuilder;
+        GlideRequest<Drawable> request;
 
         if (localPhoto != null && localPhoto.exists()) {
-            requestBuilder = GlideApp.with(view.getContext()).load(localPhoto);
+            request = GlideLoaderProvider.getInstance()
+                    .loadImageFromLocalFile(view.getContext(), localPhoto);
         } else {
             StorageReference reference = NetUtils.getStorageReferenceForAllUsers(imageName);
-            requestBuilder = GlideApp.with(view.getContext()).load(reference);
+            request = GlideLoaderProvider.getInstance()
+                    .loadImageFromFirebaseStorage(view.getContext(), reference);
         }
 
-        requestBuilder.into(view);
+        request.into(view);
     }
 
 }
