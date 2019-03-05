@@ -128,7 +128,7 @@ public class SignInFragment extends Fragment {
             mViewModel.performSignIn();
 
             /* disable all functionality */
-            if (true) return;
+//            if (true) return;
 
             final boolean emailIsMissing = email.isEmpty();
             final boolean passwordIsMissing = password.isEmpty();
