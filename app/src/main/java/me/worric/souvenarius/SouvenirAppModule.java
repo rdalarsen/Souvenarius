@@ -18,13 +18,19 @@ import me.worric.souvenarius.data.repository.UpdateSouvenirsService;
 import me.worric.souvenarius.di.ActivityScope;
 import me.worric.souvenarius.di.AppContext;
 import me.worric.souvenarius.ui.FragmentContributorModule;
+import me.worric.souvenarius.ui.authwrapper.AppAuthModule;
 import me.worric.souvenarius.ui.common.PrefsUtils;
 import me.worric.souvenarius.ui.common.ViewModelModule;
 import me.worric.souvenarius.ui.main.MainActivity;
 import me.worric.souvenarius.ui.main.MainActivityModule;
 import me.worric.souvenarius.ui.widget.UpdateWidgetService;
 
-@Module(includes = {AndroidSupportInjectionModule.class, ViewModelModule.class, DataModule.class})
+@Module(includes = {
+        AndroidSupportInjectionModule.class,
+        ViewModelModule.class,
+        DataModule.class,
+        AppAuthModule.class
+})
 public abstract class SouvenirAppModule {
 
     @Binds

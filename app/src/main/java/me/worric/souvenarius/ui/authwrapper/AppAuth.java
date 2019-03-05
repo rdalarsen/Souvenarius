@@ -20,4 +20,6 @@ public interface AppAuth {
     @Nullable
     String getUid();
 
+    void signOut();
+
 }
