@@ -48,18 +48,18 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     // Support libraries
     implementation "androidx.appcompat:appcompat:$appCompatVersion"
-    implementation "androidx.cardview:cardview:$supportLibVersion"
-    implementation "androidx.recyclerview:recyclerview:$supportLibVersion"
-    implementation "com.google.android.material:material:$supportLibVersion"
+    implementation "androidx.cardview:cardview:$cardViewVersion"
+    implementation "androidx.recyclerview:recyclerview:$recyclerViewVersion"
+    implementation "com.google.android.material:material:$materialVersion"
     implementation "androidx.constraintlayout:constraintlayout:$constVersion"
     // Resolve dependency conflicts
-    implementation "androidx.legacy:legacy-support-v4:$supportLibVersion"
-    implementation "androidx.browser:browser:$supportLibVersion"
+    implementation "androidx.legacy:legacy-support-v4:$legacyVersion"
+    implementation "androidx.browser:browser:$browserVersion"
     // Architecture Components
-    implementation "androidx.lifecycle:lifecycle-extensions:$archVersion"
-    implementation "androidx.lifecycle:lifecycle-common-java8:$archVersion"
-    implementation "androidx.room:room-runtime:$archVersion"
-    annotationProcessor "androidx.room:room-compiler:$archVersion"
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycleVersion"
+    implementation "androidx.room:room-runtime:$roomVersion"
+    annotationProcessor "androidx.room:room-compiler:$roomVersion"
     // Firebase & Google services
     implementation "com.firebaseui:firebase-ui-storage:$firebaseUiVersion"
     implementation "com.google.firebase:firebase-auth:$authVersion"
@@ -86,8 +86,8 @@ dependencies {
     testImplementation "junit:junit:$junitVersion"
     testImplementation "org.mockito:mockito-core:$mockitoVersion"
     testImplementation "org.hamcrest:hamcrest-library:$hamcrestVersion"
-    testImplementation "androidx.arch.core:core-testing:$archVersion"
-    androidTestImplementation "androidx.arch.core:core-testing:$archVersion"
+    testImplementation "androidx.arch.core:core-testing:$archTestingVersion"
+    androidTestImplementation "androidx.arch.core:core-testing:$archTestingVersion"
     androidTestImplementation "androidx.test:runner:$espressoRunnerVersion"
     androidTestImplementation "androidx.test:rules:$espressoRulesVersion"
     androidTestImplementation "androidx.test.ext:junit:$extJunitVersion"
