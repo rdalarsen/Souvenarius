@@ -3,9 +3,8 @@ package me.worric.souvenarius.ui.main;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.google.firebase.auth.FirebaseUser;
-
 import androidx.annotation.Nullable;
+import me.worric.souvenarius.ui.authwrapper.AppUser;
 
 public interface Navigator {
 
@@ -26,7 +25,7 @@ public interface Navigator {
 
     void navigateToCreateAccount();
 
-    void initNavigation(@Nullable Bundle savedInstanceState, @Nullable FirebaseUser user,
+    void initNavigation(@Nullable Bundle savedInstanceState, @Nullable AppUser user,
                         @Nullable Intent launchIntent);
 
 }

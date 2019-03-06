@@ -6,8 +6,8 @@ import androidx.annotation.Nullable;
 public interface AppAuth {
 
     interface AppAuthResult {
-        void onSuccess();
-        void onFailure();
+        void onSuccess(@NonNull AppUser user);
+        void onFailure(@NonNull Exception e);
     }
 
     @Nullable

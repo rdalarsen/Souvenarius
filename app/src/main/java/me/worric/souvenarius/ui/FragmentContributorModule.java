@@ -7,6 +7,7 @@ import me.worric.souvenarius.ui.detail.DetailFragment;
 import me.worric.souvenarius.ui.detail.EditDialog;
 import me.worric.souvenarius.ui.main.MainFragment;
 import me.worric.souvenarius.ui.search.SearchFragment;
+import me.worric.souvenarius.ui.signin.SignInFragment;
 
 @Module
 public abstract class FragmentContributorModule {
@@ -25,5 +26,8 @@ public abstract class FragmentContributorModule {
 
     @ContributesAndroidInjector
     abstract EditDialog contributeEditDialogFragment();
+
+    @ContributesAndroidInjector
+    abstract SignInFragment contributeSignInFragment();
 
 }
