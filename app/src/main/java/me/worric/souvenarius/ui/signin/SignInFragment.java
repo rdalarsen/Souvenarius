@@ -130,7 +130,7 @@ public class SignInFragment extends Fragment {
         public void onSignInButtonClicked(boolean isConnected, String email, String password) {
             mViewModel.performSignIn();
 
-            // TODO implement 2-way databinding in SignInFragment to further eliminate boilerplate
+            // TODO implement 2-way databinding in SignInFragment
             final boolean emailIsMissing = email.isEmpty();
             final boolean passwordIsMissing = password.isEmpty();
 
