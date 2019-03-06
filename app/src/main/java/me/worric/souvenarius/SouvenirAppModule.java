@@ -12,7 +12,6 @@ import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
 import dagger.android.ContributesAndroidInjector;
-import me.worric.souvenarius.data.DataModule;
 import me.worric.souvenarius.data.repository.UpdateSouvenirsService;
 import me.worric.souvenarius.di.ActivityScope;
 import me.worric.souvenarius.di.AppContext;
@@ -21,12 +20,7 @@ import me.worric.souvenarius.ui.main.MainActivity;
 import me.worric.souvenarius.ui.main.MainActivityModule;
 import me.worric.souvenarius.ui.widget.UpdateWidgetService;
 
-@Module(includes = {
-
-
-        DataModule.class,
-
-})
+@Module
 public abstract class SouvenirAppModule {
 
     @Binds
