@@ -10,7 +10,7 @@ import dagger.android.support.AndroidSupportInjectionModule;
 import me.worric.souvenarius.data.DataModule;
 import me.worric.souvenarius.data.RoomMockModule;
 import me.worric.souvenarius.ui.FragmentContributorModule;
-import me.worric.souvenarius.ui.authwrapper.FirebaseAppAuthModule;
+import me.worric.souvenarius.ui.authwrapper.InMemoryAppAuthModule;
 import me.worric.souvenarius.ui.common.ViewModelModule;
 
 @Singleton
@@ -19,7 +19,7 @@ import me.worric.souvenarius.ui.common.ViewModelModule;
         SouvenirAppModule.class,
         ViewModelModule.class,
         FragmentContributorModule.class,
-        FirebaseAppAuthModule.class,
+        InMemoryAppAuthModule.class,
         RoomMockModule.class,
         DataModule.class
 })
