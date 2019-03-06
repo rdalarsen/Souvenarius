@@ -7,6 +7,8 @@ import javax.inject.Singleton;
 import dagger.BindsInstance;
 import dagger.Component;
 import dagger.android.support.AndroidSupportInjectionModule;
+import me.worric.souvenarius.data.DataModule;
+import me.worric.souvenarius.data.RoomMockModule;
 import me.worric.souvenarius.ui.FragmentContributorModule;
 import me.worric.souvenarius.ui.authwrapper.AppAuthModule;
 import me.worric.souvenarius.ui.common.ViewModelModule;
@@ -17,7 +19,9 @@ import me.worric.souvenarius.ui.common.ViewModelModule;
         SouvenirAppModule.class,
         ViewModelModule.class,
         FragmentContributorModule.class,
-        AppAuthModule.class
+        AppAuthModule.class,
+        RoomMockModule.class,
+        DataModule.class
 })
 public interface SouvenirAppComponent {
 

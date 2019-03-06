@@ -11,12 +11,10 @@ import java.util.Map;
 
 import javax.inject.Singleton;
 
-import androidx.room.Room;
 import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
 import me.worric.souvenarius.R;
-import me.worric.souvenarius.data.db.AppDatabase;
 import me.worric.souvenarius.data.repository.location.LocationRepository;
 import me.worric.souvenarius.data.repository.location.LocationRepositoryImpl;
 import me.worric.souvenarius.data.repository.location.LocationTaskRunner;
@@ -36,13 +34,6 @@ import me.worric.souvenarius.di.SouvenirErrorMsgs;
 
 @Module
 public abstract class DataModule {
-
-    @Provides
-    @Singleton
-    static AppDatabase provideDatabase(@AppContext Context context) {
-        return Room.inMemoryDatabaseBuilder(context, AppDatabase.class)
-                .addCallback(AppDatabase.sCallback).build();
-    }
 
     @Binds
     abstract SouvenirRepository bindSouvenirRepository(SouvenirRepositoryImpl impl);
