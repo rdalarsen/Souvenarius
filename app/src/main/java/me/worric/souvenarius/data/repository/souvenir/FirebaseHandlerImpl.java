@@ -35,11 +35,8 @@ public class FirebaseHandlerImpl implements FirebaseHandler {
     private CustomEventListener mValueEventListener = null;
 
     @Inject
-    public FirebaseHandlerImpl(
-            @FirebaseErrorMsgs Map<Integer,String> errorMessages,
-            AppAuth appAuth) {
-        this(appAuth, FirebaseDatabase.getInstance().getReference(SOUVENIRS_REFERENCE),
-                errorMessages);
+    public FirebaseHandlerImpl(@FirebaseErrorMsgs Map<Integer,String> errorMessages, AppAuth appAuth) {
+        this(appAuth, FirebaseDatabase.getInstance().getReference(SOUVENIRS_REFERENCE), errorMessages);
     }
 
     FirebaseHandlerImpl(AppAuth auth, DatabaseReference ref, Map<Integer,String> errorMessages) {

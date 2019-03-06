@@ -24,7 +24,7 @@ import timber.log.Timber;
  * background processing on pre and post Oreo devices. That is, use JobScheduler on Oreo and later,
  * and start IntentService normally on pre Oreo
  *
- * See <a href="https://developer.android.com/reference/android/support/v4/app/JobIntentService"></a>.
+ * See <a href="https://developer.android.com/reference/android/support/v4/app/JobIntentService">this documentation</a>.
  */
 public class UpdateWidgetService extends JobIntentService {
 
@@ -49,7 +49,7 @@ public class UpdateWidgetService extends JobIntentService {
 
     @Override
     protected void onHandleWork(@NonNull Intent intent) {
-        String action = intent.getAction();
+        final String action = intent.getAction();
         if (TextUtils.isEmpty(action)) throw new IllegalArgumentException("Null or empty action");
         switch (action) {
             case ACTION_UPDATE_WIDGET:

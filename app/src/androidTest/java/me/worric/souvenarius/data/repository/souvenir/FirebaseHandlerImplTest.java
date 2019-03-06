@@ -55,7 +55,7 @@ public class FirebaseHandlerImplTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private FirebaseAuth mAuth;
+    @Mock private FirebaseAuth mAuth; // TODO convert to AppAuth
     @Mock private FirebaseHandlerImpl.CustomEventListener mValueEventListener;
     @Mock private DatabaseReference mReference;
     @Mock private DatabaseReference mReference2;
