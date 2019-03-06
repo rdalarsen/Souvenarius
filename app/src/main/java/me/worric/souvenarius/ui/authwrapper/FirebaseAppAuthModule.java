@@ -7,7 +7,7 @@ import dagger.Module;
 import dagger.Provides;
 
 @Module
-public abstract class AppAuthModule {
+public abstract class FirebaseAppAuthModule {
 
     @Provides
     static FirebaseAuth provideFirebaseAuth() {
@@ -15,6 +15,6 @@ public abstract class AppAuthModule {
     }
 
     @Binds
-    abstract AppAuth bindAppAuth(DefaultAppAuth defaultAppAuth);
+    abstract AppAuth bindAppAuth(FirebaseAppAuth firebaseAppAuth);
 
 }

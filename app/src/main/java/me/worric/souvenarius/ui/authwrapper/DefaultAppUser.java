@@ -4,6 +4,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 import androidx.annotation.Nullable;
 
+@Deprecated
 public class DefaultAppUser extends AbstractAppUser {
 
     public DefaultAppUser(FirebaseUser firebaseUser) {

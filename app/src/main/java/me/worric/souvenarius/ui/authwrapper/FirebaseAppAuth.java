@@ -3,17 +3,21 @@ package me.worric.souvenarius.ui.authwrapper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import timber.log.Timber;
 
-@Deprecated
-public abstract class AbstractAppAuth implements AppAuth {
+@Singleton
+public class FirebaseAppAuth implements AppAuth {
 
     private final FirebaseAuth mFirebaseAuth;
     private AppUser mAppUser;
 
-    public AbstractAppAuth(FirebaseAuth firebaseAuth) {
+    @Inject
+    public FirebaseAppAuth(FirebaseAuth firebaseAuth) {
         mFirebaseAuth = firebaseAuth;
     }
 
@@ -24,7 +28,7 @@ public abstract class AbstractAppAuth implements AppAuth {
         Timber.i("Getting current user. Cached=%s", user != null && user.equals(mAppUser));
         if (user != null) {
             if (!user.equals(mAppUser)) {
-                mAppUser = new DefaultAppUser(user);
+                mAppUser = new FirebaseAppUser(user);
             }
         } else {
             mAppUser = null;
@@ -39,7 +43,7 @@ public abstract class AbstractAppAuth implements AppAuth {
         mFirebaseAuth.signInWithEmailAndPassword(email, password)
                 .addOnSuccessListener(authResult -> {
                     Timber.i("Sign in task is successful!");
-                    result.onSuccess(new DefaultAppUser(authResult.getUser()));
+                    result.onSuccess(new FirebaseAppUser(authResult.getUser()));
                 })
                 .addOnFailureListener(result::onFailure);
     }
