@@ -35,14 +35,12 @@ public abstract class AbstractAppAuth implements AppAuth {
     @Override
     public void signInWithEmailAndPassword(@NonNull String email, @NonNull String password, @NonNull AppAuthResult result) {
         Timber.i("Signing in. email=%s,password=%s", email, password);
-        mFirebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
-            Timber.i("Sign in task complete. Successful=%s", task.isSuccessful());
-            if (task.isSuccessful()) {
-                result.onSuccess();
-            } else {
-                result.onFailure();
-            }
-        });
+        mFirebaseAuth.signInWithEmailAndPassword(email, password)
+                .addOnSuccessListener(authResult -> {
+                    Timber.i("Sign in task is successful!");
+                    result.onSuccess(new DefaultAppUser(authResult.getUser()));
+                })
+                .addOnFailureListener(result::onFailure);
     }
 
     @Nullable
