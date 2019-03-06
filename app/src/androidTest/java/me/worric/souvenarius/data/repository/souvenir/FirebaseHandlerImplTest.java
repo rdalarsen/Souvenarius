@@ -1,6 +1,5 @@
 package me.worric.souvenarius.data.repository.souvenir;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,6 +25,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.model.SouvenirDb;
+import me.worric.souvenarius.ui.authwrapper.AppAuth;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -55,7 +55,7 @@ public class FirebaseHandlerImplTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private FirebaseAuth mAuth; // TODO convert to AppAuth
+    @Mock private AppAuth mAppAuth;
     @Mock private FirebaseHandlerImpl.CustomEventListener mValueEventListener;
     @Mock private DatabaseReference mReference;
     @Mock private DatabaseReference mReference2;
@@ -70,7 +70,7 @@ public class FirebaseHandlerImplTest {
 
     @Before
     public void setUp() {
-        mHandler = new FirebaseHandlerImpl(mAuth, mReference, sErrorMessages);
+        mHandler = new FirebaseHandlerImpl(mAppAuth, mReference, sErrorMessages);
     }
 
     @Test
@@ -81,11 +81,11 @@ public class FirebaseHandlerImplTest {
             assertThat(souvenirs.status, is(equalTo(Result.Status.FAILURE)));
         };
 
-        when(mAuth.getUid()).thenReturn(null);
+        when(mAppAuth.getUid()).thenReturn(null);
 
         mHandler.fetchSouvenirsForCurrentUser(listener);
 
-        verify(mAuth).getUid();
+        verify(mAppAuth).getUid();
     }
 
     @Test
@@ -97,13 +97,13 @@ public class FirebaseHandlerImplTest {
             assertThat(souvenirs.status, is(equalTo(Result.Status.FAILURE)));
         };
 
-        when(mAuth.getUid()).thenReturn(someId);
+        when(mAppAuth.getUid()).thenReturn(someId);
         when(mValueEventListener.isRunning()).thenReturn(true);
 
         mHandler.setValueEventListener(mValueEventListener);
         mHandler.fetchSouvenirsForCurrentUser(listener);
 
-        verify(mAuth).getUid();
+        verify(mAppAuth).getUid();
         verify(mValueEventListener).isRunning();
         verify(mReference, never()).child(anyString());
         verify(mReference, never()).addListenerForSingleValueEvent(any(ValueEventListener.class));
@@ -126,7 +126,7 @@ public class FirebaseHandlerImplTest {
         final FirebaseHandlerImpl.CustomEventListener eventListener =
                 getCustomEventListener(listener, resultList);
 
-        when(mAuth.getUid()).thenReturn(authUid);
+        when(mAppAuth.getUid()).thenReturn(authUid);
         when(mReference.child(anyString())).thenReturn(mReference);
         doAnswer(invocation -> {
             assertThat(eventListener.isRunning(), is(true));
