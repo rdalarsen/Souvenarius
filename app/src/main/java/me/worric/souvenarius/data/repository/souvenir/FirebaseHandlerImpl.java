@@ -2,7 +2,6 @@ package me.worric.souvenarius.data.repository.souvenir;
 
 import android.text.TextUtils;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -16,31 +15,32 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.di.FirebaseErrorMsgs;
+import me.worric.souvenarius.ui.authwrapper.AppAuth;
 import timber.log.Timber;
 
 @Singleton
 public class FirebaseHandlerImpl implements FirebaseHandler {
 
     private static final String SOUVENIRS_REFERENCE = "souvenirs";
-    private final FirebaseAuth mAuth;
+    private final AppAuth mAppAuth;
     private final DatabaseReference mRef;
     private final Map<Integer,String> mErrorMessages;
     private CustomEventListener mValueEventListener = null;
 
     @Inject
-    public FirebaseHandlerImpl(@FirebaseErrorMsgs Map<Integer,String> errorMessages) {
-        this(FirebaseAuth.getInstance(), FirebaseDatabase.getInstance().getReference(SOUVENIRS_REFERENCE),
-                errorMessages);
+    public FirebaseHandlerImpl(@FirebaseErrorMsgs Map<Integer,String> errorMessages, AppAuth appAuth) {
+        this(appAuth, FirebaseDatabase.getInstance().getReference(SOUVENIRS_REFERENCE), errorMessages);
     }
 
-    public FirebaseHandlerImpl(FirebaseAuth auth, DatabaseReference ref, Map<Integer, String> errorMessages) {
-        mAuth = auth;
+    FirebaseHandlerImpl(AppAuth auth, DatabaseReference ref, Map<Integer,String> errorMessages) {
+        mAppAuth = auth;
         mRef = ref;
         mErrorMessages = errorMessages;
     }
@@ -89,7 +89,7 @@ public class FirebaseHandlerImpl implements FirebaseHandler {
     @Override
     public void fetchSouvenirsForCurrentUser(@NonNull OnResultListener listener,
                                              @NonNull CustomEventListener valueEventListener) {
-        if (TextUtils.isEmpty(mAuth.getUid())) {
+        if (TextUtils.isEmpty(mAppAuth.getUid())) {
             Timber.w("Current user is null; not retrieving souvenirs...");
             listener.onResult(Result.failure(mErrorMessages
                     .get(R.string.error_message_firebase_not_signed_in)));
@@ -105,7 +105,7 @@ public class FirebaseHandlerImpl implements FirebaseHandler {
 
         initEventListener(valueEventListener);
 
-        mRef.child(mAuth.getUid()).addListenerForSingleValueEvent(mValueEventListener);
+        mRef.child(mAppAuth.getUid()).addListenerForSingleValueEvent(mValueEventListener);
     }
 
     private void initEventListener(CustomEventListener valueEventListener) {
@@ -132,11 +132,13 @@ public class FirebaseHandlerImpl implements FirebaseHandler {
 
         private boolean isRunning = false;
 
+        @CallSuper
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
             setRunning(false);
         }
 
+        @CallSuper
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) {
             setRunning(false);

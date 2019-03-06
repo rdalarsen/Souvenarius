@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
+import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,8 +20,11 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import dagger.android.support.AndroidSupportInjection;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.databinding.FragmentSigninBinding;
+import me.worric.souvenarius.ui.authwrapper.AppAuth;
+import me.worric.souvenarius.ui.authwrapper.AppUser;
 import me.worric.souvenarius.ui.common.FabStateChanger;
 import me.worric.souvenarius.ui.common.NetUtils;
 import me.worric.souvenarius.ui.main.FabState;
@@ -32,16 +35,17 @@ import timber.log.Timber;
 public class SignInFragment extends Fragment {
 
     private static final String KEY_IS_CONNECTED = "key_is_connected";
+    @Inject AppAuth mAppAuth;
     private FragmentSigninBinding mBinding;
     private boolean mIsConnected;
     private FabStateChanger mFabStateChanger;
     private SignInFragmentEventListener mSignInFragmentEventListener;
     private CredentialVerifier mCredentialVerifier;
-    private FirebaseAuth mAuth;
     private SignInViewModel mViewModel;
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
+        AndroidSupportInjection.inject(this);
         super.onAttach(context);
         try {
             mFabStateChanger = (FabStateChanger) context;
@@ -58,7 +62,6 @@ public class SignInFragment extends Fragment {
         mViewModel = ViewModelProviders.of(this).get(SignInViewModel.class);
         mCredentialVerifier = new CredentialVerifier(Patterns.EMAIL_ADDRESS);
         mIsConnected = initIsConnected(savedInstanceState);
-        mAuth = FirebaseAuth.getInstance();
     }
 
     private boolean initIsConnected(@Nullable Bundle savedInstanceState) {
@@ -127,9 +130,7 @@ public class SignInFragment extends Fragment {
         public void onSignInButtonClicked(boolean isConnected, String email, String password) {
             mViewModel.performSignIn();
 
-            /* disable all functionality */
-//            if (true) return;
-
+            // TODO implement 2-way databinding in SignInFragment
             final boolean emailIsMissing = email.isEmpty();
             final boolean passwordIsMissing = password.isEmpty();
 
@@ -152,23 +153,23 @@ public class SignInFragment extends Fragment {
             }
 
             if (mCredentialVerifier.checkIfValidEmail(email)) {
-                mAuth.signInWithEmailAndPassword(email, password)
-                        .addOnSuccessListener(authResult -> {
-                            Timber.d("Auth attempt successful");
-                            if (authResult.getUser() != null) {
-                                Timber.i("User successfully logged in! Username: %s, UID: %s",
-                                        authResult.getUser().getDisplayName(),
-                                        authResult.getUser().getUid());
-                                mSignInFragmentEventListener.onSignInSuccessful(isConnected);
-                            } else {
-                                Timber.w("Login failed");
-                                Toast.makeText(getContext(), "Username or password incorrect.", Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                        .addOnFailureListener(e -> {
-                            Timber.e(e, "Auth attempt failed");
-                            Toast.makeText(getContext(), "Could not log in: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        });
+                mAppAuth.signInWithEmailAndPassword(email, password, new AppAuth.AppAuthResult() {
+                    @Override
+                    public void onSuccess(@NonNull AppUser user) {
+                        Timber.i("Auth attempt successful! Username=%s,email=%s,UID=%s",
+                                user.getDisplayName(),
+                                user.getEmail(),
+                                user.getUid());
+
+                        mSignInFragmentEventListener.onSignInSuccessful(isConnected);
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Timber.e(e, "Auth attempt failed");
+                        Toast.makeText(getContext(), "Could not log in: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
             } else {
                 mBinding.tilSigninEmail.setError(getString(R.string.error_message_sign_in_invalid_email));
                 requestFocusOnError(mBinding.etSigninEmail);

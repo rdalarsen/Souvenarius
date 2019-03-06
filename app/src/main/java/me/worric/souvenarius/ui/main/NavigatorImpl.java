@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 
-import com.google.firebase.auth.FirebaseUser;
-
 import javax.inject.Inject;
 
 import androidx.annotation.Nullable;
@@ -15,9 +13,10 @@ import androidx.fragment.app.FragmentTransaction;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.di.ActivityScope;
 import me.worric.souvenarius.ui.add.AddFragment;
+import me.worric.souvenarius.ui.authwrapper.AppUser;
+import me.worric.souvenarius.ui.createaccount.CreateAccountFragment;
 import me.worric.souvenarius.ui.detail.DetailFragment;
 import me.worric.souvenarius.ui.search.SearchFragment;
-import me.worric.souvenarius.ui.createaccount.CreateAccountFragment;
 import me.worric.souvenarius.ui.signin.SignInFragment;
 import me.worric.souvenarius.ui.widget.SouvenirWidgetProvider;
 import timber.log.Timber;
@@ -85,7 +84,7 @@ public class NavigatorImpl implements Navigator {
     }
 
     @Override
-    public void initNavigation(@Nullable Bundle savedInstanceState, @Nullable FirebaseUser user,
+    public void initNavigation(@Nullable Bundle savedInstanceState, @Nullable AppUser user,
                                @Nullable Intent launchIntent) {
         if (savedInstanceState != null || launchIntent == null) {
             return;
