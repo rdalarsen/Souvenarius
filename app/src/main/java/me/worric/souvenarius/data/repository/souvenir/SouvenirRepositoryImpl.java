@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 
 import org.threeten.bp.Instant;
@@ -30,6 +29,7 @@ import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.data.repository.UpdateSouvenirsService;
 import me.worric.souvenarius.di.AppContext;
 import me.worric.souvenarius.di.SouvenirErrorMsgs;
+import me.worric.souvenarius.ui.authwrapper.AppAuth;
 import me.worric.souvenarius.ui.main.SortStyle;
 import timber.log.Timber;
 
@@ -43,7 +43,7 @@ public class SouvenirRepositoryImpl implements SouvenirRepository {
     private final FirebaseHandler mFirebaseHandler;
     private final StorageHandler mStorageHandler;
     private final Map<Integer,String> mErrorMessages;
-    private final FirebaseAuth mAuth;
+    private final AppAuth mAppAuth;
     private final AppDatabase mAppDatabase;
     private final MutableLiveData<QueryParameters> mQueryParameters = new MutableLiveData<>();
     private final SharedPreferences mPrefs;
@@ -55,12 +55,13 @@ public class SouvenirRepositoryImpl implements SouvenirRepository {
                                   @SouvenirErrorMsgs Map<Integer,String> errorMessages,
                                   AppDatabase appDatabase,
                                   SharedPreferences prefs,
+                                  AppAuth appAuth,
                                   @AppContext Context context,
                                   DbTaskRunner dbTaskRunner) {
         mFirebaseHandler = firebaseHandler;
         mStorageHandler = storageHandler;
         mErrorMessages = errorMessages;
-        mAuth = FirebaseAuth.getInstance();
+        mAppAuth = appAuth;
         mAppDatabase = appDatabase;
         mPrefs = prefs;
         mDbTaskRunner = dbTaskRunner;
@@ -69,7 +70,7 @@ public class SouvenirRepositoryImpl implements SouvenirRepository {
     }
 
     private void initQueryParameters() {
-        mQueryParameters.setValue(new QueryParameters(mAuth.getUid(), getSortStyleFromPrefs(mPrefs, PREFS_KEY_SORT_STYLE)));
+        mQueryParameters.setValue(new QueryParameters(mAppAuth.getUid(), getSortStyleFromPrefs(mPrefs, PREFS_KEY_SORT_STYLE)));
     }
 
     @Override
@@ -103,11 +104,11 @@ public class SouvenirRepositoryImpl implements SouvenirRepository {
     @Override
     public LiveData<Result<List<SouvenirDb>>> findSouvenirsByTitle(String title) {
         return Transformations.map(mAppDatabase.souvenirDao().findSouvenirsByTitle(
-                mAuth.getUid(), formatTitleForUseWithLike(title)),
+                mAppAuth.getUid(), formatForUseWithLikeOperator(title)),
                 this::createResult);
     }
 
-    private String formatTitleForUseWithLike(String title) {
+    private String formatForUseWithLikeOperator(String title) {
         return String.format("%%%s%%", title);
     }
 
@@ -150,7 +151,7 @@ public class SouvenirRepositoryImpl implements SouvenirRepository {
 
         souvenir.setTimestamp(Instant.now().toEpochMilli());
         souvenir.setId(UUID.randomUUID().toString());
-        souvenir.setUid(mAuth.getUid());
+        souvenir.setUid(mAppAuth.getUid());
 
         mDbTaskRunner.runInsertTask(souvenir, mAppDatabase, listener);
     }
