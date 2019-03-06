@@ -12,24 +12,20 @@ import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
 import dagger.android.ContributesAndroidInjector;
-import dagger.android.support.AndroidSupportInjectionModule;
 import me.worric.souvenarius.data.DataModule;
 import me.worric.souvenarius.data.repository.UpdateSouvenirsService;
 import me.worric.souvenarius.di.ActivityScope;
 import me.worric.souvenarius.di.AppContext;
-import me.worric.souvenarius.ui.FragmentContributorModule;
-import me.worric.souvenarius.ui.authwrapper.AppAuthModule;
 import me.worric.souvenarius.ui.common.PrefsUtils;
-import me.worric.souvenarius.ui.common.ViewModelModule;
 import me.worric.souvenarius.ui.main.MainActivity;
 import me.worric.souvenarius.ui.main.MainActivityModule;
 import me.worric.souvenarius.ui.widget.UpdateWidgetService;
 
 @Module(includes = {
-        AndroidSupportInjectionModule.class,
-        ViewModelModule.class,
+
+
         DataModule.class,
-        AppAuthModule.class
+
 })
 public abstract class SouvenirAppModule {
 
@@ -39,7 +35,7 @@ public abstract class SouvenirAppModule {
     abstract Context bindApplicationContext(Application application);
 
     @ActivityScope
-    @ContributesAndroidInjector(modules = {MainActivityModule.class, FragmentContributorModule.class})
+    @ContributesAndroidInjector(modules = MainActivityModule.class)
     abstract MainActivity contributeMainActivity();
 
     @ContributesAndroidInjector

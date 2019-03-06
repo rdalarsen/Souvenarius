@@ -6,9 +6,19 @@ import javax.inject.Singleton;
 
 import dagger.BindsInstance;
 import dagger.Component;
+import dagger.android.support.AndroidSupportInjectionModule;
+import me.worric.souvenarius.ui.FragmentContributorModule;
+import me.worric.souvenarius.ui.authwrapper.AppAuthModule;
+import me.worric.souvenarius.ui.common.ViewModelModule;
 
 @Singleton
-@Component(modules = SouvenirAppModule.class)
+@Component(modules = {
+        AndroidSupportInjectionModule.class,
+        SouvenirAppModule.class,
+        ViewModelModule.class,
+        FragmentContributorModule.class,
+        AppAuthModule.class
+})
 public interface SouvenirAppComponent {
 
     @Component.Builder
