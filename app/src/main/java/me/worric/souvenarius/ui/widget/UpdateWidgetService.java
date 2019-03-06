@@ -7,8 +7,6 @@ import android.content.Intent;
 import android.os.Handler;
 import android.text.TextUtils;
 
-import com.google.firebase.auth.FirebaseAuth;
-
 import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
@@ -18,6 +16,8 @@ import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.db.AppDatabase;
 import me.worric.souvenarius.data.model.SouvenirDb;
+import me.worric.souvenarius.ui.authwrapper.AppAuth;
+import timber.log.Timber;
 
 /**
  * JobIntentService is a compatibility class inheriting from IntentService, that enables correct
@@ -30,20 +30,18 @@ public class UpdateWidgetService extends JobIntentService {
 
     private static final String ACTION_UPDATE_WIDGET = "action_update_widget";
     private static final int JOB_ID = 345;
-    private FirebaseAuth mAuth;
-    @Inject
-    protected AppDatabase mAppDatabase;
-    @Inject
-    protected Handler mMainThreadHandler;
+    @Inject AppAuth mAppAuth;
+    @Inject AppDatabase mAppDatabase;
+    @Inject Handler mMainThreadHandler;
 
     @Override
     public void onCreate() {
         AndroidInjection.inject(this);
         super.onCreate();
-        mAuth = FirebaseAuth.getInstance();
     }
 
     public static void startWidgetUpdate(Context context) {
+        Timber.i("UpdateWidgetService started");
         Intent intent = new Intent(context, UpdateWidgetService.class);
         intent.setAction(ACTION_UPDATE_WIDGET);
         enqueueWork(context, UpdateWidgetService.class, JOB_ID, intent);
@@ -63,11 +61,13 @@ public class UpdateWidgetService extends JobIntentService {
     }
 
     private void handleUpdateWidget() {
-        Result<SouvenirDb> resultSouvenir;
-        String uid = mAuth.getUid();
+        Timber.i("Handling widget update");
 
-        if (!TextUtils.isEmpty(uid)) {
-            SouvenirDb souvenir = mAppDatabase.souvenirDao().findMostRecentSync(uid);
+        Result<SouvenirDb> resultSouvenir;
+        String currentUserUid = mAppAuth.getUid();
+
+        if (!TextUtils.isEmpty(currentUserUid)) {
+            SouvenirDb souvenir = mAppDatabase.souvenirDao().findMostRecentSync(currentUserUid);
 
             if (souvenir == null) {
                 resultSouvenir = Result.failure(getString(R.string.error_message_widget_no_souvenirs));
