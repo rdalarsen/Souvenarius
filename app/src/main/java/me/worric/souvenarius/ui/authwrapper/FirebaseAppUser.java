@@ -4,12 +4,11 @@ import com.google.firebase.auth.FirebaseUser;
 
 import androidx.annotation.Nullable;
 
-@Deprecated
-public abstract class AbstractAppUser implements AppUser {
+public class FirebaseAppUser implements AppUser {
 
     private final FirebaseUser mFirebaseUser;
 
-    public AbstractAppUser(FirebaseUser firebaseUser) {
+    public FirebaseAppUser(FirebaseUser firebaseUser) {
         mFirebaseUser = firebaseUser;
     }
 
@@ -35,7 +34,13 @@ public abstract class AbstractAppUser implements AppUser {
 
     @Override
     public boolean equals(@Nullable Object obj) {
-        return mFirebaseUser.equals(obj);
+        if (obj == null || obj instanceof FirebaseAppUser || obj instanceof FirebaseUser) {
+            return mFirebaseUser.equals(obj);
+        }
+
+        throw new IllegalArgumentException("Cannot check for equality - object is not an instance " +
+                "of either " + FirebaseAppUser.class.getSimpleName() + " or " +
+                FirebaseUser.class.getSimpleName() + ". Instead was: " + obj.toString());
     }
 
 }
