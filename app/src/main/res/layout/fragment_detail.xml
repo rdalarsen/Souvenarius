@@ -79,7 +79,7 @@
                 app:constraint_referenced_ids="tv_detail_num_photos,tv_detail_timestamp"
                 app:barrierDirection="bottom" />
 
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cv_title_container"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -116,15 +116,14 @@
                             android:gravity="bottom"
                             android:text="@string/label_title_detail" />
 
-                        <TextView
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/tv_detail_edit_title"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                            android:textAllCaps="true"
-                            android:clickable="true"
-                            android:focusable="true"
+                            android:insetBottom="0dp"
+                            android:insetLeft="0dp"
                             android:textColor="@color/colorAccent"
+                            style="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
                             android:text="@string/label_edit_detail"
                             android:onClick="@{clickHandler::onEditClicked}" />
 
@@ -143,9 +142,9 @@
                         tools:text="@tools:sample/lorem" />
 
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cv_place_container"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -182,15 +181,12 @@
                             android:gravity="bottom"
                             android:text="@string/label_place_detail" />
 
-                        <TextView
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/tv_detail_edit_place"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                            android:textAllCaps="true"
-                            android:clickable="true"
-                            android:focusable="true"
                             android:textColor="@color/colorAccent"
+                            style="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
                             android:text="@string/label_edit_detail"
                             android:onClick="@{clickHandler::onEditClicked}" />
 
@@ -209,9 +205,9 @@
                         tools:text="@tools:sample/lorem" />
 
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cv_story_container"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -248,14 +244,11 @@
                             android:textStyle="italic"
                             android:gravity="bottom" />
 
-                        <TextView
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/tv_detail_edit_story"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                            android:textAllCaps="true"
-                            android:clickable="true"
-                            android:focusable="true"
+                            style="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
                             android:textColor="@color/colorAccent"
                             android:text="@string/label_edit_detail"
                             android:onClick="@{clickHandler::onEditClicked}" />
@@ -273,7 +266,7 @@
                         tools:text="@tools:sample/lorem/random" />
 
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
             <View
                 android:layout_width="match_parent"

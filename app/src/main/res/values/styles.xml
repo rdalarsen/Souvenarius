@@ -5,11 +5,12 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!-- TODO: Widget broken. Find out if app widgets work with MaterialComponents themes -->
     <!-- This is for the button in the app widget -->
     <!-- See this SO post for explanation of why we do this: https://stackoverflow.com/a/51413195 -->
-    <style name="WidgetColoredButtonTheme" parent="ThemeOverlay.MaterialComponents.Light">
+    <style name="WidgetColoredButtonTheme" parent="ThemeOverlay.AppCompat.Light">
         <item name="colorButtonNormal">@color/colorAccent</item>
-        <item name="buttonStyle">@style/Widget.MaterialComponents.Button</item>
+        <item name="buttonStyle">@style/Widget.AppCompat.Button.Colored</item>
     </style>
 
 </resources>

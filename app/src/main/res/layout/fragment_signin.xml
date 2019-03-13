@@ -64,9 +64,8 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_signin_signin"
-            style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -78,7 +77,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/til_signin_password" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_signin_create"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -86,7 +85,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btn_signin_signin"
-            style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:enabled="@{isConnected}"
             android:onClick="@{() -> clickListener.onCreateAccountButtonClicked()}"
             android:text="@string/btnlabel_signin_create" />

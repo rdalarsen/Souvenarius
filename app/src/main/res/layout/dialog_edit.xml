@@ -27,7 +27,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_edit_cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -36,18 +36,18 @@
                 app:layout_constraintEnd_toStartOf="@+id/btn_edit_save"
                 app:layout_constraintHorizontal_chainStyle="packed"
                 app:chainUseRtl="true"
-                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                style="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
                 android:onClick="@{clickListener::onCancelClicked}"
                 android:text="@string/btn_edit_dialog_cancel" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_edit_save"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/btn_edit_cancel"
                 app:layout_constraintEnd_toEndOf="parent"
-                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                style="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
                 android:onClick="@{clickListener::onSaveClicked}"
                 android:text="@string/btn_edit_dialog_save" />
 
