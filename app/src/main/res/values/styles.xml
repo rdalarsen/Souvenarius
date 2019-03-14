@@ -1,14 +1,14 @@
 <resources>
-    <!-- TODO migrate to Material Components theme -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!-- TODO: Widget broken. Find out if app widgets work with MaterialComponents themes -->
+    <!-- This is for the button in the app widget -->
     <!-- See this SO post for explanation of why we do this: https://stackoverflow.com/a/51413195 -->
-    <style name="WidgetColoredButtonTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="WidgetColoredButtonTheme" parent="ThemeOverlay.AppCompat.Light">
         <item name="colorButtonNormal">@color/colorAccent</item>
         <item name="buttonStyle">@style/Widget.AppCompat.Button.Colored</item>
     </style>
