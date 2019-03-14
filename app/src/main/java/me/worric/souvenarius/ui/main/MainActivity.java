@@ -51,14 +51,10 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     private MainViewModel mMainViewModel;
     private ActivityMainBinding mBinding;
     private LocalBroadcastManager mBroadcastManager;
-    @Inject
-    protected AppAuth mAppAuth;
-    @Inject
-    protected Navigator mNavigator;
-    @Inject
-    protected ViewModelProvider.Factory mFactory;
-    @Inject
-    DispatchingAndroidInjector<Fragment> mInjector;
+    @Inject AppAuth mAppAuth;
+    @Inject Navigator mNavigator;
+    @Inject ViewModelProvider.Factory mFactory;
+    @Inject DispatchingAndroidInjector<Fragment> mInjector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,8 +65,9 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         mBinding.setViewmodel(mMainViewModel);
         mBinding.setLifecycleOwner(this);
 
-        setSupportActionBar(mBinding.toolbar);
+        setSupportActionBar(mBinding.tbMainHeaderToolbar);
 
+        // TODO: switch to dependency injection
         mBroadcastManager = LocalBroadcastManager.getInstance(this);
 
         checkLocationPermissions();
@@ -111,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mIsConnected != null) {
             outState.putBoolean(KEY_IS_CONNECTED, mIsConnected);

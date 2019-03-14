@@ -16,29 +16,87 @@
             type="Boolean" />
     </data>
     <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/cl_main_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".ui.main.MainActivity">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appbar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/main_headerHeight"
+            android:background="@android:color/white">
+
+            <com.google.android.material.appbar.CollapsingToolbarLayout
+                android:id="@+id/ctl_main_headerCollapsingLayout"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed|exitUntilCollapsed|snap"
+                app:titleEnabled="false">
+
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/tb_main_headerToolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:layout_gravity="top"
+                    android:theme="@style/ThemeOverlay.MaterialComponents.Light"
+                    app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light"
+                    app:layout_collapseMode="pin"
+                    app:title="@string/app_name"
+                    app:titleTextAppearance="?textAppearanceHeadline5" />
+
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_main_headerMenuContainer"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/main_menuBar_size"
+                android:minHeight="@dimen/main_menuBar_size"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+                <TextView
+                    android:id="@+id/tv_main_headerNumSouvenirs"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:textAppearance="?textAppearanceSubtitle1"
+                    android:textColor="#80000000"
+                    android:textStyle="italic"
+                    android:text="Souvenirs: 256" />
+
+                <com.google.android.material.button.MaterialButton
+                    style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+                    android:id="@+id/iv_main_headerSearchIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/main_menuBar_size"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:text="search"
+                    app:icon="@drawable/ic_search" />
+
+                <com.google.android.material.button.MaterialButton
+                    style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+                    android:id="@+id/iv_main_headerSortIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/main_menuBar_size"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/iv_main_headerSearchIcon"
+                    android:text="sort"
+                    app:icon="@drawable/ic_sort" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.appbar.AppBarLayout>
 
         <FrameLayout
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/appbar_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?android:attr/actionBarSize"
-                android:theme="@style/ThemeOverlay.MaterialComponents.Dark"
-                app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light"
-                app:layout_scrollFlags="scroll|enterAlways" />
-        </com.google.android.material.appbar.AppBarLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btn_fab_add_souvenir"
