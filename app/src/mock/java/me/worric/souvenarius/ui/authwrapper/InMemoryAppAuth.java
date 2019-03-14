@@ -39,6 +39,7 @@ public class InMemoryAppAuth implements AppAuth {
     @Inject
     public InMemoryAppAuth(Map<AppUser,String> testData) {
         mTestData = testData;
+        mCurrentUser = testData.keySet().iterator().next();
     }
 
     @Nullable

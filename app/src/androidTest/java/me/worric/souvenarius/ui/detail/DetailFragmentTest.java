@@ -14,7 +14,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.MediumTest;
 import me.worric.libtestrule.DisableAnimationsRule;
 import me.worric.souvenarius.R;
-import me.worric.souvenarius.data.db.AppDatabase;
+import me.worric.souvenarius.data.RoomMockUtils;
 import me.worric.souvenarius.ui.main.MainActivity;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -37,11 +37,8 @@ import static org.hamcrest.Matchers.not;
 @MediumTest
 public class DetailFragmentTest {
 
-    @Rule
-    public final IntentsTestRule<MainActivity> mRule = new IntentsTestRule<>(MainActivity.class);
-
-    @Rule
-    public final DisableAnimationsRule mAnimationsRule = new DisableAnimationsRule();
+    @Rule public final IntentsTestRule<MainActivity> mRule = new IntentsTestRule<>(MainActivity.class);
+    @Rule public final DisableAnimationsRule mAnimationsRule = new DisableAnimationsRule();
 
     @Test
     public void detailFragment_onShareSouvenirClick_correctIntentIsLaunched() {
@@ -81,15 +78,15 @@ public class DetailFragmentTest {
                 .perform(actionOnItemAtPosition(0, click()));
 
         onView(withId(R.id.tv_detail_title))
-                .check(matches(withText(AppDatabase.MY_TITLE)));
+                .check(matches(withText(RoomMockUtils.MY_TITLE)));
         onView(withId(R.id.tv_detail_place))
-                .check(matches(withText(AppDatabase.MY_PLACE)));
+                .check(matches(withText(RoomMockUtils.MY_PLACE)));
         onView(withId(R.id.tv_detail_story))
-                .check(matches(withText(AppDatabase.MY_STORY)));
+                .check(matches(withText(RoomMockUtils.MY_STORY)));
         onView(withId(R.id.tv_detail_num_photos))
-                .check(matches(withText(AppDatabase.NUM_PHOTOS)));
+                .check(matches(withText(RoomMockUtils.NUM_PHOTOS)));
         onView(withId(R.id.tv_detail_timestamp))
-                .check(matches(withText(AppDatabase.FORMATTED_DATE)));
+                .check(matches(withText(RoomMockUtils.FORMATTED_DATE)));
     }
 
 }
