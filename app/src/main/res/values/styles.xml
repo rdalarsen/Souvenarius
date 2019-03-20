@@ -3,6 +3,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="textAppearanceSmallHeader">@style/CustomHeaderLabel</item>
     </style>
 
     <!-- TODO: Widget broken. Find out if app widgets work with MaterialComponents themes -->
@@ -11,6 +12,11 @@
     <style name="WidgetColoredButtonTheme" parent="ThemeOverlay.AppCompat.Light">
         <item name="colorButtonNormal">@color/colorAccent</item>
         <item name="buttonStyle">@style/Widget.AppCompat.Button.Colored</item>
+    </style>
+
+    <style name="CustomHeaderLabel" parent="TextAppearance.MaterialComponents.Subtitle1">
+        <item name="android:textStyle">italic</item>
+        <item name="android:textColor">@color/nice_black</item>
     </style>
 
 </resources>

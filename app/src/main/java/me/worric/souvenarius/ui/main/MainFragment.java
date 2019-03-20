@@ -1,15 +1,9 @@
 package me.worric.souvenarius.ui.main;
 
-import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.SharedPreferences;
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Parcelable;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,6 +14,12 @@ import android.widget.Toast;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 import dagger.android.support.AndroidSupportInjection;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.Result;
@@ -42,13 +42,11 @@ public class MainFragment extends Fragment {
     private Parcelable mLayoutManagerState;
     private FabStateChanger mFabStateChanger;
     private MainFragmentEventListener mMainFragmentEventListener;
-    @Inject
-    protected ViewModelProvider.Factory mFactory;
-    @Inject
-    protected SharedPreferences mSharedPreferences;
+    @Inject ViewModelProvider.Factory mFactory;
+    @Inject SharedPreferences mSharedPreferences;
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         AndroidSupportInjection.inject(this);
         super.onAttach(context);
         try {
@@ -64,7 +62,7 @@ public class MainFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        mViewModel = ViewModelProviders.of(getActivity(), mFactory).get(MainViewModel.class);
+        mViewModel = ViewModelProviders.of(requireActivity(), mFactory).get(MainViewModel.class);
         mAdapter = new SouvenirAdapter(souvenir ->
                 mMainFragmentEventListener.onSouvenirClicked(souvenir));
     }
@@ -137,12 +135,12 @@ public class MainFragment extends Fragment {
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.main_menu, menu);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_main_refresh_data:
                 refreshData();
@@ -165,7 +163,7 @@ public class MainFragment extends Fragment {
     }
 
     private void refreshData() {
-        if (!NetUtils.isConnected(getContext())) {
+        if (!NetUtils.isConnected(requireContext())) {
             showErrorToast();
         }
         UpdateSouvenirsService.startSouvenirsUpdate(getContext());
@@ -208,7 +206,6 @@ public class MainFragment extends Fragment {
         return new MainFragment();
     }
 
-    public MainFragment() {
-    }
+    public MainFragment() {}
 
 }

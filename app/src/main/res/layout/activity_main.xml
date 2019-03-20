@@ -44,7 +44,7 @@
                     app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light"
                     app:layout_collapseMode="pin"
                     app:title="@string/app_name"
-                    app:titleTextAppearance="?textAppearanceHeadline5" />
+                    app:titleTextAppearance="?attr/textAppearanceHeadline5" />
 
             </com.google.android.material.appbar.CollapsingToolbarLayout>
 
@@ -63,9 +63,7 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    android:textAppearance="?textAppearanceSubtitle1"
-                    android:textColor="#80000000"
-                    android:textStyle="italic"
+                    android:textAppearance="?attr/textAppearanceSmallHeader"
                     android:text="Souvenirs: 256" />
 
                 <com.google.android.material.button.MaterialButton
@@ -85,7 +83,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/main_menuBar_size"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/iv_main_headerSearchIcon"
+                    app:layout_constraintEnd_toStartOf="@+id/iv_main_headerSearchIcon"
                     android:text="sort"
                     app:icon="@drawable/ic_sort" />
 
@@ -122,7 +120,7 @@
             android:text="@string/main_connection_warning"
             android:background="@drawable/connectivity_warning_background"
             android:fontFamily="sans-serif-medium"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark"
+            android:theme="@style/ThemeOverlay.MaterialComponents.Dark"
             app:layout_anchor="@+id/fragment_container"
             app:layout_anchorGravity="bottom|start"
             android:clickable="true"
