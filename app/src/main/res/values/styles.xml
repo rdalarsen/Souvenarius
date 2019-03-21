@@ -4,9 +4,11 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="textAppearanceSmallHeader">@style/CustomHeaderLabel</item>
+        <item name="textAppearanceTitleHeader">@style/CustomTitleHeader</item>
     </style>
 
     <!-- TODO: Widget broken. Find out if app widgets work with MaterialComponents themes -->
+    <!-- Potential solution: specify AppCompat as a Theme on widget root view  -->
     <!-- This is for the button in the app widget -->
     <!-- See this SO post for explanation of why we do this: https://stackoverflow.com/a/51413195 -->
     <style name="WidgetColoredButtonTheme" parent="ThemeOverlay.AppCompat.Light">
@@ -16,6 +18,11 @@
 
     <style name="CustomHeaderLabel" parent="TextAppearance.MaterialComponents.Subtitle1">
         <item name="android:textStyle">italic</item>
+        <item name="android:textColor">@color/nice_black</item>
+    </style>
+
+    <style name="CustomTitleHeader" parent="TextAppearance.MaterialComponents.Headline4">
+        <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:textColor">@color/nice_black</item>
     </style>
 

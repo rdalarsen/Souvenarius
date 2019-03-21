@@ -33,7 +33,11 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed|exitUntilCollapsed|snap"
-                app:titleEnabled="false">
+                app:title="@string/app_name"
+                app:expandedTitleGravity="start|bottom"
+                app:expandedTitleTextAppearance="?attr/textAppearanceTitleHeader"
+                app:collapsedTitleTextAppearance="?attr/textAppearanceHeadline5"
+                app:titleEnabled="true">
 
                 <androidx.appcompat.widget.Toolbar
                     android:id="@+id/tb_main_headerToolbar"
