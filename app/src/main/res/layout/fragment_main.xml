@@ -13,6 +13,9 @@
         <variable
             name="resultSouvenirs"
             type="me.worric.souvenarius.data.Result&lt;List&lt;SouvenirDb&gt;&gt;" />
+        <variable
+            name="clickListener"
+            type="me.worric.souvenarius.ui.main.MainFragment.ClickListener" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

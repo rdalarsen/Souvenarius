@@ -73,6 +73,7 @@ public class MainFragment extends Fragment {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_main, container, false);
         mBinding.setViewmodel(mViewModel);
         mBinding.setLifecycleOwner(this);
+        mBinding.setClickListener(mClickListener);
         return mBinding.getRoot();
     }
 
@@ -194,6 +195,26 @@ public class MainFragment extends Fragment {
                     .apply();
             mViewModel.updateSortStyle(SortStyle.DESC);
         }
+    }
+
+    private ClickListener mClickListener = new ClickListener() {
+        @Override
+        public void onSortClick(View view) {
+            SortStyle sortStyle = PrefsUtils.getSortStyleFromPrefs(mSharedPreferences,
+                    PREFS_KEY_SORT_STYLE);
+            mShouldRestoreLayoutManagerState = false;
+            toggleAndPropagateSortStyle(sortStyle);
+        }
+
+        @Override
+        public void onSearchClick(View view) {
+            mMainFragmentEventListener.onSearchClicked();
+        }
+    };
+
+    public interface ClickListener {
+        void onSortClick(View view);
+        void onSearchClick(View view);
     }
 
     public interface MainFragmentEventListener {
