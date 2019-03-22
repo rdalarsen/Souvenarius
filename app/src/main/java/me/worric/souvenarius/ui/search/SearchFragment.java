@@ -41,11 +41,10 @@ public class SearchFragment extends Fragment {
     private String mQuery;
     private FabStateChanger mFabStateChanger;
     private SearchFragmentEventListener mSearchFragmentEventListener;
-    @Inject
-    protected ViewModelProvider.Factory mFactory;
+    @Inject ViewModelProvider.Factory mFactory;
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         AndroidSupportInjection.inject(this);
         super.onAttach(context);
         try {
@@ -77,7 +76,7 @@ public class SearchFragment extends Fragment {
         mBinding.setViewmodel(mViewModel);
         mBinding.setLifecycleOwner(this);
         mBinding.setSearchResultAdapter(mAdapter);
-        mBinding.setItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+        mBinding.setItemDecoration(new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL));
         return mBinding.getRoot();
     }
 
@@ -96,7 +95,7 @@ public class SearchFragment extends Fragment {
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.search_menu, menu);
         mSearchView = (SearchView) menu.findItem(R.id.action_search_filter).getActionView();
         setupSearchView();
@@ -142,7 +141,7 @@ public class SearchFragment extends Fragment {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_search_filter:
                 // no-op
@@ -179,7 +178,6 @@ public class SearchFragment extends Fragment {
         return new SearchFragment();
     }
 
-    public SearchFragment() {
-    }
+    public SearchFragment() {}
 
 }

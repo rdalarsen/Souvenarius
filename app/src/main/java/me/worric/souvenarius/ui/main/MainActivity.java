@@ -12,6 +12,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
@@ -20,6 +23,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -72,6 +76,43 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         checkLocationPermissions();
         mNavigator.initNavigation(savedInstanceState, mAppAuth.getCurrentUser(), getIntent());
         restoreSavedValues(savedInstanceState);
+
+        getSupportFragmentManager().registerFragmentLifecycleCallbacks(new FabTweaker(), false);
+    }
+
+    /**
+     * Helper class that knows about the Fragments hosted in MainFragment and is able to change the
+     * FAB visibility state accordingly.
+     *
+     * It is attached to the SupportFragmentManager of the Activity, where it listens for resumed
+     * fragments and takes appropriate action.
+     */
+    private class FabTweaker extends FragmentManager.FragmentLifecycleCallbacks {
+
+        private final Map<Class<? extends Fragment>,FabState> myMap;
+
+        private FabTweaker() {
+            myMap = new HashMap<>();
+            myMap.put(MainFragment.class,FabState.HIDDEN);
+            myMap.put(DetailFragment.class,FabState.ADD);
+            myMap.put(SignInFragment.class,FabState.HIDDEN);
+            myMap.put(SearchFragment.class,FabState.HIDDEN);
+        }
+
+        @Override
+        public void onFragmentResumed(@NonNull FragmentManager fm, @NonNull Fragment f) {
+            if (!myMap.containsKey(f.getClass())) {
+                Timber.w("Fragment of class %s not setup to configure FAB; skipping", f.getClass().getSimpleName());
+                return;
+            }
+
+            FabState state = myMap.get(f.getClass());
+            if (state != null) {
+                Timber.d("Fragment resumed is of type: %s. Applying FAB state: %s",
+                        f.getClass().getSimpleName(), state.toString());
+                mBinding.setFabState(state);
+            }
+        }
     }
 
     private void checkLocationPermissions() {
@@ -216,7 +257,7 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     */
     @Override
     public void changeFabState(FabState fabState) {
-        mBinding.setFabState(fabState);
+        // No-op
     }
 
     private BroadcastReceiver mConnectionStateReceiver = new BroadcastReceiver() {
