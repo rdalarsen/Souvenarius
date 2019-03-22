@@ -13,7 +13,7 @@
     <string name="hint_story_add">Your story here…</string>
     <string name="hint_location_add">Location…</string>
     <string name="hint_location_error_add">Location (could not autodetect)…</string>
-    <string name="format_location_add">%s, %s</string>
+    <string name="format_location_add" translatable="false">%s, %s</string>
     <string name="error_message_add_temp_file">Could not allocate temporary file.</string>
     <string name="error_message_add_missing_values">There are missing values. Please input them.</string>
     <string name="success_message_add_souvenir_saved">Souvenir successfully saved.</string>
@@ -26,13 +26,15 @@
     <!-- Main fragment -->
     <string name="souvenir_list_error_message">There are no souvenirs. Go get some :)!</string>
     <string name="menu_main_sign_out">Sign out</string>
-    <string name="menu_main_refresh_data">Refresh data</string>
     <string name="menu_main_sort_by_date_asc_desc">Sort by date asc/desc</string>
-    <string name="menu_main_search">Search</string>
     <string name="main_toast_sort_asc">Sort by date ascending</string>
     <string name="main_toast_sort_desc">Sort by date descending</string>
     <string name="content_desc_main_item_souvenir_photo">Souvenir photo</string>
     <string name="error_message_main_no_connection">No internet connection. Cannot refresh data.</string>
+    <string name="main_searchButtonLabel">Search</string>
+    <string name="main_sortButtonLabel">Sort</string>
+    <string name="main_numSouvenirs">Souvenirs: %1$s</string>
+    <string name="main_numSouvenirsError">Souvenirs: -</string>
 
     <!-- Detail fragment -->
     <string name="content_desc_item_detail_photo">Souvenir photo</string>

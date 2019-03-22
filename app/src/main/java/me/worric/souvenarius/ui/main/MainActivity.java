@@ -15,6 +15,7 @@ import android.widget.Toast;
 import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.databinding.DataBindingUtil;
@@ -57,15 +58,13 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     @Inject DispatchingAndroidInjector<Fragment> mInjector;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         mMainViewModel = ViewModelProviders.of(this, mFactory).get(MainViewModel.class);
         mBinding.setViewmodel(mMainViewModel);
         mBinding.setLifecycleOwner(this);
-
-        setSupportActionBar(mBinding.tbMainHeaderToolbar);
 
         // TODO: switch to dependency injection
         mBroadcastManager = LocalBroadcastManager.getInstance(this);
@@ -118,7 +117,6 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        mBinding.appbarLayout.setExpanded(true);
     }
 
     @Override
@@ -138,7 +136,6 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     */
     public void handleAddFabClicked(View view) {
         mNavigator.navigateToAdd();
-        mBinding.appbarLayout.setExpanded(true);
     }
 
     public void handleShowConnectionWarningToast(View view) {
@@ -178,7 +175,6 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     @Override
     public void onCreateAccountClicked() {
         mNavigator.navigateToCreateAccount();
-        mBinding.appbarLayout.setExpanded(true);
     }
 
     /*
@@ -187,7 +183,6 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     @Override
     public void onSouvenirClicked(SouvenirDb souvenir) {
         mNavigator.navigateToDetail(souvenir.getId());
-        mBinding.appbarLayout.setExpanded(true);
     }
 
     @Override
@@ -201,7 +196,6 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     @Override
     public void onSearchClicked() {
         mNavigator.navigateToSearch();
-        mBinding.appbarLayout.setExpanded(true);
     }
 
     /*
@@ -210,13 +204,11 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     @Override
     public void onClearButtonClicked() {
         mNavigator.navigateBack();
-        mBinding.appbarLayout.setExpanded(true);
     }
 
     @Override
     public void onSearchResultClicked(SouvenirDb souvenir) {
         mNavigator.navigateToDetail(souvenir.getId());
-        mBinding.appbarLayout.setExpanded(true);
     }
 
     /*

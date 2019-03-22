@@ -5,9 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -16,6 +13,7 @@ import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -61,7 +59,6 @@ public class MainFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
         mViewModel = ViewModelProviders.of(requireActivity(), mFactory).get(MainViewModel.class);
         mAdapter = new SouvenirAdapter(souvenir ->
                 mMainFragmentEventListener.onSouvenirClicked(souvenir));
@@ -74,20 +71,42 @@ public class MainFragment extends Fragment {
         mBinding.setViewmodel(mViewModel);
         mBinding.setLifecycleOwner(this);
         mBinding.setClickListener(mClickListener);
+        configureToolbar(mBinding.tbMainHeaderToolbar);
+        setupRecyclerView();
         return mBinding.getRoot();
+    }
+
+    private void configureToolbar(Toolbar toolbar) {
+        toolbar.inflateMenu(R.menu.main_menu);
+        toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_main_sign_out) {
+                mMainFragmentEventListener.onSignOutClicked();
+                return true;
+            }
+            return false;
+        });
+    }
+
+    private void setupRecyclerView() {
+        mBinding.rvSouvenirList.setAdapter(mAdapter);
+        mBinding.rvSouvenirList.setHasFixedSize(true);
+        mBinding.srlRefresh.setOnRefreshListener(() -> {
+            mShouldRestoreLayoutManagerState = false;
+            refreshData();
+            mBinding.srlRefresh.setRefreshing(false);
+        });
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel.getSouvenirs().observe(getViewLifecycleOwner(), souvenirResult -> {
-            mBinding.setResultSouvenirs(souvenirResult);
+            mBinding.setResultSouvenirs(souvenirResult); // TODO: integrate more tightly with data binding
             if (souvenirResult.status.equals(Result.Status.SUCCESS)) {
                 mAdapter.swapSouvenirs(souvenirResult.response);
                 restoreLayoutManagerState(savedInstanceState);
             }
         });
-        setupRecyclerView();
     }
 
     private void restoreLayoutManagerState(@Nullable Bundle savedInstanceState) {
@@ -100,16 +119,6 @@ public class MainFragment extends Fragment {
             }
         }
         mShouldRestoreLayoutManagerState = true;
-    }
-
-    private void setupRecyclerView() {
-        mBinding.rvSouvenirList.setAdapter(mAdapter);
-        mBinding.rvSouvenirList.setHasFixedSize(true);
-        mBinding.srlRefresh.setOnRefreshListener(() -> {
-            mShouldRestoreLayoutManagerState = false;
-            refreshData();
-            mBinding.srlRefresh.setRefreshing(false);
-        });
     }
 
     @Override
@@ -135,43 +144,15 @@ public class MainFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.main_menu, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_main_refresh_data:
-                refreshData();
-                return true;
-            case R.id.action_main_sign_out:
-                mMainFragmentEventListener.onSignOutClicked();
-                return true;
-            case R.id.action_main_toggle_sort:
-                SortStyle sortStyle = PrefsUtils.getSortStyleFromPrefs(mSharedPreferences,
-                        PREFS_KEY_SORT_STYLE);
-                mShouldRestoreLayoutManagerState = false;
-                toggleAndPropagateSortStyle(sortStyle);
-                return true;
-            case R.id.action_main_search:
-                mMainFragmentEventListener.onSearchClicked();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
     private void refreshData() {
         if (!NetUtils.isConnected(requireContext())) {
             showErrorToast();
         }
-        UpdateSouvenirsService.startSouvenirsUpdate(getContext());
+        UpdateSouvenirsService.startSouvenirsUpdate(requireContext());
     }
 
     private void showErrorToast() {
-        Toast.makeText(getContext(), R.string.error_message_main_no_connection, Toast.LENGTH_SHORT).show();
+        Toast.makeText(requireContext(), R.string.error_message_main_no_connection, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -183,13 +164,13 @@ public class MainFragment extends Fragment {
 
     private void toggleAndPropagateSortStyle(SortStyle sortStyle) {
         if (sortStyle.equals(SortStyle.DESC)) {
-            Toast.makeText(getContext(), R.string.main_toast_sort_asc, Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), R.string.main_toast_sort_asc, Toast.LENGTH_SHORT).show();
             mSharedPreferences.edit()
                     .putString(PREFS_KEY_SORT_STYLE, SortStyle.ASC.toString())
                     .apply();
             mViewModel.updateSortStyle(SortStyle.ASC);
         } else {
-            Toast.makeText(getContext(), R.string.main_toast_sort_desc, Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), R.string.main_toast_sort_desc, Toast.LENGTH_SHORT).show();
             mSharedPreferences.edit()
                     .putString(PREFS_KEY_SORT_STYLE, SortStyle.DESC.toString())
                     .apply();
@@ -197,7 +178,7 @@ public class MainFragment extends Fragment {
         }
     }
 
-    private ClickListener mClickListener = new ClickListener() {
+    private final ClickListener mClickListener = new ClickListener() {
         @Override
         public void onSortClick(View view) {
             SortStyle sortStyle = PrefsUtils.getSortStyleFromPrefs(mSharedPreferences,
