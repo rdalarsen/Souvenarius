@@ -23,7 +23,7 @@
             android:id="@+id/rv_search_result_list"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tb_search_searchToolBar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -64,6 +64,18 @@
             app:goneUnless="@{viewmodel.status == Status.FAILURE}"
             app:constraint_referenced_ids="tv_search_errorText,iv_search_errorImage"
             tools:visibility="visible" />
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/tb_search_searchToolBar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:theme="@style/ThemeOverlay.MaterialComponents.Light"
+            app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light"
+            app:title="@string/app_name"
+            app:titleTextAppearance="?attr/textAppearanceHeadline5" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

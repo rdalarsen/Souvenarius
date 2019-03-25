@@ -56,7 +56,7 @@ public class SignInFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mViewModel = ViewModelProviders.of(this).get(SignInViewModel.class);
-        mCredentialVerifier = new CredentialVerifier(Patterns.EMAIL_ADDRESS);
+        mCredentialVerifier = new CredentialVerifier(Patterns.EMAIL_ADDRESS); // TODO: Move to DI
         mIsConnected = initIsConnected(savedInstanceState);
     }
 

@@ -4,9 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -16,6 +13,7 @@ import javax.inject.Inject;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -55,8 +53,6 @@ public class SearchFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-        mViewModel = ViewModelProviders.of(this, mFactory).get(SearchViewModel.class);
         mAdapter = new SearchResultsAdapter(souvenir ->
                 mSearchFragmentEventListener.onSearchResultClicked(souvenir));
         if (savedInstanceState != null) {
@@ -68,35 +64,28 @@ public class SearchFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        mViewModel = ViewModelProviders.of(this, mFactory).get(SearchViewModel.class);
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
         mBinding.setViewmodel(mViewModel);
         mBinding.setLifecycleOwner(this);
         mBinding.setSearchResultAdapter(mAdapter);
         mBinding.setItemDecoration(new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL));
+        setupToolbar(mBinding.tbSearchSearchToolBar);
         return mBinding.getRoot();
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (mSearchView != null) {
-            mQuery = mSearchView.getQuery().toString();
-        }
+    private void setupToolbar(Toolbar toolBar) {
+        toolBar.inflateMenu(R.menu.search_menu);
+        mSearchView = (SearchView) toolBar.getMenu().findItem(R.id.action_search_filter).getActionView();
+        setupSearchView(mSearchView);
     }
 
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.search_menu, menu);
-        mSearchView = (SearchView) menu.findItem(R.id.action_search_filter).getActionView();
-        setupSearchView();
-    }
-
-    private void setupSearchView() {
-        mSearchView.setMaxWidth(Integer.MAX_VALUE);
-        mSearchView.setSubmitButtonEnabled(true);
-        mSearchView.setQueryHint(getString(R.string.hint_search_search_for_title));
-        mSearchView.setIconified(isIconified);
-        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+    private void setupSearchView(SearchView searchView) {
+        searchView.setMaxWidth(Integer.MAX_VALUE);
+        searchView.setSubmitButtonEnabled(true);
+        searchView.setQueryHint(getString(R.string.hint_search_search_for_title));
+        searchView.setIconified(isIconified);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
                 Timber.i("Search Query triggered: %s", s);
@@ -111,7 +100,7 @@ public class SearchFragment extends Fragment {
                 return false;
             }
         });
-        mSearchView.setOnCloseListener(() -> {
+        searchView.setOnCloseListener(() -> {
             Timber.d("onCloseListener triggered");
             if (TextUtils.isEmpty(mSearchView.getQuery())) {
                 hideSoftKeyboard();
@@ -120,7 +109,7 @@ public class SearchFragment extends Fragment {
             }
             return false;
         });
-        mSearchView.setQuery(mQuery, true);
+        searchView.setQuery(mQuery, true);
 
         if (!TextUtils.isEmpty(mQuery)) mSearchView.clearFocus();
     }
@@ -131,13 +120,10 @@ public class SearchFragment extends Fragment {
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_search_filter:
-                // no-op
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+    public void onPause() {
+        super.onPause();
+        if (mSearchView != null) {
+            mQuery = mSearchView.getQuery().toString();
         }
     }
 
