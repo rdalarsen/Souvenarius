@@ -12,13 +12,18 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -51,17 +56,13 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     private MainViewModel mMainViewModel;
     private ActivityMainBinding mBinding;
     private LocalBroadcastManager mBroadcastManager;
-    @Inject
-    protected AppAuth mAppAuth;
-    @Inject
-    protected Navigator mNavigator;
-    @Inject
-    protected ViewModelProvider.Factory mFactory;
-    @Inject
-    DispatchingAndroidInjector<Fragment> mInjector;
+    @Inject AppAuth mAppAuth;
+    @Inject Navigator mNavigator;
+    @Inject ViewModelProvider.Factory mFactory;
+    @Inject DispatchingAndroidInjector<Fragment> mInjector;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
@@ -69,13 +70,49 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         mBinding.setViewmodel(mMainViewModel);
         mBinding.setLifecycleOwner(this);
 
-        setSupportActionBar(mBinding.toolbar);
-
+        // TODO: switch to dependency injection
         mBroadcastManager = LocalBroadcastManager.getInstance(this);
 
         checkLocationPermissions();
         mNavigator.initNavigation(savedInstanceState, mAppAuth.getCurrentUser(), getIntent());
         restoreSavedValues(savedInstanceState);
+
+        getSupportFragmentManager().registerFragmentLifecycleCallbacks(new FabTweaker(), false);
+    }
+
+    /**
+     * Helper class that knows about the Fragments hosted in MainFragment and is able to change the
+     * FAB visibility state accordingly.
+     *
+     * It is attached to the SupportFragmentManager of the Activity, where it listens for resumed
+     * fragments and takes appropriate action.
+     */
+    private class FabTweaker extends FragmentManager.FragmentLifecycleCallbacks {
+
+        private final Map<Class<? extends Fragment>,FabState> myMap;
+
+        private FabTweaker() {
+            myMap = new HashMap<>();
+            myMap.put(MainFragment.class,FabState.HIDDEN);
+            myMap.put(DetailFragment.class,FabState.ADD);
+            myMap.put(SignInFragment.class,FabState.HIDDEN);
+            myMap.put(SearchFragment.class,FabState.HIDDEN);
+        }
+
+        @Override
+        public void onFragmentResumed(@NonNull FragmentManager fm, @NonNull Fragment f) {
+            if (!myMap.containsKey(f.getClass())) {
+                Timber.w("Fragment of class %s not setup to configure FAB; skipping", f.getClass().getSimpleName());
+                return;
+            }
+
+            FabState state = myMap.get(f.getClass());
+            if (state != null) {
+                Timber.d("Fragment resumed is of type: %s. Applying FAB state: %s",
+                        f.getClass().getSimpleName(), state.toString());
+                mBinding.setFabState(state);
+            }
+        }
     }
 
     private void checkLocationPermissions() {
@@ -111,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mIsConnected != null) {
             outState.putBoolean(KEY_IS_CONNECTED, mIsConnected);
@@ -121,7 +158,6 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        mBinding.appbarLayout.setExpanded(true);
     }
 
     @Override
@@ -141,7 +177,6 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     */
     public void handleAddFabClicked(View view) {
         mNavigator.navigateToAdd();
-        mBinding.appbarLayout.setExpanded(true);
     }
 
     public void handleShowConnectionWarningToast(View view) {
@@ -181,7 +216,6 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     @Override
     public void onCreateAccountClicked() {
         mNavigator.navigateToCreateAccount();
-        mBinding.appbarLayout.setExpanded(true);
     }
 
     /*
@@ -190,7 +224,6 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     @Override
     public void onSouvenirClicked(SouvenirDb souvenir) {
         mNavigator.navigateToDetail(souvenir.getId());
-        mBinding.appbarLayout.setExpanded(true);
     }
 
     @Override
@@ -204,7 +237,6 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     @Override
     public void onSearchClicked() {
         mNavigator.navigateToSearch();
-        mBinding.appbarLayout.setExpanded(true);
     }
 
     /*
@@ -213,13 +245,11 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     @Override
     public void onClearButtonClicked() {
         mNavigator.navigateBack();
-        mBinding.appbarLayout.setExpanded(true);
     }
 
     @Override
     public void onSearchResultClicked(SouvenirDb souvenir) {
         mNavigator.navigateToDetail(souvenir.getId());
-        mBinding.appbarLayout.setExpanded(true);
     }
 
     /*
@@ -227,7 +257,7 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     */
     @Override
     public void changeFabState(FabState fabState) {
-        mBinding.setFabState(fabState);
+        // No-op
     }
 
     private BroadcastReceiver mConnectionStateReceiver = new BroadcastReceiver() {

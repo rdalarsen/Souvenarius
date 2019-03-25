@@ -13,19 +13,96 @@
         <variable
             name="resultSouvenirs"
             type="me.worric.souvenarius.data.Result&lt;List&lt;SouvenirDb&gt;&gt;" />
+        <variable
+            name="clickListener"
+            type="me.worric.souvenarius.ui.main.MainFragment.ClickListener" />
     </data>
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/cl_mainFragment_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appbar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/main_headerHeight"
+            android:background="@android:color/white">
+
+            <com.google.android.material.appbar.CollapsingToolbarLayout
+                android:id="@+id/ctl_main_headerCollapsingLayout"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed|exitUntilCollapsed|snap"
+                app:title="@string/app_name"
+                app:expandedTitleGravity="start|bottom"
+                app:expandedTitleTextAppearance="?attr/textAppearanceTitleHeader"
+                app:collapsedTitleTextAppearance="?attr/textAppearanceHeadline5"
+                app:titleEnabled="true">
+
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/tb_main_headerToolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:layout_gravity="top"
+                    android:theme="@style/ThemeOverlay.MaterialComponents.Light"
+                    app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light"
+                    app:layout_collapseMode="pin"
+                    app:title="@string/app_name"
+                    app:titleTextAppearance="?attr/textAppearanceHeadline5" />
+
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_main_headerMenuContainer"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/main_menuBar_size"
+                android:minHeight="@dimen/main_menuBar_size"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+                <TextView
+                    android:id="@+id/tv_main_headerNumSouvenirs"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:textAppearance="?attr/textAppearanceSmallHeader"
+                    android:text="@{@string/main_numSouvenirs(viewmodel.numSouvenirs) ?? @string/main_numSouvenirsError}"
+                    tools:text="Souvenirs: 20" />
+
+                <com.google.android.material.button.MaterialButton
+                    style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+                    android:id="@+id/iv_main_headerSearchIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/main_menuBar_size"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:text="@string/main_searchButtonLabel"
+                    android:onClick="@{clickListener::onSearchClick}"
+                    app:icon="@drawable/ic_search" />
+
+                <com.google.android.material.button.MaterialButton
+                    style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+                    android:id="@+id/iv_main_headerSortIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/main_menuBar_size"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/iv_main_headerSearchIcon"
+                    android:onClick="@{clickListener::onSortClick}"
+                    android:text="@string/main_sortButtonLabel"
+                    app:icon="@drawable/ic_sort" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.appbar.AppBarLayout>
+
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/srl_refresh"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_souvenir_list"
@@ -37,18 +114,20 @@
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:spanCount="@integer/souvenir_list_span_count"
                 tools:listitem="@layout/item_main_souvenir" />
+
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <TextView
             android:id="@+id/tv_souvenir_list_error_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_anchorGravity="center"
+            app:layout_anchor="@+id/srl_refresh"
             android:visibility="@{resultSouvenirs.response.size() > 0 ? View.GONE : View.VISIBLE}"
-            android:text="@{resultSouvenirs.status == Status.SUCCESS ? @string/souvenir_list_error_message : viewmodel.souvenirs.message}" />
+            android:text="@{resultSouvenirs.status == Status.SUCCESS ? @string/souvenir_list_error_message : viewmodel.souvenirs.message}"
+            tools:text="Test Text"
+            tools:background="@android:color/white"
+            tools:textSize="32sp" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

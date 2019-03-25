@@ -1,6 +1,7 @@
 package me.worric.souvenarius.ui.authwrapper;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -39,6 +40,13 @@ public class InMemoryAppAuth implements AppAuth {
     @Inject
     public InMemoryAppAuth(Map<AppUser,String> testData) {
         mTestData = testData;
+        for (Iterator<AppUser> it = mTestData.keySet().iterator(); it.hasNext();) {
+            AppUser user;
+            if ((user = it.next()).getUid().equals("HFnz2Pc627Qv06f5RVso6Y8QAcq1")) {
+                mCurrentUser = user;
+                break;
+            }
+        }
     }
 
     @Nullable

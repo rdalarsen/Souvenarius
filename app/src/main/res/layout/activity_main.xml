@@ -16,6 +16,7 @@
             type="Boolean" />
     </data>
     <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/cl_main_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".ui.main.MainActivity">
@@ -23,22 +24,7 @@
         <FrameLayout
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/appbar_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?android:attr/actionBarSize"
-                android:theme="@style/ThemeOverlay.MaterialComponents.Dark"
-                app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light"
-                app:layout_scrollFlags="scroll|enterAlways" />
-        </com.google.android.material.appbar.AppBarLayout>
+            android:layout_height="match_parent" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btn_fab_add_souvenir"
@@ -64,7 +50,7 @@
             android:text="@string/main_connection_warning"
             android:background="@drawable/connectivity_warning_background"
             android:fontFamily="sans-serif-medium"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark"
+            android:theme="@style/ThemeOverlay.MaterialComponents.Dark"
             app:layout_anchor="@+id/fragment_container"
             app:layout_anchorGravity="bottom|start"
             android:clickable="true"
