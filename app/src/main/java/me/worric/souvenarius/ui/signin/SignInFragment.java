@@ -2,7 +2,6 @@ package me.worric.souvenarius.ui.signin;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,8 +30,8 @@ public class SignInFragment extends Fragment {
 
     private FragmentSigninBinding mBinding;
     private SignInFragmentEventListener mSignInFragmentEventListener;
-    private CredentialVerifier mCredentialVerifier;
     private MainViewModel mViewModel;
+    @Inject CredentialVerifier mCredentialVerifier;
     @Inject AppAuth mAppAuth;
 
     @Override
@@ -45,12 +44,6 @@ public class SignInFragment extends Fragment {
             throw new IllegalArgumentException("Attached activity does not implement" +
                     " SignInFragmentEventListener: " + context.toString());
         }
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mCredentialVerifier = new CredentialVerifier(Patterns.EMAIL_ADDRESS); // TODO: Move to DI
     }
 
     @Nullable

@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Patterns;
+
+import java.util.regex.Pattern;
 
 import javax.inject.Singleton;
 
@@ -42,6 +45,11 @@ public abstract class SouvenirAppModule {
     @Singleton
     static SharedPreferences provideSharedPreferences(@AppContext Context context) {
         return context.getSharedPreferences(PrefsUtils.PREFS_NAME, Context.MODE_PRIVATE);
+    }
+
+    @Provides
+    static Pattern provideEmailAddressPattern() {
+        return Patterns.EMAIL_ADDRESS;
     }
 
     @Provides

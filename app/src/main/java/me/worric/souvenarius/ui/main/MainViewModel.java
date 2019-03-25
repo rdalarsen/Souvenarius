@@ -1,7 +1,6 @@
 package me.worric.souvenarius.ui.main;
 
 import android.text.TextUtils;
-import android.util.Patterns;
 
 import java.util.List;
 
@@ -27,16 +26,17 @@ public class MainViewModel extends ViewModel implements SignInFragment.SignInFea
     private final LiveData<Result<List<SouvenirDb>>> mSouvenirs;
     private final MutableLiveData<Boolean> mIsConnected;
 
-    private final CredentialVerifier mVerifier = new CredentialVerifier(Patterns.EMAIL_ADDRESS); // TODO: Hook up to DI
+    private final CredentialVerifier mCredentialVerifier;
     private boolean isErrorModeEnabled;
     private MutableLiveData<String> mEmailContent;
     private MutableLiveData<SignInFragment.SignInError> mEmailError;
     private LiveData<Boolean> mHasError;
 
     @Inject
-    public MainViewModel(SouvenirRepository souvenirRepository) {
-        mIsConnected = new MutableLiveData<>();
+    public MainViewModel(SouvenirRepository souvenirRepository, CredentialVerifier credentialVerifier) {
         mSouvenirRepository = souvenirRepository;
+        mCredentialVerifier = credentialVerifier;
+        mIsConnected = new MutableLiveData<>();
         mSouvenirs = mSouvenirRepository.getSouvenirs();
         mNumSouvenirs = Transformations.map(mSouvenirs, result -> {
             if (result != null && result.status.equals(Result.Status.SUCCESS)) {
@@ -50,7 +50,7 @@ public class MainViewModel extends ViewModel implements SignInFragment.SignInFea
         mEmailError = new MutableLiveData<>();
         mHasError = Transformations.map(mEmailContent, content -> {
             boolean emptyText = TextUtils.isEmpty(content);
-            boolean invalidEmail = !mVerifier.checkIfValidEmail(content);
+            boolean invalidEmail = !mCredentialVerifier.checkIfValidEmail(content);
             if (isErrorModeEnabled) {
                 if (emptyText) {
                     // set empty text
