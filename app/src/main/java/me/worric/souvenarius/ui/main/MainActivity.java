@@ -37,7 +37,6 @@ import me.worric.souvenarius.data.repository.UpdateSouvenirsService;
 import me.worric.souvenarius.databinding.ActivityMainBinding;
 import me.worric.souvenarius.ui.add.AddFragment;
 import me.worric.souvenarius.ui.authwrapper.AppAuth;
-import me.worric.souvenarius.ui.common.FabStateChanger;
 import me.worric.souvenarius.ui.detail.DetailFragment;
 import me.worric.souvenarius.ui.search.SearchFragment;
 import me.worric.souvenarius.ui.signin.SignInFragment;
@@ -45,9 +44,9 @@ import me.worric.souvenarius.ui.widget.UpdateWidgetService;
 import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity implements HasSupportFragmentInjector,
-        FabStateChanger, DetailFragment.DetailFragmentEventListener,
-        MainFragment.MainFragmentEventListener, AddFragment.AddFragmentEventListener,
-        SearchFragment.SearchFragmentEventListener, SignInFragment.SignInFragmentEventListener {
+        DetailFragment.DetailFragmentEventListener, MainFragment.MainFragmentEventListener,
+        AddFragment.AddFragmentEventListener, SearchFragment.SearchFragmentEventListener,
+        SignInFragment.SignInFragmentEventListener {
 
     public static final String KEY_IS_CONNECTED = "key_is_connected";
     public static final String ACTION_CONNECTIVITY_CHANGED = "action_connectivity_changed";
@@ -93,10 +92,11 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
 
         private FabTweaker() {
             myMap = new HashMap<>();
-            myMap.put(MainFragment.class,FabState.HIDDEN);
-            myMap.put(DetailFragment.class,FabState.ADD);
+            myMap.put(MainFragment.class,FabState.ADD);
+            myMap.put(DetailFragment.class,FabState.HIDDEN);
             myMap.put(SignInFragment.class,FabState.HIDDEN);
             myMap.put(SearchFragment.class,FabState.HIDDEN);
+            myMap.put(AddFragment.class,FabState.HIDDEN);
         }
 
         @Override
@@ -250,14 +250,6 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     @Override
     public void onSearchResultClicked(SouvenirDb souvenir) {
         mNavigator.navigateToDetail(souvenir.getId());
-    }
-
-    /*
-    * FabStateChanger callback
-    */
-    @Override
-    public void changeFabState(FabState fabState) {
-        // No-op
     }
 
     private BroadcastReceiver mConnectionStateReceiver = new BroadcastReceiver() {

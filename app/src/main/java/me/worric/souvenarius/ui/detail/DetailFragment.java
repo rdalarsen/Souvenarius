@@ -1,21 +1,11 @@
 package me.worric.souvenarius.ui.detail;
 
-import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
-import androidx.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.MediaStore;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.core.app.ShareCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.LinearSnapHelper;
-import androidx.recyclerview.widget.SnapHelper;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,14 +18,22 @@ import java.io.File;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ShareCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSnapHelper;
+import androidx.recyclerview.widget.SnapHelper;
 import dagger.android.support.AndroidSupportInjection;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.databinding.FragmentDetailBinding;
-import me.worric.souvenarius.ui.common.FabStateChanger;
 import me.worric.souvenarius.ui.common.FileUtils;
 import me.worric.souvenarius.ui.common.NetUtils;
-import me.worric.souvenarius.ui.main.FabState;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_CANCELED;
@@ -59,21 +57,18 @@ public class DetailFragment extends Fragment implements
     private SouvenirPhotoAdapter mAdapter;
     private Parcelable mLayoutManagerState;
     private int[] mScrollViewPosition;
-    private FabStateChanger mFabStateChanger;
     private DetailFragmentEventListener mDetailFragmentEventListener;
-    @Inject
-    protected ViewModelProvider.Factory mFactory;
+    @Inject ViewModelProvider.Factory mFactory;
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         AndroidSupportInjection.inject(this);
         super.onAttach(context);
         try {
-            mFabStateChanger = (FabStateChanger) context;
             mDetailFragmentEventListener = (DetailFragmentEventListener) context;
         } catch (ClassCastException cce) {
-            throw new IllegalArgumentException("Attached activity does not implement either" +
-                    " FabStateChanger or DetailFragmentEventListener or both: " + context.toString());
+            throw new IllegalArgumentException("Attached activity does not implement" +
+                    " DetailFragmentEventListener: " + context.toString());
         }
     }
 
@@ -81,7 +76,7 @@ public class DetailFragment extends Fragment implements
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        String souvenirId = getArguments().getString(KEY_SOUVENIR_ID);
+        String souvenirId = requireArguments().getString(KEY_SOUVENIR_ID);
         mViewModel = ViewModelProviders.of(this, mFactory).get(DetailViewModel.class);
         mViewModel.setSouvenirId(souvenirId);
         mAdapter = new SouvenirPhotoAdapter(mDeletePhotoClickListener);
@@ -137,12 +132,6 @@ public class DetailFragment extends Fragment implements
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        mFabStateChanger.changeFabState(FabState.HIDDEN);
-    }
-
-    @Override
     public void onPause() {
         super.onPause();
         mLayoutManagerState = mBinding.rvSouvenirPhotoList.getLayoutManager().onSaveInstanceState();
@@ -162,22 +151,22 @@ public class DetailFragment extends Fragment implements
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.detail_menu, menu);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_detail_add_photo:
-                if (!NetUtils.isConnected(getContext())) {
+                if (!NetUtils.isConnected(requireContext())) {
                     showErrorToast();
                     return true;
                 }
                 takePhoto();
                 return true;
             case R.id.action_detail_delete_souvenir:
-                if (!NetUtils.isConnected(getContext())) {
+                if (!NetUtils.isConnected(requireContext())) {
                     showErrorToast();
                     return true;
                 }
@@ -194,7 +183,7 @@ public class DetailFragment extends Fragment implements
 
     @NonNull
     private Intent createShareIntent() {
-        return ShareCompat.IntentBuilder.from(getActivity())
+        return ShareCompat.IntentBuilder.from(requireActivity())
                 .setChooserTitle(R.string.share_dialog_title_detail)
                 .setType("text/plain")
                 .setText(createTextFromSouvenir())
@@ -221,18 +210,17 @@ public class DetailFragment extends Fragment implements
     public void onDetach() {
         super.onDetach();
         mDetailFragmentEventListener = null;
-        mFabStateChanger = null;
     }
 
     @Override
     public void onDeleteSouvenirConfirmed() {
-        mViewModel.deleteSouvenir(getContext());
+        mViewModel.deleteSouvenir(requireContext());
         mDetailFragmentEventListener.onSouvenirDeleted();
     }
 
     @Override
     public void onDeletePhotoConfirmed(String photoName) {
-        File photoFile = FileUtils.getLocalFileForPhotoName(photoName, getContext());
+        File photoFile = FileUtils.getLocalFileForPhotoName(photoName, requireContext());
         if (mViewModel.deletePhoto(photoFile)) {
             Timber.i("Successfully deleted");
         } else {
@@ -242,11 +230,11 @@ public class DetailFragment extends Fragment implements
 
     private void takePhoto() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if ((intent.resolveActivity(getContext().getPackageManager())) != null) {
-            File photo = FileUtils.createTempImageFile(getContext());
+        if ((intent.resolveActivity(requireActivity().getPackageManager())) != null) {
+            File photo = FileUtils.createTempImageFile(requireContext());
             mViewModel.setPhotoFile(photo);
             if (photo != null) {
-                Uri photoUri = FileUtils.getUriForFile(photo, getContext());
+                Uri photoUri = FileUtils.getUriForFile(photo, requireContext());
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                 startActivityForResult(intent, TAKE_PHOTO_REQUEST_CODE);
             } else {
@@ -283,7 +271,7 @@ public class DetailFragment extends Fragment implements
     }
 
     private final SouvenirPhotoAdapter.DeletePhotoClickListener mDeletePhotoClickListener = photoName -> {
-        if (!NetUtils.isConnected(getContext())) {
+        if (!NetUtils.isConnected(requireContext())) {
             showErrorToast();
             return;
         }
@@ -293,7 +281,7 @@ public class DetailFragment extends Fragment implements
     };
 
     private final EditClickListener mEditClickListener = view -> {
-        if (!NetUtils.isConnected(getContext())) {
+        if (!NetUtils.isConnected(requireContext())) {
             showErrorToast();
             return;
         }

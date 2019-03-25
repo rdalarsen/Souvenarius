@@ -24,7 +24,6 @@ import me.worric.souvenarius.data.Result;
 import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.data.repository.UpdateSouvenirsService;
 import me.worric.souvenarius.databinding.FragmentMainBinding;
-import me.worric.souvenarius.ui.common.FabStateChanger;
 import me.worric.souvenarius.ui.common.NetUtils;
 import me.worric.souvenarius.ui.common.PrefsUtils;
 
@@ -38,7 +37,6 @@ public class MainFragment extends Fragment {
     private SouvenirAdapter mAdapter;
     private boolean mShouldRestoreLayoutManagerState = true;
     private Parcelable mLayoutManagerState;
-    private FabStateChanger mFabStateChanger;
     private MainFragmentEventListener mMainFragmentEventListener;
     @Inject ViewModelProvider.Factory mFactory;
     @Inject SharedPreferences mSharedPreferences;
@@ -48,11 +46,10 @@ public class MainFragment extends Fragment {
         AndroidSupportInjection.inject(this);
         super.onAttach(context);
         try {
-            mFabStateChanger = (FabStateChanger) context;
             mMainFragmentEventListener = (MainFragmentEventListener) context;
         } catch (ClassCastException cce) {
-            throw new IllegalArgumentException("Attached activity does not implement either" +
-                    " FabStateChanger or MainFragmentEventListener or both: " + context.toString());
+            throw new IllegalArgumentException("Attached activity does not implement" +
+                    " MainFragmentEventListener: " + context.toString());
         }
     }
 
@@ -122,12 +119,6 @@ public class MainFragment extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        mFabStateChanger.changeFabState(FabState.ADD);
-    }
-
-    @Override
     public void onPause() {
         super.onPause();
         mLayoutManagerState = mBinding.rvSouvenirList.getLayoutManager().onSaveInstanceState();
@@ -158,7 +149,6 @@ public class MainFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mFabStateChanger = null;
         mMainFragmentEventListener = null;
     }
 

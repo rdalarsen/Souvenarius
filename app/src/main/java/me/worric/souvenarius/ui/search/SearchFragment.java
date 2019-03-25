@@ -25,8 +25,6 @@ import dagger.android.support.AndroidSupportInjection;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.databinding.FragmentSearchBinding;
-import me.worric.souvenarius.ui.common.FabStateChanger;
-import me.worric.souvenarius.ui.main.FabState;
 import timber.log.Timber;
 
 public class SearchFragment extends Fragment {
@@ -39,7 +37,6 @@ public class SearchFragment extends Fragment {
     private SearchView mSearchView;
     private boolean isIconified = false;
     private String mQuery;
-    private FabStateChanger mFabStateChanger;
     private SearchFragmentEventListener mSearchFragmentEventListener;
     @Inject ViewModelProvider.Factory mFactory;
 
@@ -48,11 +45,10 @@ public class SearchFragment extends Fragment {
         AndroidSupportInjection.inject(this);
         super.onAttach(context);
         try {
-            mFabStateChanger = (FabStateChanger) context;
             mSearchFragmentEventListener = (SearchFragmentEventListener) context;
         } catch (ClassCastException cce) {
-            throw new IllegalArgumentException("Attached activity does not implement either" +
-                    " FabStateChanger or SearchFragmentEventListener or both: " + context.toString());
+            throw new IllegalArgumentException("Attached activity does not implement" +
+                    " SearchFragmentEventListener: " + context.toString());
         }
     }
 
@@ -78,12 +74,6 @@ public class SearchFragment extends Fragment {
         mBinding.setSearchResultAdapter(mAdapter);
         mBinding.setItemDecoration(new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL));
         return mBinding.getRoot();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mFabStateChanger.changeFabState(FabState.HIDDEN);
     }
 
     @Override
@@ -165,7 +155,6 @@ public class SearchFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mFabStateChanger = null;
         mSearchFragmentEventListener = null;
     }
 

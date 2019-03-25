@@ -1,16 +1,10 @@
 package me.worric.souvenarius.ui.add;
 
-import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
-import androidx.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,13 +14,17 @@ import java.io.File;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 import dagger.android.support.AndroidSupportInjection;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.databinding.FragmentAddBinding;
-import me.worric.souvenarius.ui.common.FabStateChanger;
 import me.worric.souvenarius.ui.common.FileUtils;
 import me.worric.souvenarius.ui.common.NetUtils;
-import me.worric.souvenarius.ui.main.FabState;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
@@ -39,21 +37,18 @@ public class AddFragment extends Fragment {
     private static final String KEY_FILE_PATH = "key_file_path";
     private FragmentAddBinding mBinding;
     private AddViewModel mViewModel;
-    private FabStateChanger mFabStateChanger;
     private AddFragmentEventListener mAddFragmentEventListener;
-    @Inject
-    protected ViewModelProvider.Factory mFactory;
+    @Inject ViewModelProvider.Factory mFactory;
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         AndroidSupportInjection.inject(this);
         super.onAttach(context);
         try {
-            mFabStateChanger = (FabStateChanger) context;
             mAddFragmentEventListener = (AddFragmentEventListener) context;
         } catch (ClassCastException cce) {
-            throw new IllegalArgumentException("Attached activity does not implement either" +
-                    " FabStateChanger or AddFragmentEventListener or both: " + context.toString());
+            throw new IllegalArgumentException("Attached activity does not implement" +
+                    " AddFragmentEventListener: " + context.toString());
         }
     }
 
@@ -81,12 +76,6 @@ public class AddFragment extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        mFabStateChanger.changeFabState(FabState.HIDDEN);
-    }
-
-    @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         File currentFile = mViewModel.getPhotoFile().getValue();
@@ -101,23 +90,23 @@ public class AddFragment extends Fragment {
      */
     private void takePhoto() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if ((intent.resolveActivity(getContext().getPackageManager())) != null) {
-            File photo = FileUtils.createTempImageFile(getContext());
+        if ((intent.resolveActivity(requireActivity().getPackageManager())) != null) {
+            File photo = FileUtils.createTempImageFile(requireContext());
             mViewModel.setPhotoFile(photo);
             if (photo != null) {
-                Uri photoUri = FileUtils.getUriForFile(photo, getContext());
+                Uri photoUri = FileUtils.getUriForFile(photo, requireContext());
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                 startActivityForResult(intent, TAKE_PHOTO_REQUEST_CODE);
             } else {
-                Toast.makeText(getContext(), R.string.error_message_add_temp_file, Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), R.string.error_message_add_temp_file, Toast.LENGTH_SHORT).show();
             }
         } else {
-            Toast.makeText(getContext(), R.string.error_message_add_no_photo_app, Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), R.string.error_message_add_no_photo_app, Toast.LENGTH_SHORT).show();
         }
     }
 
     private void showErrorToast() {
-        Toast.makeText(getContext(), R.string.error_message_add_no_connection, Toast.LENGTH_SHORT).show();
+        Toast.makeText(requireContext(), R.string.error_message_add_no_connection, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -137,14 +126,13 @@ public class AddFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mFabStateChanger = null;
         mAddFragmentEventListener = null;
     }
 
     private final ClickListener mClickListener = new ClickListener() {
         @Override
         public void onAddPhotoClicked(View view) {
-            if (!NetUtils.isConnected(getContext())) {
+            if (!NetUtils.isConnected(requireContext())) {
                 showErrorToast();
                 return;
             }
@@ -154,7 +142,7 @@ public class AddFragment extends Fragment {
 
         @Override
         public void onSaveSouvenirClicked(View view) {
-            if (!NetUtils.isConnected(getContext())) {
+            if (!NetUtils.isConnected(requireContext())) {
                 showErrorToast();
                 return;
             }
@@ -164,7 +152,7 @@ public class AddFragment extends Fragment {
                 Toast.makeText(getContext(), R.string.error_message_add_missing_values,
                         Toast.LENGTH_SHORT).show();
             } else {
-                if (mViewModel.addSouvenir(info, getContext())) {
+                if (mViewModel.addSouvenir(info, requireContext())) {
                     Toast.makeText(getContext(), R.string.success_message_add_souvenir_saved, Toast.LENGTH_SHORT).show();
                     mAddFragmentEventListener.onSouvenirSaved();
                 } else {
@@ -176,6 +164,7 @@ public class AddFragment extends Fragment {
 
     @NonNull
     private SouvenirSaveInfo extractEditTextValuesToSaveInfo() {
+        // TODO: Convert to DataBinding
         String story = mBinding.etStory.getText().toString();
         String title = mBinding.etSouvenirTitle.getText().toString();
         String place = mBinding.etPlace.getText().toString();
@@ -196,7 +185,6 @@ public class AddFragment extends Fragment {
         return new AddFragment();
     }
 
-    public AddFragment() {
-    }
+    public AddFragment() {}
 
 }

@@ -25,9 +25,7 @@ import me.worric.souvenarius.R;
 import me.worric.souvenarius.databinding.FragmentSigninBinding;
 import me.worric.souvenarius.ui.authwrapper.AppAuth;
 import me.worric.souvenarius.ui.authwrapper.AppUser;
-import me.worric.souvenarius.ui.common.FabStateChanger;
 import me.worric.souvenarius.ui.common.NetUtils;
-import me.worric.souvenarius.ui.main.FabState;
 import me.worric.souvenarius.ui.main.MainActivity;
 import timber.log.Timber;
 
@@ -35,24 +33,22 @@ import timber.log.Timber;
 public class SignInFragment extends Fragment {
 
     private static final String KEY_IS_CONNECTED = "key_is_connected";
-    @Inject AppAuth mAppAuth;
     private FragmentSigninBinding mBinding;
     private boolean mIsConnected;
-    private FabStateChanger mFabStateChanger;
     private SignInFragmentEventListener mSignInFragmentEventListener;
     private CredentialVerifier mCredentialVerifier;
     private SignInViewModel mViewModel;
+    @Inject AppAuth mAppAuth;
 
     @Override
     public void onAttach(@NonNull Context context) {
         AndroidSupportInjection.inject(this);
         super.onAttach(context);
         try {
-            mFabStateChanger = (FabStateChanger) context;
             mSignInFragmentEventListener = (SignInFragmentEventListener) context;
         } catch (ClassCastException cce) {
-            throw new IllegalArgumentException("Attached activity does not implement either" +
-                    " FabStateChanger or SignInFragmentEventListener or both: " + context.toString());
+            throw new IllegalArgumentException("Attached activity does not implement" +
+                    " SignInFragmentEventListener: " + context.toString());
         }
     }
 
@@ -66,7 +62,7 @@ public class SignInFragment extends Fragment {
 
     private boolean initIsConnected(@Nullable Bundle savedInstanceState) {
         if (savedInstanceState == null) {
-            return NetUtils.isConnected(getContext());
+            return NetUtils.isConnected(requireContext());
         } else if (savedInstanceState.containsKey(MainActivity.KEY_IS_CONNECTED)) {
             return savedInstanceState.getBoolean(KEY_IS_CONNECTED, false);
         }
@@ -87,16 +83,16 @@ public class SignInFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        // TODO: Remove LocalBroadcastManager in favor of ViewModel approach
         IntentFilter filter = new IntentFilter(MainActivity.ACTION_CONNECTIVITY_CHANGED);
-        LocalBroadcastManager.getInstance(getContext())
+        LocalBroadcastManager.getInstance(requireContext())
                 .registerReceiver(mReceiver, filter);
-        mFabStateChanger.changeFabState(FabState.HIDDEN);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        LocalBroadcastManager.getInstance(getContext())
+        LocalBroadcastManager.getInstance(requireContext())
                 .unregisterReceiver(mReceiver);
     }
 
@@ -109,7 +105,6 @@ public class SignInFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mFabStateChanger = null;
         mSignInFragmentEventListener = null;
     }
 
@@ -219,7 +214,6 @@ public class SignInFragment extends Fragment {
         return new SignInFragment();
     }
 
-    public SignInFragment() {
-    }
+    public SignInFragment() {}
 
 }
