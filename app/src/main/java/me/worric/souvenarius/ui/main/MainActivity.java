@@ -26,7 +26,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
@@ -48,13 +47,10 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         AddFragment.AddFragmentEventListener, SearchFragment.SearchFragmentEventListener,
         SignInFragment.SignInFragmentEventListener {
 
-    public static final String KEY_IS_CONNECTED = "key_is_connected";
-    public static final String ACTION_CONNECTIVITY_CHANGED = "action_connectivity_changed";
     private static final int RC_PERMISSION_RESULTS = 404;
-    private Boolean mIsConnected;
     private MainViewModel mMainViewModel;
     private ActivityMainBinding mBinding;
-    private LocalBroadcastManager mBroadcastManager;
+    private ConnectivityManager mConnectivityManager;
     @Inject AppAuth mAppAuth;
     @Inject Navigator mNavigator;
     @Inject ViewModelProvider.Factory mFactory;
@@ -69,14 +65,11 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         mBinding.setViewmodel(mMainViewModel);
         mBinding.setLifecycleOwner(this);
 
-        // TODO: switch to dependency injection
-        mBroadcastManager = LocalBroadcastManager.getInstance(this);
-
         checkLocationPermissions();
-        mNavigator.initNavigation(savedInstanceState, mAppAuth.getCurrentUser(), getIntent());
-        restoreSavedValues(savedInstanceState);
 
         getSupportFragmentManager().registerFragmentLifecycleCallbacks(new FabTweaker(), false);
+        mNavigator.initNavigation(savedInstanceState, mAppAuth.getCurrentUser(), getIntent());
+        mConnectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
     }
 
     /**
@@ -110,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
             if (state != null) {
                 Timber.d("Fragment resumed is of type: %s. Applying FAB state: %s",
                         f.getClass().getSimpleName(), state.toString());
-                mBinding.setFabState(state);
+                mBinding.setFabState(state); // TODO: Convert to viewmodel
             }
         }
     }
@@ -128,12 +121,6 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         }
     }
 
-    private void restoreSavedValues(Bundle savedInstanceState) {
-        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_IS_CONNECTED)) {
-            mIsConnected = savedInstanceState.getBoolean(KEY_IS_CONNECTED);
-        }
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -145,19 +132,6 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     protected void onPause() {
         super.onPause();
         unregisterReceiver(mConnectionStateReceiver);
-    }
-
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        if (mIsConnected != null) {
-            outState.putBoolean(KEY_IS_CONNECTED, mIsConnected);
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
     }
 
     @Override
@@ -255,32 +229,16 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
     private BroadcastReceiver mConnectionStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            if (manager == null) return;
-            NetworkInfo info = manager.getActiveNetworkInfo();
+            Timber.d("Received connectivity broadcast in MainActivity");
+            NetworkInfo info = mConnectivityManager.getActiveNetworkInfo();
             boolean isConnected = info != null && info.isConnected();
-            mBinding.setIsConnected(isConnected);
-            if (mIsConnected == null) {
-                mIsConnected = isConnected;
-                sendLocalConnectivityBroadcast();
-            } else {
-                boolean needsUpdate = !(mIsConnected == isConnected);
-                if (needsUpdate) {
-                    mIsConnected = isConnected;
-                    sendLocalConnectivityBroadcast();
-                }
-            }
+            mMainViewModel.updateConnectedStatus(isConnected);
         }
     };
-
-    private void sendLocalConnectivityBroadcast() {
-        Intent intent = new Intent(ACTION_CONNECTIVITY_CHANGED);
-        intent.putExtra(KEY_IS_CONNECTED, mIsConnected);
-        mBroadcastManager.sendBroadcast(intent);
-    }
 
     @Override
     public AndroidInjector<Fragment> supportFragmentInjector() {
         return mInjector;
     }
+
 }

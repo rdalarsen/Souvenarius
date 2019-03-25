@@ -5,10 +5,7 @@
     <data>
         <variable
             name="viewModel"
-            type="me.worric.souvenarius.ui.signin.SignInViewModel" />
-        <variable
-            name="isConnected"
-            type="Boolean" />
+            type="me.worric.souvenarius.ui.main.MainViewModel" />
         <variable
             name="clickListener"
             type="me.worric.souvenarius.ui.signin.SignInFragment.ClickListener" />
@@ -69,8 +66,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:enabled="@{isConnected}"
-            android:onClick="@{() -> clickListener.onSignInButtonClicked(isConnected, etSigninEmail.text.toString.trim, etSigninPassword.text.toString.trim)}"
+            android:enabled="@{viewModel.isConnected}"
+            android:onClick="@{() -> clickListener.onSignInButtonClicked(viewModel.isConnected, etSigninEmail.text.toString.trim, etSigninPassword.text.toString.trim)}"
             android:text="@string/btn_label_sign_in"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -85,7 +82,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btn_signin_signin"
-            android:enabled="@{isConnected}"
+            android:enabled="@{viewModel.isConnected}"
             android:onClick="@{() -> clickListener.onCreateAccountButtonClicked()}"
             android:text="@string/btnlabel_signin_create" />
 

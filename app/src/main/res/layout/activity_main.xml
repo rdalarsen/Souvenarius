@@ -11,9 +11,6 @@
         <variable
             name="fabState"
             type="me.worric.souvenarius.ui.main.FabState" />
-        <variable
-            name="isConnected"
-            type="Boolean" />
     </data>
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/cl_main_root"
@@ -55,7 +52,7 @@
             app:layout_anchorGravity="bottom|start"
             android:clickable="true"
             android:focusable="true"
-            android:visibility="@{isConnected ? View.GONE : View.VISIBLE}"
+            android:visibility="@{viewmodel.isConnected ? View.GONE : View.VISIBLE}"
             android:onClick="handleShowConnectionWarningToast" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

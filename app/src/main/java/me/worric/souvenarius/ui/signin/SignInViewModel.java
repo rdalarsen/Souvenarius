@@ -17,7 +17,7 @@ public class SignInViewModel extends ViewModel {
     private CredentialVerifier mVerifier;
     private boolean isErrorModeEnabled;
     private MutableLiveData<String> mEmailContent;
-    private MutableLiveData<SignInError> mEmailError;
+    private MutableLiveData<SignInFragment.SignInError> mEmailError;
     private LiveData<Boolean> mHasError;
 
     public SignInViewModel() {
@@ -42,10 +42,10 @@ public class SignInViewModel extends ViewModel {
             if (isErrorModeEnabled) {
                 if (emptyText) {
                     // set empty text
-                    mEmailError.setValue(SignInError.EMAIL_NO_INPUT);
+                    mEmailError.setValue(SignInFragment.SignInError.EMAIL_NO_INPUT);
                 } else if (invalidEmail) {
                     // set invalid email
-                    mEmailError.setValue(SignInError.EMAIL_INVALID);
+                    mEmailError.setValue(SignInFragment.SignInError.EMAIL_INVALID);
                 }
             }
             boolean result = isErrorModeEnabled && (emptyText || invalidEmail);
@@ -58,7 +58,7 @@ public class SignInViewModel extends ViewModel {
         return mEmailContent;
     }
 
-    public LiveData<SignInError> getEmailError() {
+    public LiveData<SignInFragment.SignInError> getEmailError() {
         return mEmailError;
     }
 
@@ -101,19 +101,6 @@ public class SignInViewModel extends ViewModel {
         }
     }
 
-    public enum SignInError {
-        EMAIL_NO_INPUT("Empty email"),
-        EMAIL_INVALID("Invalid email");
 
-        private final String errorText;
-
-        SignInError(String errorText) {
-            this.errorText = errorText;
-        }
-
-        public String getErrorText() {
-            return errorText;
-        }
-    }
 
 }

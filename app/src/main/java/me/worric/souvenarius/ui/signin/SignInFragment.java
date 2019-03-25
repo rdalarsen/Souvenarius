@@ -1,9 +1,6 @@
 package me.worric.souvenarius.ui.signin;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.LayoutInflater;
@@ -18,26 +15,24 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import dagger.android.support.AndroidSupportInjection;
 import me.worric.souvenarius.R;
 import me.worric.souvenarius.databinding.FragmentSigninBinding;
 import me.worric.souvenarius.ui.authwrapper.AppAuth;
 import me.worric.souvenarius.ui.authwrapper.AppUser;
-import me.worric.souvenarius.ui.common.NetUtils;
-import me.worric.souvenarius.ui.main.MainActivity;
+import me.worric.souvenarius.ui.main.MainViewModel;
 import timber.log.Timber;
 
 
 public class SignInFragment extends Fragment {
 
-    private static final String KEY_IS_CONNECTED = "key_is_connected";
     private FragmentSigninBinding mBinding;
-    private boolean mIsConnected;
     private SignInFragmentEventListener mSignInFragmentEventListener;
     private CredentialVerifier mCredentialVerifier;
-    private SignInViewModel mViewModel;
+    private MainViewModel mViewModel;
     @Inject AppAuth mAppAuth;
 
     @Override
@@ -55,51 +50,18 @@ public class SignInFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this).get(SignInViewModel.class);
         mCredentialVerifier = new CredentialVerifier(Patterns.EMAIL_ADDRESS); // TODO: Move to DI
-        mIsConnected = initIsConnected(savedInstanceState);
-    }
-
-    private boolean initIsConnected(@Nullable Bundle savedInstanceState) {
-        if (savedInstanceState == null) {
-            return NetUtils.isConnected(requireContext());
-        } else if (savedInstanceState.containsKey(MainActivity.KEY_IS_CONNECTED)) {
-            return savedInstanceState.getBoolean(KEY_IS_CONNECTED, false);
-        }
-        return false;
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        mViewModel = ViewModelProviders.of(requireActivity()).get(MainViewModel.class);
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_signin, container, false);
         mBinding.setViewModel(mViewModel);
         mBinding.setLifecycleOwner(this);
         mBinding.setClickListener(mClickListener);
-        mBinding.setIsConnected(mIsConnected);
         return mBinding.getRoot();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        // TODO: Remove LocalBroadcastManager in favor of ViewModel approach
-        IntentFilter filter = new IntentFilter(MainActivity.ACTION_CONNECTIVITY_CHANGED);
-        LocalBroadcastManager.getInstance(requireContext())
-                .registerReceiver(mReceiver, filter);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        LocalBroadcastManager.getInstance(requireContext())
-                .unregisterReceiver(mReceiver);
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean(KEY_IS_CONNECTED, mIsConnected);
     }
 
     @Override
@@ -107,18 +69,6 @@ public class SignInFragment extends Fragment {
         super.onDetach();
         mSignInFragmentEventListener = null;
     }
-
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            boolean isConnected = intent.getBooleanExtra(MainActivity.KEY_IS_CONNECTED, false);
-            boolean needsUpdate = !(mIsConnected == isConnected);
-            if (needsUpdate) {
-                mIsConnected = isConnected;
-                mBinding.setIsConnected(mIsConnected);
-            }
-        }
-    };
 
     private ClickListener mClickListener = new ClickListener() {
         @Override
@@ -208,6 +158,28 @@ public class SignInFragment extends Fragment {
     public interface SignInFragmentEventListener {
         void onSignInSuccessful(boolean isConnected);
         void onCreateAccountClicked();
+    }
+
+    public interface SignInFeature {
+        MutableLiveData<String> getEmailContent();
+        LiveData<SignInError> getEmailError();
+        void performSignIn();
+        LiveData<Boolean> getHasEmailError();
+    }
+
+    public enum SignInError {
+        EMAIL_NO_INPUT("Empty email"),
+        EMAIL_INVALID("Invalid email");
+
+        private final String errorText;
+
+        SignInError(String errorText) {
+            this.errorText = errorText;
+        }
+
+        public String getErrorText() {
+            return errorText;
+        }
     }
 
     public static SignInFragment newInstance() {

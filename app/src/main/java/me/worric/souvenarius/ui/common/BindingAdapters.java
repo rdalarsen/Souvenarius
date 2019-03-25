@@ -21,14 +21,14 @@ import me.worric.souvenarius.data.model.SouvenirDb;
 import me.worric.souvenarius.ui.GlideLoaderProvider;
 import me.worric.souvenarius.ui.GlideRequest;
 import me.worric.souvenarius.ui.search.SearchResultsAdapter;
-import me.worric.souvenarius.ui.signin.SignInViewModel;
+import me.worric.souvenarius.ui.signin.SignInFragment;
 import timber.log.Timber;
 
 public class BindingAdapters {
 
     @BindingAdapter("errorText")
-    public static void setError(TextInputLayout layout, SignInViewModel.SignInError oldError,
-                                SignInViewModel.SignInError error) {
+    public static void setError(TextInputLayout layout, SignInFragment.SignInError oldError,
+                                SignInFragment.SignInError error) {
         if (error != null ) {
             layout.setError(error.getErrorText());
         }
