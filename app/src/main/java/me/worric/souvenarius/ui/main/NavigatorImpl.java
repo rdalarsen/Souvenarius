@@ -35,7 +35,7 @@ public class NavigatorImpl implements Navigator {
     @Override
     public void navigateToDetail(String souvenirId) {
         mFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, DetailFragment.newInstance(souvenirId))
+                .replace(R.id.fl_main_fragmentContainer, DetailFragment.newInstance(souvenirId))
                 .addToBackStack(null)
                 .commit();
     }
@@ -43,7 +43,7 @@ public class NavigatorImpl implements Navigator {
     @Override
     public void navigateToAdd() {
         mFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, AddFragment.newInstance())
+                .replace(R.id.fl_main_fragmentContainer, AddFragment.newInstance())
                 .addToBackStack(null)
                 .commit();
     }
@@ -51,7 +51,7 @@ public class NavigatorImpl implements Navigator {
     @Override
     public void navigateToSearch() {
         mFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, SearchFragment.newInstance())
+                .replace(R.id.fl_main_fragmentContainer, SearchFragment.newInstance())
                 .addToBackStack(null)
                 .commit();
     }
@@ -59,21 +59,21 @@ public class NavigatorImpl implements Navigator {
     @Override
     public void navigateToSignIn() {
         mFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, SignInFragment.newInstance())
+                .replace(R.id.fl_main_fragmentContainer, SignInFragment.newInstance())
                 .commit();
     }
 
     @Override
     public void navigateToMain() {
         mFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, MainFragment.newInstance())
+                .replace(R.id.fl_main_fragmentContainer, MainFragment.newInstance())
                 .commit();
     }
 
     @Override
     public void navigateToCreateAccount() {
         mFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, CreateAccountFragment.newInstance())
+                .replace(R.id.fl_main_fragmentContainer, CreateAccountFragment.newInstance())
                 .addToBackStack(null)
                 .commit();
     }
@@ -143,7 +143,7 @@ public class NavigatorImpl implements Navigator {
                                                          Fragment fragment) {
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
 
-        transaction.replace(R.id.fragment_container, fragment);
+        transaction.replace(R.id.fl_main_fragmentContainer, fragment);
         if (addToBackStack) transaction.addToBackStack(null);
         if (reorderingEnabled) transaction.setReorderingAllowed(true);
 

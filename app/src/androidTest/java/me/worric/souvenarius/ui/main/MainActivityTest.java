@@ -35,7 +35,7 @@ public class MainActivityTest {
 
     @Test
     public void onFabClick_addFragmentIsDisplayed() {
-        onView(withId(R.id.btn_fab_add_souvenir))
+        onView(withId(R.id.fab_main_addSouvenir))
                 .perform(click());
 
         onView(withId(R.id.cv_add_container))

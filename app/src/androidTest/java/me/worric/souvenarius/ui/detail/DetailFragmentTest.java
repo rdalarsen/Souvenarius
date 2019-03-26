@@ -68,7 +68,7 @@ public class DetailFragmentTest {
         onView(withId(R.id.rv_souvenir_list))
                 .perform(actionOnItemAtPosition(0, click()));
 
-        onView(withId(R.id.btn_fab_add_souvenir))
+        onView(withId(R.id.fab_main_addSouvenir))
                 .check(matches(not(isDisplayed())));
     }
 

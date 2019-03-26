@@ -25,6 +25,7 @@ public class MainViewModel extends ViewModel implements SignInFragment.SignInFea
     private final LiveData<Integer> mNumSouvenirs;
     private final LiveData<Result<List<SouvenirDb>>> mSouvenirs;
     private final MutableLiveData<Boolean> mIsConnected;
+    private final MutableLiveData<FabState> mFabState;
 
     private final CredentialVerifier mCredentialVerifier;
     private boolean isErrorModeEnabled;
@@ -37,6 +38,7 @@ public class MainViewModel extends ViewModel implements SignInFragment.SignInFea
         mSouvenirRepository = souvenirRepository;
         mCredentialVerifier = credentialVerifier;
         mIsConnected = new MutableLiveData<>();
+        mFabState = new MutableLiveData<>();
         mSouvenirs = mSouvenirRepository.getSouvenirs();
         mNumSouvenirs = Transformations.map(mSouvenirs, result -> {
             if (result != null && result.status.equals(Result.Status.SUCCESS)) {
@@ -93,6 +95,11 @@ public class MainViewModel extends ViewModel implements SignInFragment.SignInFea
         if (shouldUpdate) mIsConnected.setValue(isConnected);
     }
 
+    /**
+     * Here we're purposefully exposing a MutableLiveData in order to support 2-way DataBinding
+     *
+     * @return LiveData holding email content
+     */
     @Override
     public MutableLiveData<String> getEmailContent() {
         return mEmailContent;
@@ -101,6 +108,14 @@ public class MainViewModel extends ViewModel implements SignInFragment.SignInFea
     @Override
     public LiveData<SignInFragment.SignInError> getEmailError() {
         return mEmailError;
+    }
+
+    public LiveData<FabState> getFabState() {
+        return mFabState;
+    }
+
+    public void updateFabState(@NonNull FabState fabState) {
+        mFabState.setValue(fabState);
     }
 
     @Override

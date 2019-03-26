@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
             if (state != null) {
                 Timber.d("Fragment resumed is of type: %s. Applying FAB state: %s",
                         f.getClass().getSimpleName(), state.toString());
-                mBinding.setFabState(state); // TODO: Convert to viewmodel
+                mMainViewModel.updateFabState(state);
             }
         }
     }

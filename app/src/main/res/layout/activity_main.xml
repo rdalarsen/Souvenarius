@@ -8,9 +8,6 @@
         <variable
             name="viewmodel"
             type="me.worric.souvenarius.ui.main.MainViewModel" />
-        <variable
-            name="fabState"
-            type="me.worric.souvenarius.ui.main.FabState" />
     </data>
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/cl_main_root"
@@ -19,27 +16,27 @@
         tools:context=".ui.main.MainActivity">
 
         <FrameLayout
-            android:id="@+id/fragment_container"
+            android:id="@+id/fl_main_fragmentContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btn_fab_add_souvenir"
+            android:id="@+id/fab_main_addSouvenir"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            android:visibility="@{fabState == FabState.HIDDEN ? View.GONE : View.VISIBLE}"
+            app:goneUnless="@{viewmodel.fabState == FabState.ADD}"
             app:fabSize="normal"
             app:elevation="6dp"
             app:pressedTranslationZ="12dp"
-            app:layout_anchor="@+id/fragment_container"
+            app:layout_anchor="@+id/fl_main_fragmentContainer"
             app:layout_anchorGravity="bottom|end"
             android:contentDescription="@string/content_desc_main_add_souvenir"
             android:src="@drawable/ic_add_a_photo"
             android:onClick="handleAddFabClicked" />
 
         <TextView
-            android:id="@+id/tv_connection_warning"
+            android:id="@+id/tv_main_connectionWarning"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
@@ -48,11 +45,11 @@
             android:background="@drawable/connectivity_warning_background"
             android:fontFamily="sans-serif-medium"
             android:theme="@style/ThemeOverlay.MaterialComponents.Dark"
-            app:layout_anchor="@+id/fragment_container"
+            app:layout_anchor="@+id/fl_main_fragmentContainer"
             app:layout_anchorGravity="bottom|start"
             android:clickable="true"
             android:focusable="true"
-            android:visibility="@{viewmodel.isConnected ? View.GONE : View.VISIBLE}"
+            app:goneUnless="@{viewmodel.isConnected == false}"
             android:onClick="handleShowConnectionWarningToast" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
