@@ -1,12 +1,13 @@
 package me.worric.souvenarius.ui.main;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.MediumTest;
+import androidx.test.rule.ActivityTestRule;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.filters.MediumTest;
-import androidx.test.rule.ActivityTestRule;
 import me.worric.libtestrule.DisableAnimationsRule;
 import me.worric.souvenarius.R;
 
@@ -56,13 +57,13 @@ public class MainActivityTest {
     }
 
     @Test
-    public void onToolbarSearchButtonClick_searchFragmentIsDisplayed() {
-        onView(withId(R.id.action_main_search))
+    public void onHeaderSearchButtonClick_searchFragmentIsDisplayed() {
+        onView(withId(R.id.btn_main_headerSearchIcon))
                 .perform(click());
 
         onView(withId(com.google.android.material.R.id.search_src_text))
                 .check(matches(isDisplayed()));
-        onView(withId(R.id.rv_search_result_list))
+        onView(withId(R.id.tb_search_searchToolBar))
                 .check(matches(isDisplayed()));
     }
 

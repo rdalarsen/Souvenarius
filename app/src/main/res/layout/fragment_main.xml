@@ -74,7 +74,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
-                    android:id="@+id/iv_main_headerSearchIcon"
+                    android:id="@+id/btn_main_headerSearchIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/main_menuBar_size"
                     app:layout_constraintTop_toTopOf="parent"
@@ -86,11 +86,11 @@
 
                 <com.google.android.material.button.MaterialButton
                     style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
-                    android:id="@+id/iv_main_headerSortIcon"
+                    android:id="@+id/btn_main_headerSortIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/main_menuBar_size"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/iv_main_headerSearchIcon"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_main_headerSearchIcon"
                     android:onClick="@{clickListener::onSortClick}"
                     android:text="@string/main_sortButtonLabel"
                     app:icon="@drawable/ic_sort" />
