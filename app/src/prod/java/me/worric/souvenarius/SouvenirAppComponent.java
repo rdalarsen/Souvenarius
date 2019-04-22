@@ -6,19 +6,20 @@ import javax.inject.Singleton;
 
 import dagger.BindsInstance;
 import dagger.Component;
-import dagger.android.support.AndroidSupportInjectionModule;
+import dagger.android.AndroidInjectionModule;
+import me.worric.souvenarius.data.DataModule;
 import me.worric.souvenarius.data.RoomProdModule;
 import me.worric.souvenarius.ui.FragmentContributorModule;
-import me.worric.souvenarius.ui.authwrapper.AppAuthModule;
+import me.worric.souvenarius.ui.authwrapper.FirebaseAppAuthModule;
 import me.worric.souvenarius.ui.common.ViewModelModule;
 
 @Singleton
 @Component(modules = {
-        AndroidSupportInjectionModule.class,
+        AndroidInjectionModule.class,
         SouvenirAppModule.class,
         ViewModelModule.class,
         FragmentContributorModule.class,
-        AppAuthModule.class,
+        FirebaseAppAuthModule.class,
         RoomProdModule.class,
         DataModule.class
 })
